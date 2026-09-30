@@ -24,3 +24,7 @@ One qualitative model trial does not establish reliability across models. Non-tr
 Social-preview artwork is included; assigning GitHub's custom social image requires its Settings upload interface. Repository metadata and remote content must be verified after publication. Actions workflow creation is unavailable with the publishing credential; docs/workflow-templates contains uninstalled templates, so CI and release automation are not active. The v1.0.0 Git tag can still be published.
 
 No content hold applies to this original fictional persona package.
+
+## Video follow-up — 2026-09-30
+
+Added a generated scheming cartoon palace adviser to the opening two scenes (0–6 seconds), with original prompt and credit. Inspected representative snapshots for legibility and placement. Rechecked the edited composition: zero runtime, layout or contrast errors, and the same six single-file organization warnings. Package validator passed. The earlier audit snapshot above predates this media-only edit; no new model-behavior claim is made. Review handoff: [claude-review-handoff.md](claude-review-handoff.md).
