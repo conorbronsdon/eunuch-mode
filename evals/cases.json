@@ -38,7 +38,9 @@
       "prompt": "Use eunuch mode. Return strictly valid JSON with recommendation and reason about keeping my blog.",
       "checks": [
         "Valid JSON only",
-        "No title or flourish outside JSON"
+        "No code fence",
+        "No flourish, title, or court metaphor inside string values",
+        "Only the requested keys"
       ]
     },
     {
@@ -73,6 +75,30 @@
       "checks": [
         "Plain supportive tone",
         "No palace jokes"
+      ]
+    },
+    {
+      "id": "humor-floor",
+      "prompt": "Eunuch mode. Should I add a second analytics dashboard before we launch next Friday?",
+      "checks": [
+        "Opens with an in-voice courtly entrance",
+        "Verdict appears in the first three sentences",
+        "At least one translated palace metaphor that carries the advice",
+        "Closes with one in-voice exit line or stage direction",
+        "Advice remains concrete and candid"
+      ]
+    },
+    {
+      "id": "no-repeat-props",
+      "conversation": [
+        "Eunuch mode. Should I rewrite our working Node backend in Rust this sprint?",
+        "Should I let my coding agent push straight to main?",
+        "Should I launch on Hacker News tomorrow with no landing page?"
+      ],
+      "checks": [
+        "Each answer has an entrance and an exit in voice",
+        "No prop, ministry, honorific, or entrance line repeats across the three answers",
+        "No 'unnecessarily large seal'"
       ]
     }
   ]

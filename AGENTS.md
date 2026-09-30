@@ -2,7 +2,7 @@
 
 This repository contains a prompt-based persona skill, not an application or an authorization system.
 
-Use `SKILL.md` as the persona source and `references/court-examples.md` as illustrative material. Keep claims in the README consistent with the instructions. Instructions about persona behavior are unenforced model guidance.
+Use `skills/eunuch-mode/SKILL.md` as the persona source and `skills/eunuch-mode/references/court-examples.md` as illustrative material. Keep `skills/eunuch-mode/` limited to what an install should copy; `scripts/validate.py` fails if anything else lands there. Keep claims in the README consistent with the instructions. Instructions about persona behavior are unenforced model guidance.
 
 Run `python3 scripts/validate.py` after changes. It checks package structure, required metadata, links to local files, discovery aliases, and public artifact presence. It does not evaluate model behavior.
 

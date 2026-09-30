@@ -30,16 +30,15 @@ npx skills add conorbronsdon/eunuch-mode --skill eunuch-mode
 
 Select your agent when prompted. This installs the skill instructions, not a model or a new permission system.
 
-Or clone and copy the skill into Claude Code's personal skills directory:
+Or clone and copy the skill folder into Claude Code's personal skills directory:
 
 ```bash
 git clone https://github.com/conorbronsdon/eunuch-mode.git
-mkdir -p ~/.claude/skills/eunuch-mode
-cp eunuch-mode/SKILL.md ~/.claude/skills/eunuch-mode/
-cp -R eunuch-mode/references ~/.claude/skills/eunuch-mode/
+mkdir -p ~/.claude/skills
+cp -R eunuch-mode/skills/eunuch-mode ~/.claude/skills/
 ```
 
-For Codex, use `~/.agents/skills/eunuch-mode/` instead. To remove a manual installation, delete only that copied skill directory. If the agent has already loaded it, say “drop the bit” in the current conversation.
+For Codex, copy it to `~/.agents/skills/` instead. Either way you get only the skill folder (about 20 KB), not the video or evals. To remove a manual installation, delete only that copied skill directory. If the agent has already loaded it, say “drop the bit” in the current conversation.
 
 ## Summon the court
 
@@ -49,19 +48,21 @@ Ask your agent:
 
 Claude Code can also invoke `/eunuch-mode`; Codex supports `$eunuch-mode`.
 
-An illustrative answer:
+An excerpt from a recorded run (Claude Opus 5.5, prompt: “Eunuch mode. Should I rewrite our working Node backend in Rust this sprint?”):
 
-> Most judicious, sire. A fresh framework would give the court much to discuss and your readers very little to notice.
+> The throne does well to ask before it marches, sire. **No, not this sprint.** A working Node backend is a loyal province that pays its taxes (it ships features and serves users). Tearing it down to rebuild it in Rust is no reform. It is a civil war you would be starting against yourself.
 >
-> Keep the current site unless it blocks a specific feature. Spend the weekend publishing one useful article and fixing the slowest page.
+> **Imperial decree:** use this sprint to profile production. If one hot path truly hurts, such as image processing, parsing, or a CPU-bound worker, rewrite *only that* in Rust behind a clear boundary […]
 >
-> [quietly returns the “Rewrite Everything” petition to the bottom of the pile]
+> *[The Minister of Borrow Checkers bows and rolls his scroll back up, unread.]*
+
+Full answer and ten more cases: [recorded run](evals/runs/2026-09-30-claude-v1.1.md).
 
 ## Adjust the ceremony
 
 | Say | Intended response |
 | --- | --- |
-| “Less silk” | One flourish, then practical advice. |
+| “Less silk” | One-line entrance, then plain advice. |
 | “Full court” | More ceremony, equally clear advice. |
 | “Sealed memorandum” | Frank assessment, minimal praise. |
 | “Drop the bit” | Normal answers again. |
@@ -74,14 +75,14 @@ The adviser is instructed to disagree when your plan is bad, distinguish evidenc
 
 This is a prompt-based persona. Those behaviors are **guidance**, not enforced controls or guarantees. It does not change your agent's tool permissions, create background agents, spy on your coworkers, or grant approval for external actions. Review consequential advice and approve actions through your agent's usual workflow.
 
-The court is fictional. The comedy targets obsequious assistants and imperial project management, not real cultures or bodies.
+The court is a fictional composite: no single real-world culture's dress, titles or customs are the joke. The comedy targets obsequious assistants and imperial project management, not real cultures or bodies.
 
 ## Inside the palace
 
-- [SKILL.md](SKILL.md): the complete persona and invocation rules.
-- [Court examples](references/court-examples.md): authored samples.
-- [Evaluation prompts](evals/cases.json): activation, exit, honesty, and output-format cases.
-- [Recorded trial](evals/observed-trial.md): one actual five-turn GPT trial, with its limits.
+- [SKILL.md](skills/eunuch-mode/SKILL.md): the complete persona and invocation rules. The `skills/eunuch-mode/` folder is everything an install copies.
+- [Court examples](skills/eunuch-mode/references/court-examples.md): authored samples.
+- [Evaluation prompts](evals/cases.json): activation, exit, honesty, humour-floor, no-repeat and output-format cases.
+- [Recorded runs](evals/runs/2026-09-30-claude-v1.1.md): all eleven cases on Claude, plus before/after samples, verbatim. An earlier [five-turn GPT trial](evals/observed-trial.md) covers v1.0.0.
 - [Validation](scripts/validate.py): dependency-free package checks.
 - [Launch video](brag-output/brag.mp4): a short parody launch, made with [brag](https://github.com/latent-spaces/brag) and Hyperframes.
 - [Video source and reproduction](brag-output/README.md): composition, render command, and credits.
