@@ -2,6 +2,8 @@
 
 The package contains a usable skill and its README describes prompt guidance accurately.
 
+Audited functional source: 36e6bb2 on main; remote fetched and matched. The audit document itself is updated after that source snapshot.
+
 ## Evidence checked
 
 SKILL.md, agents/openai.yaml, references/court-examples.md, both scripts, README.md, AGENTS.md, CONTRIBUTING.md, evaluation cases and observed trial, generated GIF/social card, video composition and audio/fonts, package scripts, funding and attributes, workflow templates.
@@ -17,7 +19,7 @@ SKILL.md, agents/openai.yaml, references/court-examples.md, both scripts, README
 
 ## Coverage limits
 
-One qualitative model trial does not establish reliability across models. Non-triggering, distress and tool-permission behavior have reusable cases but were not measured in that trial. The sample GIF/video are authored illustrations. Local skill discovery was tested; every agent's installer and conversation persistence were not.
+One qualitative model trial does not establish reliability across models. Non-triggering, distress and tool-permission behavior have reusable cases but were not measured in that trial. The sample GIF/video are authored illustrations. Both local and published-repository Skills CLI discovery found exactly one skill. Every agent's full installer and conversation persistence were not tested.
 
 Social-preview artwork is included; assigning GitHub's custom social image requires its Settings upload interface. Repository metadata and remote content must be verified after publication. Actions workflow creation is unavailable with the publishing credential; docs/workflow-templates contains uninstalled templates, so CI and release automation are not active. The v1.0.0 Git tag can still be published.
 
