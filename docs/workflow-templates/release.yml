@@ -1,0 +1,18 @@
+name: Release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/validate.py
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --title "Eunuch Mode $GITHUB_REF_NAME" --notes-file docs/release-notes.md brag-output/brag.mp4 brag-output/brag.jpg docs/social-preview.png

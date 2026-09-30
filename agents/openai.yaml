@@ -1,0 +1,4 @@
+interface:
+  display_name: "Eunuch Mode"
+  short_description: "A palace adviser for your questionable decrees"
+  default_prompt: "Use $eunuch-mode to counsel me on my latest scheme."

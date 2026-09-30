@@ -1,0 +1,2 @@
+I built eunuch mode for AI assistants. A palace adviser for your questionable decrees. Most judicious, sire.
+https://github.com/conorbronsdon/eunuch-mode
