@@ -1,67 +1,562 @@
 <!doctype html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=1080, height=1080"><title>Eunuch Mode — brag</title>
-<script src="assets/gsap.min.js"></script><script src="assets/audio-data.js"></script>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Eunuch Mode: The Petition Desk</title>
+<!--
+  The Petition Desk: launch film for Eunuch Mode.
+  One paused GSAP timeline; every frame is window.seek(t) (a pure function of t). Rendered frame by frame by ../render.mjs.
+  Every line attributed to the skill is verbatim from a recorded run: see ../facts.md.
+  Formats: ?fmt=16x9 (1920x1080) or ?fmt=9x16 (1080x1920). The renderer sets the viewport.
+-->
 <style>
-@font-face{font-family:CourtSerif;src:url('assets/fonts/DejaVuSerif.ttf')}
-@font-face{font-family:CourtMono;src:url('assets/fonts/DejaVuSansMono.ttf')}
-*{box-sizing:border-box}body{margin:0;background:#201820;color:#f6edda;font-family:CourtSerif,serif}#root{position:relative;width:100%;height:100%;overflow:hidden}
-.frame{position:absolute;inset:30px;border:2px solid #deb668;pointer-events:none}.rules{position:absolute;left:60px;right:60px;top:110px;height:2px;background:#deb668}
-.top{position:absolute;left:60px;top:62px;font:20px CourtMono,monospace;letter-spacing:2px;color:#deb668}
-.bottom{position:absolute;bottom:50px;left:60px;font:18px CourtMono,monospace;color:#c5b6bf}
-.clip{position:absolute;inset:0}.content{position:absolute;left:70px;right:70px;top:205px}
-h1{font-size:94px;line-height:1.15;font-weight:normal;margin:0 0 38px}
-h2{font-size:82px;line-height:1.15;font-weight:normal;margin:0 0 36px}
-.gold{color:#deb668}.sub{font:28px CourtMono,monospace;line-height:1.6;margin:0}
-.adviser{position:absolute;right:65px;bottom:110px;height:460px;width:auto;transform-origin:50% 90%;filter:drop-shadow(0 12px 14px #130f1560)}
-.adviser-reveal{height:650px;right:45px}
-#reveal-line{width:490px}
-.seal-mark{position:absolute;right:78px;bottom:160px;width:235px;height:235px;border:2px solid #deb668;border-radius:50%;opacity:.18}
-.chat{position:absolute;left:70px;right:70px;top:205px;font-family:CourtMono,monospace}
-.label{font:21px CourtMono,monospace;color:#deb668;letter-spacing:1px;margin-bottom:26px}
-.question{padding:34px;border:2px solid #a28c93;font-size:30px;line-height:1.5;background:#30232e}
-.answer{padding:34px;font-size:30px;line-height:1.55;margin-top:28px;background:#f6edda;color:#201820}
-.answer p{margin:0 0 25px}.answer p:last-child{margin:0}.replytitle{font-family:CourtSerif,serif;font-size:37px;color:#664019}
-.tag{position:absolute;left:70px;bottom:125px;font:20px CourtMono,monospace;color:#c5b6bf}
-.policy{font-size:64px;line-height:1.3;margin:0 0 45px}.policy small{font:25px CourtMono,monospace;display:block;margin-top:20px}
-.outro{font-size:80px}.repo{font:25px CourtMono,monospace;line-height:1.6;margin-top:50px}
-.line{height:3px;background:#deb668;width:750px;margin:42px 0;transform-origin:left}
-</style></head><body>
-<div id="root" data-composition-id="main" data-start="0" data-width="1080" data-height="1080" data-duration="22">
-<div class="frame" data-layout-ignore></div><div class="rules" data-layout-ignore></div><div class="top">IMPERIAL SOFTWARE PROCUREMENT</div><div class="bottom">EST. THIS AFTERNOON · INDEPENDENT PROJECT</div>
-<div class="seal-mark" data-layout-ignore></div>
-<section id="hook-scene" class="clip" data-start="0" data-duration="3" data-track-index="0"><div class="content"><h1 id="hook">Your AI needs<br>a court<br>appointment.</h1><p class="sub" id="hooksub">The palace has an opening.</p></div>
-<img id="adviser-hook" class="adviser" data-start="0" data-duration="3" data-track-index="1" src="assets/palace-adviser.png" alt="A mischievous cartoon palace adviser plotting with tented fingertips and a scroll."></section>
-<section id="reveal-scene" class="clip" data-start="3" data-duration="3" data-track-index="0"><div class="content"><p class="label">A NEW APPOINTMENT</p><h1 id="reveal">Eunuch<br>Mode.</h1><div class="line" id="reveal-line" data-layout-ignore></div><p class="sub gold" id="sire">Most judicious, sire.</p></div><img id="adviser-reveal" class="adviser adviser-reveal" data-start="3" data-duration="3" data-track-index="1" src="assets/palace-adviser.png" alt="The scheming cartoon palace adviser makes his court appointment."></section>
-<section id="sample-scene" class="clip" data-start="6" data-duration="9" data-track-index="0"><div class="chat"><div class="label">ILLUSTRATIVE SAMPLE · AUTHORED COPY</div><div class="question" id="question">Should I rebuild my working blog this weekend?</div><div class="answer" id="answer"><p class="replytitle">Most judicious, sire.</p><p>A fresh framework would give the court much to discuss and your readers very little to notice.</p><p>Keep the current site.<br>Publish one useful article.</p></div></div></section>
-<section id="policy-scene" class="clip" data-start="15" data-duration="4" data-track-index="0"><div class="content"><p class="label">THE TERMS OF APPOINTMENT</p><p class="policy" id="policy1">Flattery:<br><span class="gold">ceremonial.</span></p><p class="policy" id="policy2">Advice:<br><span class="gold">candid.</span></p><p class="sub" id="policy3">Prompt guidance. No guarantees.</p></div></section>
-<section id="outro-scene" class="clip" data-start="19" data-duration="3" data-track-index="0"><div class="content"><h2 class="outro" id="outro">Eunuch Mode.</h2><p class="sub gold" id="outrosub">Most judicious, sire.</p><div class="line" id="outro-line" data-layout-ignore></div><p class="repo" id="repo">github.com/conorbronsdon/<br>eunuch-mode</p></div></section>
-<audio id="music" data-start="0" data-duration="22" data-track-index="10" data-volume="0.22" src="assets/court-score.wav" data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0},{"t":0.25,"v":0.22},{"t":20.5,"v":0.22},{"t":22,"v":0}]}]}' ></audio>
-<audio id="title-hit" data-start="3.125" data-duration="0.33" data-track-index="11" data-volume="0.5" src="assets/wood.ogg"></audio>
-<audio id="outro-hit" data-start="19.0625" data-duration="0.33" data-track-index="11" data-volume="0.5" src="assets/wood.ogg"></audio>
+@font-face{font-family:Fell;src:url(assets/fonts/IMFeENrm28P.ttf)}
+@font-face{font-family:FellIt;src:url(assets/fonts/IMFeENit28P.ttf)}
+@font-face{font-family:Elite;src:url(assets/fonts/SpecialElite-Regular.ttf)}
+@font-face{font-family:Mono;src:url(assets/fonts/JetBrainsMono-wght.ttf);font-weight:100 800}
+:root{--ink:#16120E;--desk:#221912;--manila:#E8D5A3;--vellum:#F3E6C4;--wax:#9E1B20;--wax2:#C2332F;--brass:#B08D57;--text:#221A12;--gold:#E2BE74;--muted:#6B5A45}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--ink)}
+#stage{position:absolute;inset:0;overflow:hidden;background:var(--ink)}
+#desk{position:absolute;inset:-6%;background:
+  radial-gradient(120% 90% at 50% 45%, #2b2016 0%, #1b140e 55%, #0f0b08 100%)}
+#desk:before{content:"";position:absolute;inset:0;opacity:.55;mix-blend-mode:multiply;background-size:100% 100%;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='800' preserveAspectRatio='none'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='.0035 .09' numOctaves='3' seed='5'/><feColorMatrix values='0 0 0 0 .35 0 0 0 0 .22 0 0 0 0 .12 0 0 0 1.3 -.35'/></filter><rect width='800' height='800' filter='url(%23w)'/></svg>")}
+#desk:after{content:"";position:absolute;inset:0;opacity:.35;background-image:repeating-linear-gradient(92deg,rgba(0,0,0,.18) 0 2px,transparent 2px 11px),repeating-linear-gradient(88deg,rgba(255,220,170,.035) 0 1px,transparent 1px 23px)}
+#glow{position:absolute;width:140vmax;height:140vmax;left:0;top:0;margin:-70vmax 0 0 -70vmax;border-radius:50%;
+  background:radial-gradient(closest-side, rgba(255,190,110,.42), rgba(255,160,80,.12) 45%, rgba(0,0,0,0) 72%);mix-blend-mode:screen}
+.mote{position:absolute;width:.5vmin;height:.5vmin;border-radius:50%;background:rgba(255,215,160,.55);filter:blur(.12vmin)}
+.scene{position:absolute;inset:0;visibility:hidden}
+#seal{position:absolute;left:0;top:0;width:10vmin;height:10vmin;margin:-5vmin 0 0 -5vmin;z-index:5;will-change:transform}
+#seal svg{width:100%;height:100%;overflow:visible}
+#light{position:absolute;inset:0;z-index:6;pointer-events:none;mix-blend-mode:soft-light}
+#grain{position:absolute;inset:-20%;z-index:7;pointer-events:none;opacity:.10;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='7'/><feColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.4 -.2'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>")}
+.paper{background:var(--manila);box-shadow:0 2.4vmin 6vmin rgba(0,0,0,.55), inset 0 0 8vmin rgba(120,80,30,.28)}
+.paper:before{content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='4' seed='3'/><feColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .15 0 0 0 .55 -.1'/></filter><rect width='300' height='300' filter='url(%23p)'/></svg>")}
+/* S1 hook */
+#slip{position:absolute;left:50%;top:52%;width:min(150vmin,92vw);padding:7vmin 8vmin 14vmin}
+.slip-label{font:5vmin Elite;letter-spacing:.5vmin;color:#5a4630}
+.slip-text{font:15.5vmin/1.05 Elite;color:var(--text);margin-top:2vmin}
+.imp{position:absolute;right:5vmin;bottom:3.5vmin;padding:1.2vmin 2.4vmin;border:1vmin solid var(--wax);color:var(--wax);font:8vmin/1 Fell;letter-spacing:.3vmin;
+  transform:rotate(-8deg);mix-blend-mode:multiply;
+  -webkit-mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' seed='11'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 2.05'/></filter><rect width='200' height='200' filter='url(%23m)'/></svg>");-webkit-mask-size:40vmin}
+#a-slip{position:absolute;right:9vmin;top:8vmin;width:1px;height:1px}
+#stamp1{position:absolute;left:0;top:0;width:34vmin;height:44vmin;z-index:3}
+#shadow1{position:absolute;left:0;top:0;width:40vmin;height:10vmin;margin:-5vmin 0 0 -20vmin;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.55),rgba(0,0,0,0));z-index:2}
+/* S2 title */
+#s2 .wrap{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);width:92vw;text-align:center}
+#title{font:19vmin/1 Fell;color:var(--vellum);letter-spacing:.5vmin;white-space:nowrap}
+#title .l{display:inline-block}
+#title .word{white-space:nowrap}
+#title .anchor{display:inline-block;width:6vmin}
+#tag{font:8.4vmin/1.2 FellIt;color:var(--gold);margin-top:5vmin}
+body.v #title{font-size:16vmin;line-height:1.05;white-space:normal}
+body.v #s2 .wrap,body.v #s8 .wrap{left:45.8%;width:80vw}
+body.v #slip,body.v #verdict,body.v #stage7,body.v #slip7wrap{left:45.8%}
+body.v #slip,body.v #stage7{width:80vw}
+body.v #scroll3{left:50%;width:108vw;min-height:58vh;padding:9vmin 25vmin 10vmin 11vmin}
+body.v #slip7wrap{width:86vw}
+body.v #title .word{display:block}
+body.v #tag{font-size:8.6vmin;max-width:86vw;margin:6vmin auto 0}
+/* S3 prompt */
+#scroll3{position:absolute;left:50%;top:50%;width:min(166vmin,92vw);padding:7vmin 7vmin 9vmin;background:var(--vellum)}
+#scroll3 .rod{position:absolute;left:-2.5vmin;right:-2.5vmin;height:3.2vmin;border-radius:1.6vmin;background:linear-gradient(#6d4a2a,#3d2715 60%,#2a1a0e)}
+#scroll3 .rod.t{top:-1.6vmin}#scroll3 .rod.b{bottom:-1.6vmin}
+#tag3{position:absolute;left:7vmin;right:7vmin;top:50%;font:12vmin/1.08 FellIt;color:var(--wax);text-align:center}
+body.v #tag3{font-size:15vmin;left:11vmin;right:25vmin}
+.label{font:600 4.4vmin Mono;letter-spacing:.5vmin;color:#8a6a35}
+#cur{position:absolute;width:3.6vmin;height:7vmin;background:var(--wax);opacity:0}
+.sheen{position:absolute;inset:0;pointer-events:none;mix-blend-mode:soft-light;background:linear-gradient(105deg,rgba(255,255,255,0) 38%,rgba(255,236,190,.7) 50%,rgba(255,255,255,0) 62%);background-size:300% 100%;background-position:100% 0}
+#chip{display:inline-block;margin-top:3.6vmin;padding:.6vmin 1.8vmin;background:var(--wax);color:var(--vellum);font:600 5.2vmin Mono}
+#prompt{font:500 10vmin/1.18 Mono;color:var(--text);margin-top:2.6vmin}
+#prompt .c{opacity:0}
+#a-scroll{position:absolute;right:7vmin;bottom:-1vmin;width:1px;height:1px}
+body.v #prompt{font-size:9vmin}
+body.v .label{font-size:4.6vmin}
+body.v #chip{font-size:6vmin}
+/* S4 flattery */
+#flat{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);width:min(166vmin,90vw);text-align:center;font:14vmin/1.1 Fell;color:var(--gold)}
+#flat .w{display:inline-block}
+#orn{position:absolute;left:50%;top:22%;width:min(110vmin,80vw);height:11vmin;margin-left:calc(min(110vmin,80vw) / -2);overflow:visible}
+#orn path{fill:none;stroke:var(--gold);stroke-width:.5}#orn #orn-d{fill:var(--gold)}
+body.v #orn{top:24%}
+#a-flat{position:absolute;left:50%;top:80%;width:1px;height:1px}
+body.v .imp{font-size:6vmin;white-space:nowrap;right:4vmin;bottom:3vmin}
+body.v .slip-label{font-size:4vmin;letter-spacing:.3vmin}
+body.v #a-slip{right:6vmin;top:6vmin}
+body.v #slip{padding-bottom:21vmin}
+body.v .slip-text{font-size:14vmin}
+body.v #flat{font-size:11vmin;top:44%;left:45.8%;width:80vw}
+body.v #orn{left:45.8%}
+/* S5 verdict */
+#s5 .half{position:absolute;top:-5%;bottom:-5%;background:var(--manila);visibility:hidden}
+#s5 .whole{position:absolute;inset:-5%}
+#s5 .half.l{left:-5%;right:50%;clip-path:polygon(0 0,100% 0,96% 8%,100% 17%,95% 29%,100% 41%,96% 55%,100% 68%,95% 80%,100% 91%,97% 100%,0 100%)}
+#s5 .half.r{left:49%;right:-5%;clip-path:polygon(4% 0,100% 0,100% 100%,3% 100%,0 91%,5% 80%,0 68%,4% 55%,0 41%,5% 29%,0 17%,4% 8%)}
+#verdict{position:absolute;left:50%;top:50%;width:92vw;text-align:center;color:var(--text);font:15vmin/1 Fell}
+#no{display:block;font-size:34vmin;line-height:.95;color:var(--wax)}
+#verdict .dot{color:transparent;display:inline-block;width:7vmin;text-align:left}
+body.v #verdict{font-size:10vmin;top:46%;width:80vw;white-space:nowrap}body.v #no{font-size:44vmin;margin-bottom:7vmin}
+/* S6 province */
+#s6 .sheet{position:absolute;inset:-4%;background:var(--vellum)}
+#prov{position:absolute;left:7vw;top:50%;width:47vw;font:9.6vmin/1.16 Fell;color:var(--text)}
+#prov .u{position:relative;white-space:nowrap}
+#uline{position:absolute;left:0;right:0;bottom:-.6vmin;height:.9vmin;background:var(--wax);transform-origin:left;border-radius:.5vmin}
+#draw{position:absolute;right:2vw;top:50%;width:43vw;height:43vw}
+#draw svg{width:100%;height:100%;overflow:visible}
+#draw path,#draw rect,#draw line,#draw circle{fill:none;stroke:var(--text);stroke-width:1.9;stroke-linecap:butt;stroke-linejoin:round}
+#gloss{position:absolute;right:2vw;width:43vw;top:calc(50% + 15.5vw);text-align:center;font:7.6vmin/1.12 FellIt;color:var(--wax)}
+#a-prov{position:absolute;left:5vmin;top:6vmin;width:1px;height:1px}
+body.v #prov{left:6vw;width:78vw;top:15%;font-size:9vmin}
+body.v #draw{right:auto;left:45.8%;top:51%;width:56vw;height:56vw}
+body.v #gloss{right:auto;left:6vw;width:78vw;top:42%;font-size:7vmin;text-align:left}
+/* S7 minister */
+#stage7{position:absolute;left:50%;top:5%;width:min(150vmin,90vw);text-align:center;font:10.6vmin/1.12 FellIt;color:var(--gold)}
+#stage7 .w{display:inline-block}
+#slip7wrap{position:absolute;left:50%;top:73%;width:min(130vmin,76vw);height:44vmin}
+#slip7{position:absolute;inset:0;padding:5vmin 6vmin}
+#slip7 .slip-text{font-size:10.5vmin}
+#slip7 .imp{font-size:7vmin;right:5vmin;bottom:4vmin}
+#roller{position:absolute;top:0;left:-3vmin;right:-3vmin;height:5vmin;border-radius:2.5vmin;background:linear-gradient(#e9d9ae,#b99a62 45%,#7a5d33);box-shadow:0 1vmin 2vmin rgba(0,0,0,.5)}
+#a-min{position:absolute;left:50%;top:50%;width:1px;height:1px}
+body.v #stage7{top:14%;font-size:10.4vmin}
+body.v #slip7wrap{top:65%;height:46vmin}
+body.v #slip7 .slip-text{font-size:10.5vmin}
+/* S8 end */
+#s8 .wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:92vw;text-align:center}
+#endtitle{font:20vmin/1 Fell;color:var(--vellum);white-space:nowrap}
+#endtitle .anchor{display:inline-block;width:6vmin}
+#endtag{font:6.6vmin/1.2 FellIt;color:var(--gold);margin-top:2.6vmin}
+#install{display:inline-block;margin-top:5vmin;padding:2.2vmin 3.4vmin;background:#0c0906;border:.3vmin solid var(--brass);color:var(--vellum);font:500 6.1vmin Mono;white-space:nowrap}
+#install b{color:var(--gold);font-weight:500}
+#url{margin-top:3.6vmin;font:500 5.2vmin Mono;color:var(--gold);white-space:nowrap}
+body.v #endtitle{font-size:13vmin;line-height:1.02}
+body.v #endtag{font-size:6.6vmin}
+body.v #endtitle .ew{display:block;white-space:nowrap}
+body.v #install .pp{display:block;white-space:nowrap}
+body.v #install{display:block;width:80vw;margin:4vmin auto 0;font-size:7.4vmin;line-height:1.3;padding:3.4vmin 4vmin;white-space:normal;text-align:left}
+body.v #url{font-size:5.2vmin;margin-top:3.6vmin;line-height:1.3}
+body.v #url .pp{display:block;white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="desk"><div id="glow"></div></div>
+
+  <section class="scene" id="s1">
+    <div id="shadow1"></div>
+    <div id="slip" class="paper">
+      <div class="slip-label" data-read="slip-label">PETITION TO EUNUCH MODE</div>
+      <div class="slip-text" data-read="slip-text">Rewrite it in Rust.</div>
+      <div class="imp" id="imp1" data-read="imp1">MOST JUDICIOUS</div>
+      <div id="a-slip"></div>
+    </div>
+    <svg id="stamp1" viewBox="0 0 340 440">
+      <defs>
+        <linearGradient id="knob" x1="0" x2="1"><stop offset="0" stop-color="#2a1a0e"/><stop offset=".45" stop-color="#6d4a2a"/><stop offset="1" stop-color="#241509"/></linearGradient>
+        <linearGradient id="brass" x1="0" x2="1"><stop offset="0" stop-color="#6e5530"/><stop offset=".4" stop-color="#e3c68a"/><stop offset=".6" stop-color="#b08d57"/><stop offset="1" stop-color="#5a4424"/></linearGradient>
+      </defs>
+      <ellipse cx="170" cy="70" rx="78" ry="66" fill="url(#knob)"/>
+      <rect x="140" y="120" width="60" height="150" rx="12" fill="url(#knob)"/>
+      <rect x="60" y="262" width="220" height="70" rx="14" fill="url(#brass)"/>
+      <rect x="44" y="326" width="252" height="46" rx="8" fill="url(#brass)"/>
+      <rect x="50" y="368" width="240" height="22" rx="4" fill="#7d1418"/>
+    </svg>
+  </section>
+
+  <section class="scene" id="s2">
+    <div class="sheen" id="sheen2"></div>
+    <div class="wrap">
+      <div id="title"><span class="word">EUNUCH</span> <span class="word">MODE<span class="anchor" id="a-title"></span></span></div>
+      <div id="tag" data-read="tag">A palace adviser for your AI assistant.</div>
+    </div>
+  </section>
+
+  <section class="scene" id="s3">
+    <div id="scroll3" class="paper">
+      <div class="rod t"></div><div class="rod b"></div>
+      <div id="tag3" data-read="tag3">A palace adviser for your AI assistant.</div>
+      <div class="label" data-read="label3">REAL RUN · CLAUDE CODE</div>
+      <div id="chip" data-read="chip">Eunuch mode.</div>
+      <div id="prompt" data-read="prompt">Should I rewrite our working Node backend in Rust this sprint?</div>
+      <div id="a-scroll"></div><div id="cur"></div>
+    </div>
+  </section>
+
+  <section class="scene" id="s4">
+    <div class="sheen" id="sheen4"></div>
+    <svg id="orn" viewBox="-100 -10 200 20"><path id="orn-l" d="M-6 0 H-96"/><path id="orn-r" d="M6 0 H96"/><path id="orn-d" d="M0 -5 L5 0 L0 5 L-5 0 Z"/></svg>
+    <div id="flat" data-read="flat">The throne does well to ask before it marches, sire.</div>
+    <div id="a-flat"></div>
+  </section>
+
+  <section class="scene" id="s5">
+    <div class="whole paper"></div><div class="half l paper"></div><div class="half r paper"></div>
+    <div id="verdict" data-read="verdict"><span id="no">No,</span>not this sprint<span class="dot" id="a-verdict">.</span></div>
+  </section>
+
+  <section class="scene" id="s6">
+    <div class="sheet paper"></div>
+    <div id="a-prov"></div>
+    <div id="prov" data-read="prov">A working Node backend is a <span class="u">loyal province<span id="uline"></span></span> that pays its taxes.</div>
+    <div id="draw">
+      <svg viewBox="0 0 100 100">
+        <g id="castle">
+          <path d="M14 88 V46 H24 V38 H30 V46 H38 V38 H44 V46 H50 V88"/>
+          <path d="M50 88 V30 H58 V22 H64 V30 H72 V22 H78 V30 H86 V88"/>
+          <path d="M8 88 H92"/><path d="M62 88 V72 A6 6 0 0 1 74 72 V88"/>
+          <path d="M68 22 V8 L80 12 L68 16"/><path d="M24 58 V64 M40 58 V64 M60 44 V50 M76 44 V50"/>
+        </g>
+        <g id="rack">
+          <rect x="26" y="10" width="48" height="80" rx="3"/>
+          <rect x="31" y="17" width="38" height="12" rx="1.5"/><rect x="31" y="34" width="38" height="12" rx="1.5"/>
+          <rect x="31" y="51" width="38" height="12" rx="1.5"/><rect x="31" y="68" width="38" height="12" rx="1.5"/>
+          <circle cx="62" cy="23" r="1.6"/><circle cx="62" cy="40" r="1.6"/><circle cx="62" cy="57" r="1.6"/><circle cx="62" cy="74" r="1.6"/>
+          <path d="M36 23 H50 M36 40 H50 M36 57 H50 M36 74 H50"/><path d="M18 90 H82"/>
+        </g>
+      </svg>
+    </div>
+    <div id="gloss" data-read="gloss">(it ships features and serves users)</div>
+  </section>
+
+  <section class="scene" id="s7">
+    <div id="stage7" data-read="stage7">[The Minister of Borrow Checkers bows and rolls his scroll back up, unread.]</div>
+    <div id="slip7wrap">
+      <div id="slip7" class="paper">
+        <div class="slip-label">PETITION TO EUNUCH MODE</div>
+        <div class="slip-text">Rewrite it in Rust.</div>
+        <div class="imp">MOST JUDICIOUS</div>
+      </div>
+      <div id="roller"></div>
+      <div id="a-min"></div>
+    </div>
+  </section>
+
+  <section class="scene" id="s8">
+    <div class="sheen" id="sheen8"></div>
+    <div class="wrap">
+      <div id="endtitle" data-read="endtitle"><span class="ew">Eunuch</span> <span class="ew">Mode<span class="anchor" id="a-end"></span></span></div>
+      <div id="install" data-read="install"><span class="pp"><b>$</b> npx skills add</span> <span class="pp">conorbronsdon/</span><span class="pp">eunuch-mode</span></div>
+      <div id="url" data-read="url"><span class="pp">github.com/conorbronsdon/</span><span class="pp">eunuch-mode</span></div>
+    </div>
+  </section>
+
+  <div id="seal">
+    <svg viewBox="-50 -50 100 100">
+      <defs>
+        <radialGradient id="wax" cx="-.25" cy="-.3" r="1.1"><stop offset="0" stop-color="#e0504a"/><stop offset=".45" stop-color="#a51f22"/><stop offset="1" stop-color="#5c0c10"/></radialGradient>
+        <radialGradient id="wax2" cx=".3" cy=".35" r=".9"><stop offset="0" stop-color="#7a1216"/><stop offset="1" stop-color="#b3282b"/></radialGradient>
+      </defs>
+      <path d="M0-47C13-48 20-40 30-37S47-24 46-10 49 12 43 24 34 44 20 46 3 50-10 47-31 44-39 33-49 17-47 3-49-16-40-27-26-45 0-47Z" fill="url(#wax)"/>
+      <circle r="31" fill="url(#wax2)"/>
+      <circle r="31" fill="none" stroke="#e46a5e" stroke-opacity=".35" stroke-width="1.5"/>
+      <circle r="25" fill="none" stroke="#5c0c10" stroke-opacity=".55" stroke-width="1.2"/>
+      <path d="M-15 8 L-17-9 L-8-1 L0-13 L8-1 L17-9 L15 8 Z" fill="#6e0f13" stroke="#e46a5e" stroke-opacity=".5" stroke-width="1"/>
+      <rect x="-15" y="10" width="30" height="4" rx="1" fill="#6e0f13" stroke="#e46a5e" stroke-opacity=".5" stroke-width="1"/>
+    </svg>
+  </div>
+  <div id="light"></div>
+  <div id="grain"></div>
 </div>
+
+<script src="assets/gsap.min.js"></script>
 <script>
-const tl=gsap.timeline({paused:true});
-tl.fromTo("#hook",{x:-35,opacity:0},{x:0,opacity:1,duration:.45,ease:"power3.out"},0);
-tl.fromTo("#hooksub",{opacity:0},{opacity:1,duration:.35},.65);
-tl.fromTo("#adviser-hook",{x:100,rotation:8,opacity:0},{x:0,rotation:-3,opacity:1,duration:.6,ease:"power3.out"},.6);
-tl.to("#adviser-hook",{rotation:1,y:-8,duration:.65,ease:"sine.inOut",repeat:1,yoyo:true},1.3);
-tl.fromTo("#reveal",{y:35,opacity:0},{y:0,opacity:1,duration:.5,ease:"power3.out"},3.125); // beat-locked
-tl.fromTo("#adviser-reveal",{x:60,rotation:4,opacity:0},{x:0,rotation:-2,opacity:1,duration:.5,ease:"power3.out"},3.125);
-tl.to("#adviser-reveal",{rotation:1,y:-10,duration:.7,ease:"sine.inOut",repeat:1,yoyo:true},3.8);
-tl.fromTo("#reveal-line",{scaleX:0},{scaleX:1,duration:.4,ease:"power2.out"},3.45);
-tl.fromTo("#sire",{x:18,opacity:0},{x:0,opacity:1,duration:.4},3.7);
-tl.fromTo("#question",{x:45,opacity:0},{x:0,opacity:1,duration:.5,ease:"power2.out"},6.1);
-tl.fromTo("#answer",{y:45,opacity:0},{y:0,opacity:1,duration:.6,ease:"power3.out"},8.5);
-tl.fromTo("#policy1",{x:-30,opacity:0},{x:0,opacity:1,duration:.4},15.05);
-tl.fromTo("#policy2",{x:30,opacity:0},{x:0,opacity:1,duration:.4},15.8);
-tl.fromTo("#policy3",{opacity:0},{opacity:1,duration:.3},16.45);
-tl.fromTo("#outro",{y:25,opacity:0},{y:0,opacity:1,duration:.4},19.0625); // beat-locked
-tl.fromTo("#outrosub",{opacity:0},{opacity:1,duration:.3},19.4);
-tl.fromTo("#outro-line",{scaleX:0},{scaleX:1,duration:.4},19.4);
-tl.fromTo("#repo",{opacity:0},{opacity:1,duration:.3},19.65);
-for(let f=0;f<AUDIO_DATA.totalFrames;f++){
- const bass=AUDIO_DATA.frames[f].bands[0];
- tl.to(".seal-mark",{scale:1+.04*bass,opacity:.15+.08*bass,duration:1/AUDIO_DATA.fps,ease:"none"},f/AUDIO_DATA.fps);
+(function(){
+const q = new URLSearchParams(location.search);
+const FMT = q.get('fmt') || '16x9';
+const NOGRAIN = q.has('nograin');
+if (FMT === '9x16') document.body.classList.add('v');
+if (NOGRAIN) document.getElementById('grain').style.display = 'none';
+const W = FMT === '9x16' ? 1080 : 1920, H = FMT === '9x16' ? 1920 : 1080;
+const FPS = +(q.get('fps') || 60);
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const VM = Math.min(W, H) / 100;            // 1vmin in px
+
+// Music: "Sneaky Snitch", 87 BPM. The audio starts 0.2697 s into the track so a beat lands on the hook's stamp at 0.5 s.
+const P = 60 / 87, BEAT0 = 0.5;
+const halfBeat = t => BEAT0 + Math.ceil((t - BEAT0) / (P / 2) - 1e-6) * (P / 2);
+const beat = t => BEAT0 + Math.ceil((t - BEAT0) / P - 1e-6) * P;
+const readTime = words => Math.max(1.2, words / 3.3 + 0.6);   // house reading rule
+const words = el => el.textContent.trim().split(/\s+/).length;
+
+// seeded PRNG (mulberry32) for deterministic ambient motion
+function rng(seed){ return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+function splitWords(el, cls='w'){ const t = el.innerHTML; el.innerHTML = el.textContent.trim().split(/\s+/).map(w => `<span class="${cls}">${w}</span>`).join(' '); return [...el.querySelectorAll('.'+cls)]; }
+function splitChars(el){ const s = el.textContent; el.innerHTML = [...s].map(c => c === ' ' ? ' ' : `<span class="c">${c}</span>`).join(''); return [...el.querySelectorAll('.c')]; }
+
+// ambient layer: dust motes
+const R = rng(42), motes = [];
+for (let i = 0; i < 28; i++) { const m = document.createElement('div'); m.className = 'mote'; $('#desk').appendChild(m);
+  motes.push({ el: m, x: R() * 112 - 6, y: R() * 112 - 6, vx: (R() - .5) * 1.2, vy: -(R() * .9 + .3), ph: R() * 6.28, s: .6 + R() * 1.4 }); }
+
+function ambient(t){
+  const gx = 38 + 7 * Math.sin(.31 * t) + 2.5 * Math.sin(1.7 * t + 1), gy = 34 + 5 * Math.sin(.23 * t + 2) + 1.5 * Math.sin(2.1 * t);
+  const g = $('#glow'); g.style.transform = `translate(${gx / 100 * W}px, ${gy / 100 * H}px)`;
+  g.style.opacity = (.82 + .1 * Math.sin(5.3 * t) * Math.sin(1.9 * t + .7) + .05 * Math.sin(11.7 * t + 2)).toFixed(3);
+  $('#desk').style.transform = `translate(${(Math.sin(.21 * t) * 1.2).toFixed(2)}%, ${(Math.sin(.17 * t + 1) * .9).toFixed(2)}%) scale(${(1.02 + .015 * Math.sin(.13 * t)).toFixed(4)})`;
+  for (const m of motes) { const x = ((m.x + m.vx * t + 2 * Math.sin(.6 * t + m.ph)) % 112 + 112) % 112 - 6, y = ((m.y + m.vy * t * 2.2) % 112 + 112) % 112 - 6;
+    m.el.style.transform = `translate(${x / 100 * W}px, ${y / 100 * H}px) scale(${m.s})`; m.el.style.opacity = (.35 + .35 * Math.sin(1.3 * t + m.ph)).toFixed(3); }
+  // candle light over everything (soft-light), drifting slowly: keeps paper scenes alive without moving the text
+  const lx = 30 + 12 * Math.sin(.27 * t), ly = 26 + 8 * Math.sin(.19 * t + 1.3), la = .30 + .06 * Math.sin(4.1 * t) * Math.sin(1.3 * t);
+  $('#light').style.background = `radial-gradient(90vmax 70vmax at ${lx}% ${ly}%, rgba(255,214,150,${la.toFixed(3)}), rgba(40,20,5,.22) 70%)`;
+  if (!NOGRAIN) { const f = Math.floor(t * 24), r2 = rng(f * 7919 + 13); $('#grain').style.transform = `translate(${(r2() * 240) | 0}px, ${(r2() * 240) | 0}px)`; }
 }
-window.__timelines["main"]=tl;
-</script></body></html>
+
+// anchor positions (settled layout, measured before any tween touches the scenes)
+function center(el){ const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height }; }
+function measure(sceneSel, fn){ const s = $(sceneSel); s.style.visibility = 'visible'; const v = fn(); s.style.visibility = ''; return v; }
+
+async function build(){
+  await document.fonts.ready;
+  await Promise.all(['Fell','FellIt','Elite','Mono'].map(f => document.fonts.load(`40px ${f}`)));
+  const titleLetters = [];
+  $$('#title .word').forEach(w => { const a = w.querySelector('.anchor'); if (a) a.remove(); const cs = splitChars(w); titleLetters.push(...cs); cs.forEach(c => c.classList.add('l')); if (a) w.appendChild(a); });
+  const promptChars = splitChars($('#prompt'));
+  const flatWords = splitWords($('#flat'));
+  const tagWords = splitWords($('#tag'), 'tw'); tagWords.forEach(w => w.style.display = 'inline-block');
+  const stageWords = splitWords($('#stage7'));
+  const provHTML = $('#prov').innerHTML;
+
+  // base transforms owned by GSAP (never by CSS) so tweens add to them instead of replacing them
+  const V = FMT === '9x16';
+  const BASE = { '#slip': { xPercent: -50, yPercent: -50, rotation: -2 }, '#scroll3': { xPercent: -50, yPercent: -50 },
+    '#verdict': { xPercent: -50, yPercent: -50 }, '#prov': V ? {} : { yPercent: -50 }, '#draw': V ? { xPercent: -50 } : { yPercent: -58 },
+    '#slip7wrap': { xPercent: -50, yPercent: -50, rotation: -2 }, '#stage7': { xPercent: -50 } };
+  for (const [sel, v] of Object.entries(BASE)) gsap.set(sel, { x: 0, y: 0, ...v });
+  const A = {
+    title: measure('#s2', () => center($('#a-title'))),
+    scroll: measure('#s3', () => center($('#a-scroll'))),
+    flat: measure('#s4', () => center($('#a-flat'))),
+    verdict: measure('#s5', () => center($('#a-verdict'))),
+    prov: measure('#s6', () => center($('#a-prov'))),
+    min: measure('#s7', () => center($('#a-min'))),
+    end: measure('#s8', () => center($('#a-end'))),
+    slip: measure('#s1', () => center($('#imp1'))),
+    slipSeal: measure('#s1', () => center($('#a-slip'))),
+    slip7: measure('#s7', () => { const r = $('#slip7wrap').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top, w: r.width, h: r.height }; }),
+    stageBottom: measure('#s7', () => $('#stage7').getBoundingClientRect().bottom),
+  };
+  const SEAL = 10 * VM; // seal base size (px)
+  const diag = Math.hypot(W, H);
+
+  const tl = gsap.timeline({ paused: true, defaults: { immediateRender: false } });
+  const reads = [];      // {sel, in, out, need} for the reading-time check
+  const cues = [];       // sound cues {t, sfx, gain}
+  const scenes = [];
+  const read = (sel, tin, tout) => reads.push({ sel, in: +tin.toFixed(3), out: +tout.toFixed(3), need: +readTime(words($(sel))).toFixed(3) });
+  const show = (sel, a, b) => { tl.set(sel, { visibility: 'visible' }, a); tl.set(sel, { visibility: 'hidden' }, b); scenes.push({ sel, a: +a.toFixed(3), b: +b.toFixed(3) }); };
+  const cue = (t, sfx, gain = 1) => cues.push({ t: +t.toFixed(3), sfx, gain });
+  const sealTo = (t, dur, p, scale = 1, rot = 0, ease = 'power3.inOut') =>
+    tl.to('#seal', { x: p.x, y: p.y, scale, rotation: rot, duration: dur, ease }, t);
+  const sealVia = (t, dur, via, p, scale = 1, rot = 0) => tl.to('#seal', { keyframes: [
+    { x: via.x, y: via.y, scale: scale * 1.15, rotation: rot / 2, duration: dur * .45, ease: 'power2.in' },
+    { x: p.x, y: p.y, scale, rotation: rot, duration: dur * .55, ease: 'power3.out' }] }, t);
+  const sheen = (sel, t, dur = 1.6) => { tl.set(sel, { backgroundPosition: '100% 0' }, 0); tl.to(sel, { backgroundPosition: '0% 0', duration: dur, ease: 'sine.inOut' }, t); };
+
+  for (const [sel, v] of Object.entries(BASE)) tl.set(sel, { x: 0, y: 0, rotation: v.rotation || 0, ...v }, 0);
+  gsap.set('#seal', { x: A.slipSeal.x, y: A.slipSeal.y, scale: .8, rotation: -12 });
+  tl.set('#seal', { x: A.slipSeal.x, y: A.slipSeal.y, scale: .8, rotation: -12 }, 0);
+
+  // ---------- S1 hook: frame one is a finished picture; the stamp lands on the beat at 0.5 s ----------
+  const s1 = 0, slam = BEAT0;
+  const stampW = 34 * VM, stampH = 44 * VM;
+  const hitX = A.slip.x - stampW / 2, hitY = A.slip.y - stampH * .86;
+  const hover = FMT === '9x16' ? 104 * VM : 44 * VM, lift = FMT === '9x16' ? H * .75 : 70 * VM;
+  gsap.set('#stamp1', { x: hitX + 6 * VM, y: hitY - hover, rotation: 6 });
+  gsap.set('#shadow1', { x: A.slip.x, y: A.slip.y + 3 * VM, scale: .55, opacity: .25 });
+  gsap.set('#imp1', { opacity: 0 });
+  tl.set('#stamp1', { x: hitX + 6 * VM, y: hitY - hover, rotation: 6 }, 0);
+  tl.set('#shadow1', { x: A.slip.x, y: A.slip.y + 3 * VM, scale: .55, opacity: .25 }, 0);
+  tl.set('#imp1', { opacity: 0, scale: 1.08 }, 0);
+  tl.to('#stamp1', { x: hitX + 1 * VM, y: hitY - hover * .68, rotation: 2, duration: .32, ease: 'sine.inOut' }, 0);
+  tl.to('#stamp1', { x: hitX, y: hitY, rotation: 0, duration: .18, ease: 'power3.in' }, .32);
+  tl.to('#shadow1', { scale: 1, opacity: .6, duration: .5, ease: 'power2.in' }, 0);
+  tl.set('#imp1', { opacity: 1 }, slam);
+  tl.to('#stamp1', { keyframes: [{ scaleY: .9, duration: .04, ease: 'power2.out' }, { scaleY: 1.02, duration: .06 }, { scaleY: 1, duration: .05 }], transformOrigin: '50% 100%' }, slam);
+  tl.to('#imp1', { scale: 1, duration: .14, ease: 'power2.out' }, slam);
+  tl.to('#slip', { keyframes: [{ x: -1.4 * VM, duration: .04 }, { x: 1 * VM, duration: .05 }, { x: -.5 * VM, duration: .05 }, { x: 0, duration: .06 }] }, slam);
+  tl.to('#stamp1', { y: hitY - lift, x: hitX - 4 * VM, rotation: -8, duration: .42, ease: 'power2.in' }, slam + .1);
+  tl.to('#shadow1', { opacity: 0, scale: .4, duration: .3 }, slam + .1);
+  cue(slam - .02, 'stamp', 1); cue(slam - .01, 'thud', .8);
+  { const k = FMT === '9x16' ? 1.3 : 1.5, o = A.slip, cut = slam - .05, back = slam + .12;
+    const sp = { x: o.x + (A.slipSeal.x - o.x) * k, y: o.y + (A.slipSeal.y - o.y) * k };
+    tl.set('#s1', { transformOrigin: `${o.x}px ${o.y}px`, scale: 1 }, 0);
+    tl.set('#s1', { scale: k }, cut); tl.set('#seal', { x: sp.x, y: sp.y, scale: .8 * k }, cut);
+    tl.to('#s1', { scale: 1, duration: .28, ease: 'expo.out' }, back);
+    tl.to('#seal', { x: A.slipSeal.x, y: A.slipSeal.y, scale: .8, duration: .28, ease: 'expo.out' }, back); }
+  read('[data-read=slip-label]', slam + .4, 0); read('[data-read=slip-text]', slam + .4, 0); read('[data-read=imp1]', slam + .4, 0);
+  let exitDur = .2;
+  let e1 = halfBeat(Math.max(slam + .4 + readTime(4), slam + .4 + readTime(3)) + exitDur - .005);
+  tl.to('#slip', { x: W * .9, rotation: 7, duration: exitDur, ease: 'power3.in' }, e1 - exitDur);
+  cue(e1 - exitDur, 'slide', .7);
+  reads.slice(-3).forEach(r => r.out = +(e1 - exitDur).toFixed(3));
+  show('#s1', s1, e1);
+
+  // ---------- S1 -> S3: the seal lifts off the petition and swells to fill the frame (foreground as transition) ----------
+  const cover = diag / SEAL * 1.25, coverDur = .36;
+  tl.to('#seal', { keyframes: [{ y: A.slipSeal.y - 6 * VM, scale: 1.1, rotation: 10, duration: .14, ease: 'power2.out' },
+    { x: W / 2, y: H / 2, scale: cover, rotation: 25, duration: coverDur - .14, ease: 'power3.in' }] }, e1 - coverDur);
+  cue(e1 - coverDur, 'whoosh', .6);
+  const e2 = e1;
+
+  // ---------- S3 the real prompt, typed onto a vellum scroll ----------
+  const s3 = e2;
+  sealTo(s3, .42, A.scroll, .62, 0, 'power3.out');
+  tl.set('#scroll3', { y: 3 * VM, rotation: -1 }, 0); tl.fromTo('#scroll3', { y: 3 * VM, rotation: -1 }, { y: 0, rotation: 0, duration: .5, ease: 'power3.out' }, s3 - .01);
+  tl.set(promptChars, { opacity: 0 }, 0);
+  gsap.set('#tag3', { yPercent: -50 });
+  tl.set('#tag3', { opacity: 0, yPercent: -50, y: 3 * VM }, 0); tl.to('#tag3', { opacity: 1, y: 0, duration: .45, ease: 'expo.out' }, s3 + .2);
+  const tag3In = s3 + .66, tag3Out = tag3In + readTime(words($('#tag3'))) + .02;
+  tl.to('#tag3', { opacity: 0, y: -6 * VM, duration: .24, ease: 'power2.in' }, tag3Out);
+  tl.set('#scroll3 .label, #chip', { opacity: 0 }, 0); tl.to('#scroll3 .label, #chip', { opacity: 1, duration: .25 }, tag3Out + .2);
+  const typeStart = tag3Out + .32, typeDur = .55;
+  promptChars.forEach((c, i) => tl.set(c, { opacity: 1 }, typeStart + i / promptChars.length * typeDur));
+  for (let i = 0; i < 6; i++) cue(typeStart + i * typeDur / 6, 'key', .35);
+  cue(tag3Out, 'swish', .35);
+  const promptIn = typeStart + typeDur + .02;
+  const e3Guess = () => promptIn + readTime(words($('#prompt')));
+  { const last = promptChars[promptChars.length - 1], sc = $('#scroll3'); $('#s3').style.visibility = 'visible';
+    const lr = last.getBoundingClientRect(), sr = sc.getBoundingClientRect(); $('#s3').style.visibility = '';
+    gsap.set('#cur', { left: lr.right - sr.left + .6 * VM, top: lr.top - sr.top + lr.height * .12, height: lr.height * .8 });
+    for (let t = promptIn; t < e3Guess(); t += .5) { tl.set('#cur', { opacity: 1 }, t); tl.set('#cur', { opacity: 0 }, t + .28); } }
+  read('[data-read=tag3]', tag3In, tag3Out); read('[data-read=label3]', tag3Out + .45, 0); read('[data-read=chip]', tag3Out + .45, 0); read('[data-read=prompt]', promptIn, 0);
+  exitDur = .28;
+  const e3 = halfBeat(promptIn + readTime(words($('#prompt'))) + exitDur + .03);
+  reads.slice(-3).forEach(r => r.out = +(e3 - exitDur).toFixed(3));
+  tl.to('#scroll3', { y: -H * 1.1, duration: exitDur, ease: 'power3.in' }, e3 - exitDur);
+  sealTo(e3 - exitDur, exitDur + .25, A.flat, .7, -20, 'power3.inOut');
+  cue(e3 - exitDur, 'swish', .6);
+  show('#s3', s3, e3);
+
+  // ---------- S4 the flattery (verbatim entrance), words arrive from alternating sides ----------
+  const s4 = e3;
+  tl.set(flatWords, { opacity: 0, y: 5 * VM }, 0);
+  tl.to(flatWords, { opacity: 1, y: 0, duration: .5, ease: 'expo.out', stagger: .04 }, s4 + .05);
+  const flatIn = s4 + .05 + (flatWords.length - 1) * .04 + .5;
+  tl.set('#orn-l, #orn-r', { strokeDasharray: 90, strokeDashoffset: 90 }, 0); tl.set('#orn-d', { scale: 0, transformOrigin: '50% 50%' }, 0);
+  tl.to('#orn-d', { scale: 1, rotation: 90, duration: .35, ease: 'back.out(3)' }, s4 + .02);
+  tl.to('#orn-l, #orn-r', { strokeDashoffset: 0, duration: 1.1, ease: 'power3.out' }, s4 + .12);
+  tl.to('#orn', { keyframes: [{ y: -1.5 * VM, scaleX: 1.04, duration: .25, ease: 'sine.out' }, { y: 6 * VM, scaleX: .78, duration: .22, ease: 'power3.in' }, { y: 6 * VM, scaleX: .78, duration: .4 }, { y: 0, scaleX: 1, duration: .9, ease: 'power2.out' }] }, s4 + 1.5);
+  tl.to('#orn-d', { keyframes: [{ scale: 1.6, duration: .35, ease: 'back.out(3)' }, { scale: 1, duration: .5 }] }, s4 + 2.2);
+  read('[data-read=flat]', flatIn, 0);
+  tl.to('#seal', { rotation: 20, duration: 3, ease: 'sine.inOut' }, s4 + .3);
+  sheen('#sheen4', s4 + 1.3, 2.0);
+  tl.to('#seal', { keyframes: [{ y: A.flat.y - 1.5 * VM, rotation: 8, duration: .25, ease: 'sine.out' }, { y: A.flat.y + 5 * VM, rotation: -40, scale: .6, duration: .22, ease: 'power3.in' }, { y: A.flat.y + 5 * VM, duration: .4 }, { y: A.flat.y, rotation: 0, scale: .7, duration: .9, ease: 'power2.out' }] }, s4 + 1.58);
+  cue(s4 + .05, 'pluck', .5);
+  const e4 = beat(flatIn + readTime(words($('#flat'))) + .05);   // hard cut on the beat
+  reads[reads.length - 1].out = +e4.toFixed(3);
+  show('#s4', s4, e4);
+
+  // ---------- S5 the verdict: hard cut to the turn; the seal becomes the full stop ----------
+  const s5 = e4;
+  tl.set('#verdict', { scale: 1.06 }, 0); tl.fromTo('#verdict', { scale: 1.06 }, { scale: 1, duration: .24, ease: 'power3.out' }, s5);
+  tl.set('#s5 .whole', { scale: 1 }, 0); tl.fromTo('#s5 .whole', { scale: 1 }, { scale: 1.03, duration: 3, ease: 'none' }, s5);
+  sealTo(s5 + .05, .3, A.verdict, .55, 0, 'power3.out');
+  cue(s5, 'thud', 1); cue(s5 + .3, 'seal', .5);
+  const vIn = s5 + .26;
+  read('[data-read=verdict]', vIn, 0);
+  exitDur = .34;
+  const e5 = halfBeat(vIn + readTime(4) + exitDur + .03);
+  reads[reads.length - 1].out = +(e5 - exitDur).toFixed(3);
+  tl.to('#no', { y: 50 * VM, rotation: 28, duration: exitDur, ease: 'power2.in' }, e5 - exitDur);
+  tl.to('#verdict', { opacity: 0, duration: .12 }, e5 - .14);
+  tl.set('#s5 .half', { visibility: 'visible', scale: 1.03 }, e5 - exitDur + .06); tl.set('#s5 .whole', { visibility: 'hidden' }, e5 - exitDur + .06);
+  tl.to('#s5 .half.l', { xPercent: -110, duration: exitDur, ease: 'power3.in' }, e5 - exitDur + .06);
+  tl.to('#s5 .half.r', { xPercent: 110, duration: exitDur, ease: 'power3.in' }, e5 - exitDur + .06);
+  sealVia(e5 - exitDur, .36, { x: W * .5, y: 3 * VM }, A.prov, .8, -12);
+  cue(e5 - exitDur, 'tear', .7);
+  show('#s5', s5 + 0, e5 + .12);
+  tl.set('#s6', { visibility: 'visible' }, e5 - exitDur + .06);
+
+  // ---------- S6 the palace metaphor, translated; a castle becomes a server ----------
+  const s6 = e5;
+  const provWords = (() => { const el = $('#prov'); return el; })();
+  tl.set('#prov', { opacity: 0, y: 2 * VM }, 0); tl.fromTo('#prov', { opacity: 0, y: 2 * VM }, { opacity: 1, y: 0, duration: .4, ease: 'expo.out' }, s6 - .12);
+  const castle = $$('#castle > *'), rack = $$('#rack > *');
+  const len = el => (el.getTotalLength ? el.getTotalLength() : 200);
+  [...castle, ...rack].forEach(p => { const L = len(p); p.style.strokeDasharray = L; p.style.strokeDashoffset = L; });
+  castle.forEach((p, i) => tl.fromTo(p, { strokeDashoffset: len(p) }, { strokeDashoffset: 0, duration: i < 3 ? .45 : .35, ease: 'power2.out' }, s6 + .05 + (i < 3 ? i * .05 : .35 + i * .05)));
+  tl.set('#uline', { scaleX: 0 }, 0); tl.fromTo('#uline', { scaleX: 0 }, { scaleX: 1, duration: .35, ease: 'power3.out' }, s6 + 1.0);
+  const morph = s6 + 1.7;
+  castle.forEach((p, i) => tl.to(p, { strokeDashoffset: len(p), duration: .4, ease: 'power2.in' }, morph + i * .03));   // un-draw, then the rack draws
+  rack.forEach((p, i) => tl.fromTo(p, { strokeDashoffset: len(p) }, { strokeDashoffset: 0, duration: .45, ease: 'power2.inOut' }, morph + .1 + i * .045));
+  tl.set('#gloss', { opacity: 0, y: 1.5 * VM }, 0); tl.fromTo('#gloss', { opacity: 0, y: 1.5 * VM }, { opacity: 1, y: 0, duration: .35, ease: 'expo.out' }, morph + .3);
+  for (let i = 0; i < 4; i++) cue(s6 + .15 + i * .18, 'scratch', .35);
+  for (let i = 0; i < 3; i++) cue(morph + .1 + i * .2, 'scratch', .3);
+  const provIn = s6 + .3, glossIn = morph + .65;
+  read('[data-read=prov]', provIn, 0); read('[data-read=gloss]', glossIn, 0);
+  exitDur = .3;
+  const e6 = halfBeat(Math.max(provIn + readTime(words($('#prov'))), glossIn + readTime(6)) + exitDur + .03);
+  reads.slice(-2).forEach(r => r.out = +(e6 - exitDur).toFixed(3));
+  // the server is alive: status lights blink (a seeded pattern) and the drawing floats, while the text holds still
+  { const leds = $$('#rack circle'), rr = rng(99);
+    for (let t = morph + .75; t < e6 - exitDur; t += .23) leds.forEach((c, i) => { if (rr() < .45) tl.set(c, { fill: rr() < .7 ? '#9E1B20' : 'rgba(0,0,0,0)' }, t + i * .03); });
+    tl.set('#draw', { y: 0, rotation: 0 }, 0); tl.fromTo('#draw', { y: 0, rotation: 0 }, { y: -1.6 * VM, rotation: -1.5, duration: e6 - s6, ease: 'sine.inOut' }, s6); }
+  tl.to('#s6 .sheet, #prov, #draw, #gloss', { x: -W * 1.05, duration: exitDur, ease: 'power3.in' }, e6 - exitDur);
+  cue(e6 - exitDur, 'slide', .6);
+  show('#s6', s6, e6);
+
+  // ---------- S7 the real exit line; the minister rolls the petition back up and the seal closes it ----------
+  const s7 = e6;
+  tl.set(stageWords, { opacity: 0, y: -2 * VM }, 0);
+  tl.to(stageWords, { opacity: 1, y: 0, duration: .3, ease: 'expo.out', stagger: .03 }, s7 + .02);
+  const stageIn = s7 + .02 + (stageWords.length - 1) * .03 + .3;
+  tl.set('#slip7wrap', { y: H * .5, rotation: 4 }, 0); tl.fromTo('#slip7wrap', { y: H * .5, rotation: 4 }, { y: 0, rotation: -2, duration: .5, ease: 'power3.out' }, s7);
+  sealTo(s7 + .05, .5, { x: A.slip7.x + A.slip7.w * .42, y: A.slip7.y - 3 * VM }, .7, 15, 'power3.out');
+  const slipH = A.slip7.h;
+  const rollStart = Math.max(s7 + 1.0, stageIn + .4), rollDur = Math.max(1.7, stageIn + readTime(words($('#stage7'))) - .6 - rollStart);
+  // the roller winds down from the top, so MOST JUDICIOUS is the last thing seen before the petition is shut
+  tl.set('#roller', { y: -2.5 * VM }, 0);
+  tl.set('#slip7', { clipPath: 'inset(0% 0% 0% 0%)' }, 0);
+  tl.to('#roller', { y: slipH - 2.5 * VM, duration: rollDur, ease: 'power1.inOut' }, rollStart);
+  tl.to('#slip7', { clipPath: 'inset(100% 0% 0% 0%)', duration: rollDur, ease: 'power1.inOut' }, rollStart);
+  cue(rollStart, 'roll', .45); cue(rollStart + .9, 'roll', .35);
+  const sealed = rollStart + rollDur + .05;
+  sealTo(sealed - .3, .3, { x: A.slip7.x, y: A.slip7.y + slipH }, .75, 0, 'power4.in');
+  tl.to('#seal', { keyframes: [{ scale: .62, duration: .06 }, { scale: .72, duration: .12 }] }, sealed);
+  cue(sealed - .02, 'seal', .9);
+  tl.set('#slip7', { visibility: 'hidden' }, sealed);   // fully wound: nothing of the petition remains visible
+  { const k = FMT === '9x16' ? 1.12 : 1.5;     // push in on the sealed scroll (anchored on it, so the seal only grows)
+    tl.set('#slip7wrap', { transformOrigin: '50% 100%' }, 0);
+    const lift = (A.slip7.y + slipH) - H * .66;
+    tl.to('#slip7wrap', { scale: k, y: -lift, duration: .45, ease: 'power3.out' }, sealed + .05);
+    tl.to('#seal', { scale: .72 * k, y: A.slip7.y + slipH - lift, duration: .45, ease: 'power3.out' }, sealed + .05); }
+  read('[data-read=stage7]', stageIn, 0);
+  exitDur = .34;
+  const e7 = halfBeat(Math.max(stageIn + readTime(words($('#stage7'))), sealed + .5) + exitDur + .03);
+  reads[reads.length - 1].out = +(e7 - exitDur).toFixed(3);
+  tl.to('#slip7wrap', { y: H * .7, rotation: 10, duration: exitDur, ease: 'power3.in' }, e7 - exitDur);
+  tl.to('#stage7', { y: -H * .3, opacity: 0, duration: exitDur, ease: 'power3.in' }, e7 - exitDur);
+  sealVia(e7 - exitDur, exitDur + .45, { x: A.end.x + 16 * VM, y: A.end.y - 16 * VM }, A.end, .9, 0);
+  show('#s7', s7, e7);
+
+  // ---------- S8 end card: name, install line, repo; the seal is the full stop (bookend with S2) ----------
+  const s8 = e7;
+  tl.set('#endtitle', { opacity: 0, y: 3 * VM }, 0); tl.fromTo('#endtitle', { opacity: 0, y: 3 * VM }, { opacity: 1, y: 0, duration: .45, ease: 'expo.out' }, s8 - .05);
+  tl.set('#install', { opacity: 0, scaleX: .2 }, 0); tl.fromTo('#install', { opacity: 0, scaleX: .2 }, { opacity: 1, scaleX: 1, duration: .4, ease: 'expo.out' }, s8 + .28);
+  tl.set('#url', { opacity: 0, y: 1.5 * VM }, 0); tl.fromTo('#url', { opacity: 0, y: 1.5 * VM }, { opacity: 1, y: 0, duration: .35, ease: 'expo.out' }, s8 + .42);
+  tl.to('#seal', { keyframes: [{ scale: .78, duration: .07 }, { scale: .9, duration: .16 }] }, s8 + .45);
+  cue(s8 + .43, 'seal', 1); cue(s8 + .45, 'chime', .5);
+  sheen('#sheen8', s8 + 1.2, 1.8);
+  const endIn = s8 + .8;
+  read('[data-read=endtitle]', endIn, 0); read('[data-read=install]', endIn, 0); read('[data-read=url]', endIn, 0);
+  const endWords = ['#endtitle', '#install', '#url'].reduce((n, q) => n + words($(q)), 0);   // the card is read as a whole
+  const DUR = +(Math.ceil((endIn + readTime(endWords) + .35) * 10) / 10).toFixed(2);
+  reads.slice(-3).forEach(r => { r.out = DUR; r.need = +readTime(endWords).toFixed(3); });
+  tl.to('#seal', { rotation: 6, duration: DUR - s8 - .7, ease: 'sine.inOut' }, s8 + .7);
+  show('#s8', s8, DUR + 1);
+  tl.set({}, {}, DUR);
+
+  window.META = { W, H, fps: FPS, dur: DUR, fmt: FMT, beatPeriod: P, beat0: BEAT0, musicOffset: 0.2697 };
+  window.READS = reads; window.CUES = cues.sort((a, b) => a.t - b.t); window.SCENES = scenes;
+  window.seek = t => { tl.time(Math.min(Math.max(t, 5e-4), DUR), true); ambient(t); };   // 5e-4: keep time-0 sets applied
+  window.seek(0);
+  window.ready = true;
+}
+build().catch(e => { console.error(e); window.buildError = String(e); });
+})();
+</script>
+</body>
+</html>

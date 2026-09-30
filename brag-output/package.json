@@ -1,0 +1,13 @@
+{
+  "name": "eunuch-mode-launch-film",
+  "private": true,
+  "type": "module",
+  "description": "Frame-by-frame render of the Eunuch Mode launch film (composition/index.html).",
+  "scripts": {
+    "check": "node render.mjs --fmt=16x9 --check && node render.mjs --fmt=9x16 --check",
+    "render": "node render.mjs --fmt=16x9 --out=brag.mp4 && node render.mjs --fmt=9x16 --out=brag-9x16.mp4"
+  },
+  "dependencies": {
+    "playwright-core": "1.63.0"
+  }
+}
