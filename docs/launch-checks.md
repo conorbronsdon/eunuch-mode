@@ -27,4 +27,8 @@ No content hold applies to this original fictional persona package.
 
 ## Video follow-up — 2026-09-30
 
-Added a generated scheming cartoon palace adviser to the opening two scenes (0–6 seconds), with original prompt and credit. Inspected representative snapshots for legibility and placement. Rechecked the edited composition: zero runtime, layout or contrast errors, and the same six single-file organization warnings. Package validator passed. The earlier audit snapshot above predates this media-only edit; no new model-behavior claim is made. Review handoff: [claude-review-handoff.md](claude-review-handoff.md).
+Added a generated scheming cartoon palace adviser to the opening two scenes (0–6 seconds), with original prompt and credit. Inspected representative snapshots for legibility and placement. Rechecked the edited composition: zero runtime, layout or contrast errors, and the same six single-file organization warnings. Package validator passed. The earlier audit snapshot above predates this media-only edit; no new model-behavior claim is made.
+
+## v1.1.0 — 2026-09-30
+
+Independent review by Claude. The skill moved to `skills/eunuch-mode/` so installers copy only the skill; both install methods were re-tested. Humour guidance was rewritten (entrance, working metaphors, exit line, no repeated props), strict formats were tightened, and two eval cases were added. All eleven cases were run on Claude Opus 5.5: [recorded run](../evals/runs/2026-09-30-claude-v1.1.md). The launch video was rebuilt; see [brag-output/README.md](../brag-output/README.md).
