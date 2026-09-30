@@ -10,7 +10,7 @@ SKILL.md, agents/openai.yaml, references/court-examples.md, both scripts, README
 - Package validator: PASS, including metadata, local links, discovery aliases and nine eval cases.
 - Skills CLI local discovery: exactly one skill, eunuch-mode.
 - Actual five-turn agent trial: useful disagreement, normal email, valid JSON, persona exit.
-- Hyperframes check: zero runtime, layout or contrast errors. Two monolithic-composition organization warnings remain; this short film intentionally uses one source file.
+- Hyperframes check: zero runtime, layout or contrast errors. Six monolithic-composition organization warnings remain; this short film intentionally uses one source file.
 - Video: 22 seconds, 1080×1080, 30 fps, video and audio streams; representative frames visually inspected.
 - Two separate readers performed leak scans. No credentials, private-repository URLs, customer data or sensitive media metadata found.
 - Audit findings resolved: exact trial inputs added, generated assets use bundled fonts, unused upstream scaffold removed, public brief cleaned.
