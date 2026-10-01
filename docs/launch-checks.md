@@ -13,7 +13,7 @@ SKILL.md, agents/openai.yaml, references/court-examples.md, both scripts, README
 - Skills CLI local discovery: exactly one skill, eunuch-mode.
 - Actual five-turn agent trial: useful disagreement, normal email, valid JSON, persona exit.
 - Hyperframes check: zero runtime, layout or contrast errors. Six monolithic-composition organization warnings remain; this short film intentionally uses one source file.
-- Video: 22 seconds, 1080×1080, 30 fps, video and audio streams; representative frames visually inspected.
+- Video (v1.0.0 launch, since replaced): 22 seconds, 1080×1080, 30 fps. The v1.1.0 film ("The Petition Desk", 30 s, 16:9 and 9:16, 60 fps, CC0 music) has its own checks in `brag-output/critic-ledger.md`.
 - Two separate readers performed leak scans. No credentials, private-repository URLs, customer data or sensitive media metadata found.
 - Audit findings resolved: exact trial inputs added, generated assets use bundled fonts, unused upstream scaffold removed, public brief cleaned.
 
