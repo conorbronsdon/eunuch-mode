@@ -9,7 +9,7 @@ Every line attributed to the skill is a verbatim excerpt from one recorded run o
 - [storyboard.md](storyboard.md): scenes, purpose, transitions and the carried seal
 - [critic-ledger.md](critic-ledger.md): the independent critic's rounds and the measured quality bar
 - [contact-sheet.jpg](contact-sheet.jpg): the 16:9 cut, one frame every 0.5 s
-- [LICENSES.md](LICENSES.md): music, sound effects, fonts and runtime licences, plus the attribution line to use when posting
+- [LICENSES.md](LICENSES.md): music, sound effects, fonts and runtime licences (all CC0 or permissive; no credit line needed when posting)
 
 ## Reproduce
 
