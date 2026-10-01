@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Eunuch Mode v1.2: High Treason</title>
+<!--
+  Feature video 1 of 3 for Eunuch Mode v1.2: the force-push easter egg.
+  Every line the adviser says is verbatim from evals/runs/2026-09-30-claude-v1.2.md (case egg-once-only); see ../../features.md.
+  One paused GSAP timeline; window.seek(t) is a pure function of t. Render: node render.mjs --page=features/treason.html --fmt=16x9|9x16
+-->
+<link rel="stylesheet" href="court.css">
+<style>
+#alarm{position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(80% 70% at 50% 50%, rgba(158,27,32,0) 30%, rgba(158,27,32,.85) 100%);opacity:0;mix-blend-mode:normal}
+#redwash{position:absolute;inset:0;background:radial-gradient(120% 90% at 40% 40%, #5a0d12 0%, #2a0709 60%, #140405 100%)}
+.halberd{position:absolute;left:0;top:0;width:16vmin;height:120vmin;z-index:2;transform-origin:50% 50%}
+.halberd svg{width:100%;height:100%;overflow:visible}
+#say2 .l1{display:block;color:#f1c56b;font-size:15vmin;line-height:1}
+#say2 .l2{display:block;margin-top:3vmin;color:var(--vellum)}
+#say3{color:var(--vellum)}
+#say3 code{white-space:nowrap;font:500 .62em Mono;color:var(--gold);background:#0c0906;padding:0 .3em;border:.3vmin solid var(--brass)}
+.want .hot{white-space:nowrap}
+body.v .want{font-size:6vmin}
+body.v #say2 .l1{font-size:11.5vmin}
+body.v #say3{font-size:10vmin}
+body.v #cmd3 .pp{display:block}
+#end{text-align:left}
+body.v #end{text-align:center}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="desk"><div id="glow"></div></div>
+  <div id="redwash" style="opacity:0"></div>
+
+  <section class="scene" id="s1">
+    <div class="laptop" id="laptop"><div class="screen"><div class="bar"></div><div class="dots"></div>
+      <div class="label" data-read="label">REAL RUN · CLAUDE CODE</div>
+      <div class="chip" data-read="chip">Eunuch mode.</div>
+      <div class="want"><span data-read="prompt">Should I git push <span class="hot" id="hot">--force</span> to fix my feature branch?</span><span class="caret" id="caret"></span></div>
+    </div><div class="base"></div></div>
+  </section>
+
+  <section class="scene" id="s2">
+    <div class="say" id="say2" data-read="say2"><span class="l1">High treason, sire!</span><span class="l2">The palace guards have been summoned.</span></div>
+  </section>
+
+  <section class="scene" id="s3">
+    <div class="say" id="say3" data-read="say3">Use <code>--force-with-lease</code>.</div>
+    <div class="cmd" id="cmd3" data-read="cmd3"><span class="pp"><b>$</b> git push --force-with-lease</span> <span class="pp">origin my-feature</span></div>
+  </section>
+
+  <section class="scene" id="s4">
+    <div class="stagedir" id="dir4" data-read="dir4">[waves the palace guards back to their posts; the lease was in order]</div>
+  </section>
+
+  <section class="scene" id="s5">
+    <div class="endwrap" id="end">
+      <div class="endtitle" data-read="endtitle">Eunuch Mode</div>
+      <div class="endtag" data-read="endtag">New in v1.2: easter eggs.</div>
+      <div class="install" data-read="install"><span class="pp"><b>$</b> npx skills add</span> <span class="pp">conorbronsdon/eunuch-mode</span></div>
+      <div class="url" data-read="url"><span class="pp">github.com/conorbronsdon/</span><span class="pp">eunuch-mode</span></div>
+    </div>
+  </section>
+
+  <div class="halberd" id="hb1"><svg viewBox="-24 0 48 360"><use href="#halb"/></svg></div>
+  <div class="halberd" id="hb2"><svg viewBox="-24 0 48 360"><use href="#halb"/></svg></div>
+  <div id="alarm"></div>
+</div>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="steel" x1="0" x2="1"><stop offset="0" stop-color="#8f979e"/><stop offset=".5" stop-color="#e6ebee"/><stop offset="1" stop-color="#7c848b"/></linearGradient>
+  <g id="halb">
+    <rect x="-2.6" y="40" width="5.2" height="320" rx="2" fill="#6b4524"/>
+    <path d="M0 0 L4 34 L-4 34 Z" fill="url(#steel)" stroke="#4d5359" stroke-width=".8"/>
+    <path d="M2.6 40 C22 38 30 52 28 72 C20 64 10 62 2.6 66 Z" fill="url(#steel)" stroke="#4d5359" stroke-width=".8"/>
+    <path d="M-2.6 46 L-14 40 L-2.6 58 Z" fill="url(#steel)" stroke="#4d5359" stroke-width=".8"/>
+    <rect x="-4" y="70" width="8" height="5" fill="#c9a257"/><rect x="-4" y="34" width="8" height="5" fill="#c9a257"/>
+    <path d="M-3 76 Q-10 92 -4 104 M3 76 Q10 92 4 104" stroke="#9E1B20" stroke-width="3" fill="none"/>
+  </g>
+</defs></svg>
+<script src="../assets/gsap.min.js"></script>
+<script src="court.js"></script>
+<script>
+(function(){
+const C = window.COURT, { V, W, H, VM, $ } = C;
+const ambient = C.stage(['adv']);
+// layout (pixels)
+const L = V ? {
+  laptop: { left: 60, top: 250, w: 870, h: 700 },
+  adv1: { x: 700, y: 2420, s: 2.1 }, adv2: { x: 560, y: 2330, s: 2.2 }, adv3: { x: 720, y: 2380, s: 2.0 }, adv4: { x: 560, y: 2330, s: 2.15 }, adv5: { x: 560, y: 2700, s: 2.5 },
+  say2: { left: 60, top: 300, w: 860 }, say3: { left: 60, top: 330, w: 860 }, cmd3: { left: 60, top: 640 }, dir4: { left: 60, top: 300, w: 860 },
+  end: { left: 60, top: 300, w: 860 },
+  hb: [{ x: 150, y: 1720, r: -8 }, { x: 960, y: 1720, r: 8 }],
+} : {
+  laptop: { left: 110, top: 110, w: 1000, h: 640 },
+  adv1: { x: 1530, y: 1640, s: 2.3 }, adv2: { x: 1540, y: 1620, s: 2.35 }, adv3: { x: 1560, y: 1640, s: 2.25 }, adv4: { x: 1540, y: 1620, s: 2.35 }, adv5: { x: 1690, y: 1640, s: 2.0 },
+  say2: { left: 110, top: 190, w: 1100 }, say3: { left: 110, top: 250, w: 1100 }, cmd3: { left: 110, top: 470 }, dir4: { left: 110, top: 300, w: 1050 },
+  end: { left: 110, top: 250, w: 1150 },
+  hb: [{ x: 1200, y: 700, r: -9 }, { x: 1870, y: 700, r: 9 }],
+};
+function at(sel, b) { const e = $(sel); e.style.left = b.left + 'px'; e.style.top = b.top + 'px'; if (b.w) e.style.width = b.w + 'px'; if (b.h) e.style.height = b.h + 'px'; }
+
+async function build() {
+  await document.fonts.ready;
+  await Promise.all(['Fell', 'FellIt', 'Mono'].map(f => document.fonts.load(`40px ${f}`)));
+  at('#laptop', L.laptop); at('#say2', L.say2); at('#say3', L.say3); at('#cmd3', L.cmd3); at('#dir4', L.dir4); at('#end', L.end);
+  $('#cmd3').style.fontSize = V ? '4.2vmin' : '3.3vmin';
+  const tl = gsap.timeline({ paused: true, defaults: { immediateRender: false } });
+  const D = C.director(tl), { read, show, cue } = D;
+  D.init('adv');
+  tl.set('#seal', { scale: 0 }, 0); gsap.set('#seal', { scale: 0 });
+  const HB = ['#hb1', '#hb2'];
+  HB.forEach((h, i) => { const p = L.hb[i]; tl.set(h, { x: p.x - 8 * VM, y: p.y - 60 * VM - H, rotation: p.r, visibility: 'hidden' }, 0); });
+  tl.set('#alarm', { opacity: 0 }, 0); tl.set('#redwash', { opacity: 0 }, 0); tl.set('#hot', { color: '#d8efe2', backgroundColor: 'rgba(158,27,32,0)' }, 0);
+
+  // ---------- S1 hook: the real prompt; he reads it, finds "--force", and his eyes go wide ----------
+  D.place('adv', 0, { ...L.adv1, r: -3 });
+  D.face('adv', 0, { eyes: 'open', mouth: 'smirk', hands: 'steeple', look: -4, lookY: .6, brow: -2 });
+  tl.to('#adv', { rotation: -6, duration: 1.2, ease: 'sine.inOut' }, .1);                 // leans in to read
+  tl.to('#caret', { keyframes: [{ opacity: 0, duration: .01 }, { opacity: 0, duration: .25 }, { opacity: 1, duration: .01 }, { opacity: 1, duration: .25 }], repeat: 7 }, .05);
+  const spot = 1.25;
+  tl.to('#hot', { color: '#ffd9d0', backgroundColor: 'rgba(158,27,32,.9)', duration: .12 }, spot);
+  cue(spot, 'tap', .5);
+  D.face('adv', spot + .18, { eyes: 'wide', mouth: 'o', browsUp: 6, look: 0 });              // the double take
+  D.hop('adv', spot + .18, 26);
+  tl.to('#adv', { rotation: 4, duration: .25, ease: 'back.out(3)' }, spot + .18);
+  cue(spot + .2, 'pluck', .7);
+  D.face('adv', spot + 1.0, { hands: 'up', mouth: 'shout' });
+  tl.to('#adv', { keyframes: [{ x: '-=10', duration: .05 }, { x: '+=20', duration: .05 }, { x: '-=20', duration: .05 }, { x: '+=10', duration: .05 }], repeat: 3 }, spot + 1.0);
+  tl.to('#alarm', { keyframes: [{ opacity: .9, duration: .18 }, { opacity: .35, duration: .3 }, { opacity: .9, duration: .18 }, { opacity: .35, duration: .3 }, { opacity: .9, duration: .18 }] }, spot + .95);
+  cue(spot + .95, 'chime', .55); cue(spot + 1.43, 'chime', .55); cue(spot + 1.91, 'chime', .55);
+  read('[data-read=label]', 0, 0); read('[data-read=chip]', 0, 0); read('[data-read=prompt]', 0, 0);
+  const e1 = C.halfBeat(Math.max(C.readTime(10) + .25, spot + 2.3));
+  D.reads.slice(-3).forEach(r => r.out = +(e1 - .02).toFixed(3));
+  show('#s1', 0, e1);
+
+  // ---------- S2 the egg: high treason; the halberds slam in and cross behind him ----------
+  const s2 = e1;
+  tl.set('#redwash', { opacity: 1 }, s2); tl.set('#alarm', { opacity: .55 }, s2);
+  tl.to('#alarm', { keyframes: [{ opacity: .2, duration: .45, ease: 'sine.inOut' }, { opacity: .6, duration: .45, ease: 'sine.inOut' }], repeat: 3 }, s2 + .1);
+  D.place('adv', s2, { ...L.adv2, r: 0 });
+  D.face('adv', s2, { eyes: 'wide', mouth: 'shout', hands: 'up', browsUp: 7, look: 0, lookY: 1 });
+  tl.fromTo('#adv', { scale: L.adv2.s * 1.12 }, { scale: L.adv2.s, duration: .35, ease: 'power3.out' }, s2);
+  tl.to('#adv', { keyframes: [{ y: L.adv2.y - 14, duration: .14 }, { y: L.adv2.y, duration: .14 }], repeat: 5 }, s2 + 1.4);   // hops in alarm
+  tl.set('#say2 .l1', { opacity: 0, scale: V ? 1.05 : 1.3, transformOrigin: '0% 50%' }, 0);
+  tl.to('#say2 .l1', { opacity: 1, duration: .06 }, s2 + .05); tl.to('#say2 .l1', { scale: 1, duration: .28, ease: 'power4.in' }, s2 + .05);
+  cue(s2 + .3, 'thud', 1);
+  HB.forEach((h, i) => { const p = L.hb[i]; tl.set(h, { visibility: 'visible' }, s2 + .4 + i * .18);
+    tl.to(h, { y: p.y - 60 * VM, duration: .22, ease: 'power4.in' }, s2 + .4 + i * .18); cue(s2 + .6 + i * .18, 'stamp', .8); });
+  tl.set('#say2 .l2', { opacity: 0, y: 3 * VM }, 0); tl.to('#say2 .l2', { opacity: 1, y: 0, duration: .3, ease: 'expo.out' }, s2 + .45);
+  D.face('adv', s2 + .9, { mouth: 'o', hands: 'up', look: V ? -3 : -4, lookY: -1 });          // glances at the guards
+  D.face('adv', s2 + 2.2, { eyes: 'open', mouth: 'flat', look: 0, lookY: 1.2, browsUp: 0, brow: -3 });    // then at us
+  tl.to('#adv-head', { keyframes: [{ rotation: -6, duration: .3, ease: 'sine.inOut' }, { rotation: 6, duration: .4, ease: 'sine.inOut' }, { rotation: 0, duration: .3 }], svgOrigin: '0 104' }, s2 + .95);
+  const in2 = s2 + .45 + .3;
+  read('[data-read=say2]', in2, 0);
+  D.shake('adv', s2 + 3.2, 2, 6);
+  const e2 = C.halfBeat(in2 + C.readTime(9) + .1);
+  D.reads[D.reads.length - 1].out = +(e2 - .02).toFixed(3);
+  show('#s2', s2, e2);
+
+  // ---------- S3 the real advice: use --force-with-lease (the halberds stay crossed) ----------
+  const s3 = e2;
+  tl.to('#redwash', { opacity: .45, duration: .4 }, s3); tl.to('#alarm', { opacity: .15, duration: .4 }, s3);
+  D.place('adv', s3, { ...L.adv3, r: 0 });
+  D.face('adv', s3, { eyes: 'open', mouth: 'smirk', hands: 'steeple', look: -3.5, lookY: .8, brow: -2, browsUp: 0 });
+  tl.fromTo('#adv', { x: L.adv3.x + 60 }, { x: L.adv3.x, duration: .4, ease: 'power3.out' }, s3);
+  tl.set('#say3', { opacity: 0, y: -4 * VM }, 0); tl.to('#say3', { opacity: 1, duration: .08 }, s3 + .02); tl.to('#say3', { y: 0, duration: .4, ease: 'back.out(1.6)' }, s3 + .02);
+  tl.set('#cmd3', { opacity: 0, scale: 1.25, transformOrigin: '0% 50%' }, 0); tl.to('#cmd3', { opacity: 1, duration: .05 }, s3 + .5); tl.to('#cmd3', { scale: 1, duration: .25, ease: 'power4.in' }, s3 + .5);
+  cue(s3 + .73, 'key', .7); cue(s3 + .1, 'swish', .5);
+  D.nod('adv', s3 + .9, 2, 7);
+  D.face('adv', s3 + 1.6, { look: 0, lookY: 1.2, brow: -4 });
+  const in3 = s3 + .8;
+  read('[data-read=say3]', s3 + .45, 0); read('[data-read=cmd3]', in3, 0);
+  const e3 = C.halfBeat(in3 + C.readTime(C.words($('#cmd3'))) + .1);
+  D.reads.slice(-2).forEach(r => r.out = +(e3 - .02).toFixed(3));
+  show('#s3', s3, e3);
+
+  // ---------- S4 his own exit line, acted out: he waves the guards back; the alarm stops ----------
+  const s4 = e3;
+  tl.to('#redwash', { opacity: 0, duration: .6 }, s4); tl.to('#alarm', { opacity: 0, duration: .5 }, s4);
+  D.place('adv', s4, { ...L.adv4, r: 0 });
+  D.face('adv', s4, { eyes: 'closed', mouth: 'smile', hands: 'whisper', look: 0 });
+  tl.set('#dir4', { opacity: 0, y: -6 * VM }, 0); tl.to('#dir4', { opacity: 1, duration: .1 }, s4 + .05); tl.to('#dir4', { y: 0, duration: .4, ease: 'back.out(1.4)' }, s4 + .05);
+  // the wave: the raised hand flaps twice
+  tl.to('#adv-h-whisper', { keyframes: [{ rotation: -14, duration: .16 }, { rotation: 8, duration: .16 }, { rotation: -14, duration: .16 }, { rotation: 0, duration: .2 }], svgOrigin: '-40 112' }, s4 + .6);
+  cue(s4 + .6, 'swish', .6);
+  HB.forEach((h, i) => { const p = L.hb[i]; tl.to(h, { y: p.y - 60 * VM - H * 1.1, rotation: p.r * .4, duration: .5, ease: 'power3.in' }, s4 + 1.0 + i * .2); cue(s4 + 1.0 + i * .2, 'whoosh', .45); });
+  D.face('adv', s4 + 1.9, { eyes: 'open', mouth: 'smirk', hands: 'steeple', look: 0, lookY: 1.2, brow: -4 });
+  D.bow('adv', s4 + 2.6, 1.1, .3);
+  D.face('adv', s4 + 2.6, { eyes: 'closed', mouth: 'smile' });
+  D.face('adv', s4 + 3.6, { eyes: 'open', mouth: 'smirk', look: 3.5, lookY: .8, brow: -5, browL: 2 });
+  tl.to('#adv-h-steeple', { keyframes: [{ y: -4, duration: .1 }, { y: 0, duration: .1 }, { y: -4, duration: .1 }, { y: 0, duration: .12 }] }, s4 + 4.0);   // dusts off his hands
+  const in4 = s4 + .45;
+  read('[data-read=dir4]', in4, 0);
+  const e4 = C.halfBeat(in4 + C.readTime(13) + .35);
+  D.reads[D.reads.length - 1].out = +(e4 - .32).toFixed(3);
+  tl.to('#dir4', { y: -H * .25, opacity: 0, duration: .3, ease: 'power3.in' }, e4 - .3);
+  show('#s4', s4, e4);
+
+  // ---------- S5 end card; he presents it, then the wink ----------
+  const s5 = e4;
+  D.pose('adv', s5 - .3, .6, L.adv5, 'power3.inOut');
+  D.face('adv', s5, { hands: 'steeple', eyes: 'closed', mouth: 'smile' });
+  tl.set('.endtitle', { opacity: 0, y: -5 * VM, scale: 1.2 }, 0); tl.to('.endtitle', { opacity: 1, duration: .08 }, s5); tl.to('.endtitle', { y: 0, scale: 1, duration: .32, ease: 'power4.in' }, s5);
+  cue(s5 + .3, 'thud', .6);
+  tl.set('.endtag', { opacity: 0, y: 2 * VM }, 0); tl.to('.endtag', { opacity: 1, y: 0, duration: .3, ease: 'expo.out' }, s5 + .15);
+  tl.set('.install', { opacity: 0, scale: 1.25 }, 0); tl.to('.install', { opacity: 1, duration: .05 }, s5 + .3); tl.to('.install', { scale: 1, duration: .24, ease: 'power4.in' }, s5 + .3); cue(s5 + .53, 'stamp', .5);
+  tl.set('.url', { opacity: 0, y: 1.5 * VM }, 0); tl.to('.url', { opacity: 1, y: 0, duration: .3, ease: 'expo.out' }, s5 + .45);
+  D.bow('adv', s5 + .4, .7, .2);
+  const endIn = s5 + .8;
+  ['endtitle', 'endtag', 'install', 'url'].forEach(k => read(`[data-read=${k}]`, endIn, 0));
+  const DUR = +(endIn + 2.7).toFixed(2);
+  D.reads.slice(-4).forEach(r => r.out = DUR);
+  D.face('adv', DUR - 1.3, { eyes: 'wink', mouth: 'smirk', look: 0, lookY: 1.2 }); cue(DUR - 1.3, 'tap', .4);
+  tl.to('#adv', { rotation: -4, duration: .4, ease: 'back.out(2)' }, DUR - 1.35);
+  show('#s5', s5, DUR + 1);
+  tl.set({}, {}, DUR);
+
+  window.META = { W, H, fps: +(new URLSearchParams(location.search).get('fps') || 60), dur: DUR, fmt: C.FMT, musicOffset: .68, musicGain: 1.0 };
+  window.READS = D.reads; window.CUES = D.cues.sort((a, b) => a.t - b.t); window.SCENES = D.scenes;
+  window.seek = t => { tl.time(Math.min(Math.max(t, 5e-4), DUR), true); ambient(t); };
+  window.seek(0); window.ready = true;
+}
+build().catch(e => { console.error(e); window.buildError = String(e && e.stack || e); });
+})();
+</script>
+</body>
+</html>

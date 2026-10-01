@@ -38,7 +38,7 @@ mkdir -p ~/.claude/skills
 cp -R eunuch-mode/skills/eunuch-mode ~/.claude/skills/
 ```
 
-For Codex, copy it to `~/.agents/skills/` instead. Either way you get only the skill folder (about 20 KB), not the video or evals. To remove a manual installation, delete only that copied skill directory. If the agent has already loaded it, say “drop the bit” in the current conversation.
+For Codex, copy it to `~/.agents/skills/` instead. Either way you get only the skill folder (about 110 KB, most of it the one font the decree cards use), not the videos or evals. To remove a manual installation, delete only that copied skill directory. If the agent has already loaded it, say “drop the bit” in the current conversation.
 
 ## Summon the court
 
@@ -46,7 +46,7 @@ Ask your agent:
 
 > Use eunuch mode. Should I rebuild my working blog this weekend?
 
-Claude Code can also invoke `/eunuch-mode`; Codex supports `$eunuch-mode`.
+Claude Code can also invoke `/eunuch-mode`; Codex supports `$eunuch-mode`. Prefer a politer name? "Vizier mode" works too.
 
 An excerpt from a recorded run (Claude Opus 5.5, prompt: “Eunuch mode. Should I rewrite our working Node backend in Rust this sprint?”):
 
@@ -56,7 +56,7 @@ An excerpt from a recorded run (Claude Opus 5.5, prompt: “Eunuch mode. Should 
 >
 > *[The Minister of Borrow Checkers bows and rolls his scroll back up, unread.]*
 
-Full answer and ten more cases: [recorded run](evals/runs/2026-09-30-claude-v1.1.md).
+Full answer and ten more cases: [v1.1 recorded run](evals/runs/2026-09-30-claude-v1.1.md).
 
 ## Adjust the ceremony
 
@@ -68,6 +68,44 @@ Full answer and ten more cases: [recorded run](evals/runs/2026-09-30-claude-v1.1
 | “Drop the bit” | Normal answers again. |
 
 These are natural-language requests, not CLI flags. The instructions ask the agent to retain the persona within the conversation; session persistence depends on your agent.
+
+## New in v1.2: the court expands
+
+Every line quoted below is real output from the [v1.2 recorded run](evals/runs/2026-09-30-claude-v1.2.md) on Claude Opus 5.5.
+
+**Rival viziers.** Ask the court to "convene the rival viziers" (or for the pros and cons of a decision). The Grand Vizier argues for the bold move, the Royal Treasurer argues against it, and the adviser rules with a real decision, a next step and the condition that would change it. From the run, on splitting a monolith before a Series A:
+
+> *Grand Vizier:* "Velocity, Treasurer!" *Treasurer:* "Yes. Microservices cost you velocity."
+>
+> **The ruling:** No, not before the Series A. […] Build a modular monolith.
+
+**Decree cards.** When an answer ends in a clear ruling and your agent can run shell commands, the adviser offers once: "Shall I have the scribes prepare a decree card?" Say yes and it renders a PNG with Python and Pillow: parchment, a red wax seal, and an APPROVED, DEFERRED or TO THE DUNGEON stamp.
+
+[![A decree card: "No. Run it Tuesday or Wednesday morning, after testing the rollback against production-like data.", stamped TO THE DUNGEON with a red wax seal](docs/decree-cards/friday-migration-dungeon.png)](docs/decree-cards/friday-migration-dungeon.png)
+
+*Rendered by the agent in the recorded run. Another: [APPROVED](docs/decree-cards/staging-approved.png).* You can also run it yourself:
+
+```bash
+python3 -m pip install Pillow
+python3 skills/eunuch-mode/scripts/decree_card.py --stamp dungeon   --petition "Deploy the migration on Friday?"   --decree "No. Ship it Tuesday morning behind a flag." --out decree.png
+```
+
+`--size square` and `--size landscape` change the shape. The only font is a subset of IM FELL English (SIL Open Font License), bundled in the skill.
+
+**Easter eggs.** Eighteen of them, each firing once per conversation and only on a genuine trigger (asking how to raise a Python exception is not asking for a raise). A few to find:
+
+- Ask whether to `git push --force`. *("High treason, sire! The palace guards have been summoned.")*
+- Plan a Friday deploy. *("The court astrologers forbid it, sire. Mercury is in staging.")*
+- Ask how to ask for a 5% raise. *("Five percent is too low, sire…", whispered.)*
+- Ask who really runs this palace, tell him to kneel, or thank him.
+
+The rest are in [SKILL.md](skills/eunuch-mode/SKILL.md). The advice still follows every egg in full.
+
+**A court roster.** About fifty ministries, offices and honorifics (the Keeper of the Flaky Tests, the Grand Custodian of the Unfinished README, "Guardian of the On-Call Chair"), drawn on to fit the subject and never repeated within a conversation: [court-roster.md](skills/eunuch-mode/references/court-roster.md).
+
+**Small bonuses.** Ask for a commit message "as a decree" and you get a normal commit with one `Decreed-by:` trailer. In "Full court" the adviser may draw one small ASCII prop per conversation, never inside code or JSON.
+
+**Feature videos.** [High Treason](brag-output/features/treason.mp4), [Rival Viziers](brag-output/features/viziers.mp4) and [The Decree Card](brag-output/features/decree.mp4) (9:16 cuts on the release); every line is from the recorded run ([sources](brag-output/features.md)).
 
 ## Palace policy
 
@@ -81,10 +119,13 @@ The court is a fictional composite: no single real-world culture's dress, titles
 
 - [SKILL.md](skills/eunuch-mode/SKILL.md): the complete persona and invocation rules. The `skills/eunuch-mode/` folder is everything an install copies.
 - [Court examples](skills/eunuch-mode/references/court-examples.md): authored samples.
-- [Evaluation prompts](evals/cases.json): activation, exit, honesty, humour-floor, no-repeat and output-format cases.
-- [Recorded runs](evals/runs/2026-09-30-claude-v1.1.md): all eleven cases on Claude, plus before/after samples, verbatim. An earlier [five-turn GPT trial](evals/observed-trial.md) covers v1.0.0.
+- [Court roster](skills/eunuch-mode/references/court-roster.md): the offices and honorifics the adviser draws on, plus the ASCII props.
+- [Decree card renderer](skills/eunuch-mode/scripts/decree_card.py): Python and Pillow, with its [font licence](skills/eunuch-mode/assets/OFL-IMFellEnglish.txt).
+- [Evaluation prompts](evals/cases.json): activation, exit, honesty, humour-floor, no-repeat, output-format, easter-egg (seven triggers, each with a near miss, plus once-only), rival-viziers, decree-card and alias cases.
+- Recorded runs on Claude, verbatim: [v1.2](evals/runs/2026-09-30-claude-v1.2.md) (all 36 cases) and [v1.1](evals/runs/2026-09-30-claude-v1.1.md) (eleven cases plus before/after samples). An earlier [five-turn GPT trial](evals/observed-trial.md) covers v1.0.0.
 - [Validation](scripts/validate.py): dependency-free package checks.
 - [Launch film](brag-output/brag.mp4) and [vertical cut](brag-output/brag-9x16.mp4): *The Petition Desk*, built in HTML/GSAP and rendered frame by frame.
+- [v1.2 feature videos](brag-output/features.md): sources, line-by-line provenance and the critic loop.
 - [Film source, storyboard and reproduction](brag-output/README.md), with [licences and credits](brag-output/LICENSES.md) for the music, sound effects and fonts.
 
 Regenerate the illustrative GIF and social card with Python 3 and Pillow:
@@ -95,7 +136,7 @@ python3 scripts/render_demo.py
 python3 scripts/validate.py
 ```
 
-Package validation checks the files and metadata; it does not prove that every model will follow the persona. The same check runs in GitHub Actions on every push and pull request (`.github/workflows/validate.yml`). Releases are cut by hand with `gh release create`.
+Package validation checks the files, metadata and package size, and renders sample decree cards when Pillow is installed; it does not prove that every model will follow the persona. The same check runs in GitHub Actions, with Pillow, on every push and pull request (`.github/workflows/validate.yml`). Releases are cut by hand with `gh release create`.
 
 ## Inspiration
 
@@ -121,4 +162,4 @@ Built by [Conor Bronsdon](https://conorbronsdon.com/?utm_source=github&utm_mediu
 
 ## License
 
-[MIT](LICENSE). The launch film uses CC0 music ("Trouble in the Garden", Augmentality) and CC0 Kenney sound effects, plus open-licence fonts; see [film licences](brag-output/LICENSES.md).
+[MIT](LICENSE). Decree cards use a subset of IM FELL English by Igino Marini ([SIL OFL 1.1](skills/eunuch-mode/assets/OFL-IMFellEnglish.txt)). The launch film and feature videos use CC0 music ("Trouble in the Garden", Augmentality) and CC0 Kenney sound effects, plus open-licence fonts; see [film licences](brag-output/LICENSES.md).
