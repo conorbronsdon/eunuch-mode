@@ -1,2 +1,2 @@
-I built eunuch mode for AI assistants. A palace adviser for your questionable decrees. Most judicious, sire.
+I built eunuch mode: an Agent Skill that turns your AI coding assistant into a scheming palace adviser. Flattery ceremonial, advice candid.
 https://github.com/conorbronsdon/eunuch-mode

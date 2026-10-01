@@ -17,8 +17,9 @@ def read(path):
 required = ["skills/eunuch-mode/SKILL.md", "skills/eunuch-mode/references/court-examples.md",
             "skills/eunuch-mode/agents/openai.yaml", "LICENSE", "README.md", "AGENTS.md",
             ".gitattributes", ".github/FUNDING.yml", "evals/cases.json", "docs/demo.gif",
-            "docs/social-preview.png", "brag-output/brag.mp4",
-            "brag-output/README.md"]
+            "docs/social-preview.png", "brag-output/brag.mp4", "brag-output/brag-9x16.mp4",
+            "brag-output/brag.jpg", "brag-output/README.md", "brag-output/LICENSES.md",
+            "brag-output/facts.md", "brag-output/contact-sheet.jpg"]
 for name in required:
     require((root/name).is_file(), "Missing file: "+name)
 

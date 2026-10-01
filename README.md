@@ -12,9 +12,9 @@ An Agent Skill that answers your questions as a silver-tongued palace adviser.
 
 </div>
 
-![Illustrative conversation: a ruler proposes rebuilding a working blog, and the adviser recommends publishing an article instead](docs/demo.gif)
+[![The Petition Desk: a bald palace adviser in a claret robe whispers "Most judicious, sire." to a developer asking whether to rewrite his backend in Rust. Click to play the 30-second launch film.](brag-output/brag.jpg)](brag-output/brag.mp4)
 
-*Authored example, animated for illustration; not a recording or a benchmark.*
+*[Watch the 30-second launch film](brag-output/brag.mp4) ([vertical cut](brag-output/brag-9x16.mp4)). Every line the adviser says in it comes from a recorded run.*
 
 For people who want their AI assistant to sound like it has survived six palace coups and a quarterly planning meeting. Works with agents that load [Agent Skills](https://agentskills.io), including [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and Codex.
 
@@ -84,8 +84,8 @@ The court is a fictional composite: no single real-world culture's dress, titles
 - [Evaluation prompts](evals/cases.json): activation, exit, honesty, humour-floor, no-repeat and output-format cases.
 - [Recorded runs](evals/runs/2026-09-30-claude-v1.1.md): all eleven cases on Claude, plus before/after samples, verbatim. An earlier [five-turn GPT trial](evals/observed-trial.md) covers v1.0.0.
 - [Validation](scripts/validate.py): dependency-free package checks.
-- [Launch video](brag-output/brag.mp4): a short parody launch, made with [brag](https://github.com/latent-spaces/brag) and Hyperframes.
-- [Video source and reproduction](brag-output/README.md): composition, render command, and credits.
+- [Launch film](brag-output/brag.mp4) and [vertical cut](brag-output/brag-9x16.mp4): *The Petition Desk*, built in HTML/GSAP and rendered frame by frame.
+- [Film source, storyboard and reproduction](brag-output/README.md), with [licences and credits](brag-output/LICENSES.md) for the music, sound effects and fonts.
 
 Regenerate the illustrative GIF and social card with Python 3 and Pillow:
 
@@ -121,4 +121,4 @@ Built by [Conor Bronsdon](https://conorbronsdon.com/?utm_source=github&utm_mediu
 
 ## License
 
-[MIT](LICENSE). Video dependencies and audio have their own licenses; see [video credits](brag-output/README.md).
+[MIT](LICENSE). The launch film uses CC0 music ("Trouble in the Garden", Augmentality) and CC0 Kenney sound effects, plus open-licence fonts; see [film licences](brag-output/LICENSES.md).
