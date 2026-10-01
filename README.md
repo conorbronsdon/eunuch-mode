@@ -152,6 +152,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Small, funny improvements welcome. Keep 
 
 Built by [Conor Bronsdon](https://conorbronsdon.com/?utm_source=github&utm_medium=referral&utm_campaign=repo-readme&utm_content=eunuch-mode).
 
+Enjoyed the court? Try ruling one yourself: [The Cold Chair](https://the-cold-chair-preview.conor-afe.workers.dev/?utm_source=github&utm_medium=referral&utm_campaign=repo-readme&utm_content=eunuch-mode) is my free browser game, a medieval-chronicle strategy sim where one reign is one link and the whole history replays from the URL.
+
 [Chain of Thought](https://chainofthought.show/?utm_source=github&utm_medium=referral&utm_campaign=repo-readme&utm_content=eunuch-mode) · [GitHub](https://github.com/conorbronsdon?utm_source=github&utm_medium=referral&utm_campaign=repo-readme&utm_content=eunuch-mode) · [X](https://x.com/ConorBronsdon?utm_source=github&utm_medium=referral&utm_campaign=repo-readme&utm_content=eunuch-mode) · [LinkedIn](https://www.linkedin.com/in/conorbronsdon/?utm_source=github&utm_medium=referral&utm_campaign=repo-readme&utm_content=eunuch-mode)
 
 ---
