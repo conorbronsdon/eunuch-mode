@@ -5,6 +5,7 @@
 //   node render.mjs --fmt=9x16 --out=brag-9x16.mp4
 //   node render.mjs --fmt=16x9 --check                   reading-time, text-fit and seal-collision checks
 //   node render.mjs --fmt=16x9 --stills=0,1.5,3 --outdir=stills    full-resolution PNG stills
+//   node render.mjs --page=features/treason.html --fmt=9x16 --out=treason-9x16.mp4   (a v1.2 feature video)
 //   options: --fps=60 --workers=4 --crf=16 --draft (lower JPEG quality) --png (lossless capture, slow) --nograin --no-audio --music-only=FILE --chrome=PATH (or CHROME_PATH)
 //
 // The page is a pure function of t: window.seek(t) positions one paused GSAP timeline. No timers are used.
@@ -30,14 +31,15 @@ const CHROME = args.chrome || process.env.CHROME_PATH || [
 ].find(p => fs.existsSync(p));
 if (!CHROME) { console.error('No Chrome/Chromium found; pass --chrome=PATH'); process.exit(1); }
 
-const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.ttf': 'font/ttf', '.svg': 'image/svg+xml', '.png': 'image/png' };
+const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.jpg': 'image/jpeg', '.ttf': 'font/ttf', '.svg': 'image/svg+xml', '.png': 'image/png' };
 const srv = http.createServer((req, res) => {
   const p = resolve(join(COMP, decodeURIComponent(new URL(req.url, 'http://x').pathname)));
   if (!p.startsWith(resolve(COMP))) { res.writeHead(403); return res.end(); }
   fs.readFile(p, (e, b) => { if (e) { res.writeHead(404); return res.end(); } res.writeHead(200, { 'content-type': TYPES[extname(p)] || 'application/octet-stream' }); res.end(b); });
 });
 await new Promise(ok => srv.listen(0, '127.0.0.1', ok));
-const URL_ = `http://127.0.0.1:${srv.address().port}/index.html?fmt=${fmt}&fps=${fps}${args.nograin ? '&nograin' : ''}`;
+const PAGE = args.page || 'index.html';   // --page=features/treason.html renders a v1.2 feature video
+const URL_ = `http://127.0.0.1:${srv.address().port}/${PAGE}?fmt=${fmt}&fps=${fps}${args.nograin ? '&nograin' : ''}`;
 const browser = await chromium.launch({ executablePath: CHROME, headless: true,
   args: ['--force-color-profile=srgb', '--font-render-hinting=none', '--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--hide-scrollbars'] });
 
@@ -157,9 +159,9 @@ if (args['no-audio']) { fs.copyFileSync(silent, out); }
 else {
   const CUES = await probe.evaluate(() => window.CUES);
   const A = join(COMP, 'assets', 'audio');
-  const inputs = ['-ss', String(META.musicOffset), '-t', String(dur + .2), '-i', join(A, 'trouble-in-the-garden-15-57s.ogg')];
+  const inputs = ['-ss', String(META.musicOffset), '-t', String(dur + .2), '-i', join(A, META.music || 'trouble-in-the-garden-15-57s.ogg')];
   const SFX_GAIN = 0.34;               // cues sit under the music
-  const parts = [`[0:a]aformat=sample_rates=48000:channel_layouts=stereo,volume=1.0,afade=t=in:d=0.08,afade=t=out:st=${(dur - 1.6).toFixed(2)}:d=1.6[m]`];
+  const parts = [`[0:a]aformat=sample_rates=48000:channel_layouts=stereo,volume=${META.musicGain || 1.0},afade=t=in:d=0.08,afade=t=out:st=${(dur - 1.6).toFixed(2)}:d=1.6[m]`];
   CUES.forEach((c, i) => { inputs.push('-i', join(A, `${c.sfx}.ogg`));
     parts.push(`[${i + 1}:a]aformat=sample_rates=48000:channel_layouts=stereo,volume=${(c.gain * SFX_GAIN).toFixed(3)},adelay=${Math.round(c.t * 1000)}|${Math.round(c.t * 1000)}[s${i}]`); });
   const mixIn = '[m]' + CUES.map((_, i) => `[s${i}]`).join('');

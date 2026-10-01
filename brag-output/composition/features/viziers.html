@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Eunuch Mode v1.2: Rival Viziers</title>
+<!--
+  Feature video 2 of 3 for Eunuch Mode v1.2: rival viziers mode.
+  Every line the court says is verbatim from evals/runs/2026-09-30-claude-v1.2.md (case viziers-decision); see ../../features.md.
+  The Grand Vizier (indigo, tall hat, banner) and the Royal Treasurer (olive, spectacles, abacus) are original drawings in court.js.
+-->
+<link rel="stylesheet" href="court.css">
+<style>
+.lab{position:absolute;font:600 3.4vmin Mono;letter-spacing:.5vmin;color:var(--gold)}
+.quote{position:absolute;font:8.6vmin/1.12 Fell;color:var(--vellum)}
+.quote.gv{color:#cfd3ff}
+.quote.tr{color:#e8e0b0}
+.shout{position:absolute;font:12vmin/1 Fell;color:#cfd3ff;white-space:nowrap}
+.reply{position:absolute;font:9vmin/1.1 Fell;color:#e8e0b0}
+#rule{position:absolute;font:11vmin/1.08 Fell;color:var(--vellum)}
+#rule .no{color:#e0504a}
+#gvwash{position:absolute;inset:0;background:radial-gradient(90% 80% at 25% 60%, rgba(45,52,120,.55), rgba(0,0,0,0) 70%)}
+#trwash{position:absolute;inset:0;background:radial-gradient(90% 80% at 75% 60%, rgba(110,106,58,.5), rgba(0,0,0,0) 70%)}
+body.v .quote{font-size:8.4vmin}
+body.v .shout{font-size:10vmin;white-space:normal;width:860px}
+.want{font-size:4.7vmin}
+body.v .want{font-size:6.2vmin}
+#lab4{white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="desk"><div id="glow"></div></div>
+  <div id="gvwash" style="opacity:0"></div><div id="trwash" style="opacity:0"></div>
+
+  <section class="scene" id="s1">
+    <div class="laptop" id="laptop"><div class="screen"><div class="bar"></div><div class="dots"></div>
+      <div class="label" data-read="label">REAL RUN · CLAUDE CODE</div>
+      <div class="chip" data-read="chip">Eunuch mode,</div>
+      <div class="want"><span data-read="prompt">convene the rival viziers: should we break our monolith into microservices before our Series A?</span><span class="caret" id="caret"></span></div>
+    </div><div class="base"></div></div>
+  </section>
+
+  <section class="scene" id="s2">
+    <div class="lab" id="lab2" data-read="lab2">THE GRAND VIZIER (FOR)</div>
+    <div class="quote gv" id="q2" data-read="q2">“Separate services let teams deploy on their own schedule…”</div>
+  </section>
+
+  <section class="scene" id="s3">
+    <div class="lab" id="t3a" data-read="t3a" style="color:#aab0ff">THE GRAND VIZIER</div>
+    <div class="lab" id="t3b" data-read="t3b" style="color:#d8cf8a">THE ROYAL TREASURER</div>
+    <div class="shout" id="sh3" data-read="sh3">“Velocity, Treasurer!”</div>
+    <div class="reply" id="re3" data-read="re3">“Yes. Microservices cost you velocity.”</div>
+  </section>
+
+  <section class="scene" id="s4">
+    <div class="lab" id="lab4" data-read="lab4">THE RULING</div>
+    <div id="rule" data-read="rule"><span class="no">No,</span> not before the Series A<span id="a-rule" style="display:inline-block;width:.85em;color:transparent">.</span></div>
+  </section>
+
+  <section class="scene" id="s5">
+    <div class="endwrap" id="end">
+      <div class="endtitle" data-read="endtitle">Eunuch Mode</div>
+      <div class="endtag" data-read="endtag">New in v1.2: rival viziers.</div>
+      <div class="install" data-read="install"><span class="pp"><b>$</b> npx skills add</span> <span class="pp">conorbronsdon/eunuch-mode</span></div>
+      <div class="url" data-read="url"><span class="pp">github.com/conorbronsdon/</span><span class="pp">eunuch-mode</span></div>
+    </div>
+  </section>
+</div>
+<script src="../assets/gsap.min.js"></script>
+<script src="court.js"></script>
+<script>
+(function(){
+const C = window.COURT, { V, W, H, VM, $, $$ } = C;
+const ambient = C.stage(['gv', 'tr', 'adv']);
+const L = V ? {
+  laptop: { left: 60, top: 250, w: 870, h: 880 },
+  s1: { adv: { x: 800, y: 2440, s: 2.0 }, gv: { x: 190, y: 2140, s: 1.35 }, tr: { x: 470, y: 2190, s: 1.35 } },
+  s2: { gv: { x: 400, y: 2420, s: 2.35 }, tr: { x: 930, y: 2180, s: 1.2 } }, lab2: { left: 60, top: 300 }, q2: { left: 60, top: 370, w: 860 },
+  s3: { gv: { x: 280, y: 2360, s: 1.85 }, tr: { x: 800, y: 2360, s: 1.85 } }, t3a: { left: 60, top: 270 }, sh3: { left: 60, top: 350 }, t3b: { left: 60, top: 640 }, re3: { left: 60, top: 700, w: 860 },
+  s4: { adv: { x: 540, y: 2440, s: 2.3 }, gv: { x: 70, y: 2330, s: 1.3 }, tr: { x: 1010, y: 2330, s: 1.3 } }, lab4: { left: 60, top: 520 }, rule: { left: 60, top: 590, w: 860 },
+  s5: { adv: { x: 560, y: 2720, s: 2.5 } }, end: { left: 60, top: 300, w: 860 },
+} : {
+  laptop: { left: 110, top: 90, w: 1000, h: 660 },
+  s1: { adv: { x: 1540, y: 1640, s: 2.3 }, gv: { x: 330, y: 1700, s: 1.45 }, tr: { x: 860, y: 1720, s: 1.45 } },
+  s2: { gv: { x: 380, y: 1720, s: 2.3 }, tr: { x: 1770, y: 1540, s: 1.25 } }, lab2: { left: 1080, top: 230 }, q2: { left: 1080, top: 300, w: 760 },
+  s3: { gv: { x: 430, y: 1720, s: 1.75 }, tr: { x: 1450, y: 1720, s: 1.75 } }, t3a: { left: 110, top: 60 }, sh3: { left: 110, top: 140 }, t3b: { left: 1000, top: 300 }, re3: { left: 1000, top: 370, w: 860 },
+  s4: { adv: { x: 960, y: 1700, s: 2.35 }, gv: { x: 190, y: 1500, s: 1.4 }, tr: { x: 1730, y: 1500, s: 1.4 } }, lab4: { left: 110, top: 120 }, rule: { left: 110, top: 180, w: 1700 },
+  s5: { adv: { x: 1690, y: 1640, s: 2.0 } }, end: { left: 110, top: 250, w: 1150 },
+};
+function at(sel, b) { const e = $(sel); e.style.left = b.left + 'px'; e.style.top = b.top + 'px'; if (b.w) e.style.width = b.w + 'px'; if (b.h) e.style.height = b.h + 'px'; }
+
+async function build() {
+  await document.fonts.ready;
+  await Promise.all(['Fell', 'FellIt', 'Mono'].map(f => document.fonts.load(`40px ${f}`)));
+  at('#laptop', L.laptop); at('#lab2', L.lab2); at('#q2', L.q2); at('#sh3', L.sh3); at('#re3', L.re3); at('#t3a', L.t3a); at('#t3b', L.t3b); at('#lab4', L.lab4); at('#rule', L.rule); at('#end', L.end);
+  if (!V) { $('#end').style.textAlign = 'left'; $('#rule').style.textAlign = 'center'; $('#lab4').style.left = '60px'; $('#lab4').style.width = (W - 120) + 'px'; $('#lab4').style.textAlign = 'center'; $('#rule').style.left = (W - 1700) / 2 + 'px'; }
+  else { $('#end').style.textAlign = 'center'; }
+  const tl = gsap.timeline({ paused: true, defaults: { immediateRender: false } });
+  const D = C.director(tl), { read, show, cue } = D;
+  ['gv', 'tr', 'adv'].forEach(p => D.init(p));
+  tl.set('#seal', { scale: 0 }, 0); gsap.set('#seal', { scale: 0 });
+  tl.set('#gvwash, #trwash', { opacity: 0 }, 0);
+  tl.set('#gv-flag', { rotation: 0, skewY: 0, svgOrigin: '60 70' }, 0); tl.set('#gv-banner', { rotation: 0, svgOrigin: '62 214' }, 0);
+  const beads = $$('#tr-abacus .bead'); beads.forEach(b => tl.set(b, { x: 0 }, 0));
+  const clack = (t, n = 3) => { for (let i = 0; i < n; i++) { const b = beads[(i * 7 + Math.round(t * 10)) % beads.length]; tl.to(b, { x: (i % 2 ? -1 : 1) * 9, duration: .07, ease: 'power3.out' }, t + i * .12); cue(t + i * .12, 'tap', .35); } };
+  const wave = (t, dur) => tl.to('#gv-flag', { keyframes: Array.from({ length: Math.max(2, Math.round(dur / .3)) }, (_, i) => ({ skewY: i % 2 ? -8 : 6, rotation: i % 2 ? -3 : 2, duration: .3, ease: 'sine.inOut' })), svgOrigin: '60 70' }, t);
+
+  // ---------- S1 hook: the real prompt; he reads it; two rivals pop up and glare at each other ----------
+  D.place('adv', 0, { ...L.s1.adv, r: -3 });
+  D.face('adv', 0, { eyes: 'open', mouth: 'smirk', hands: 'steeple', look: -4, lookY: .6, brow: -2 });
+  tl.to('#adv', { rotation: -6, duration: 1.2, ease: 'sine.inOut' }, .1);
+  tl.to('#caret', { keyframes: [{ opacity: 0, duration: .01 }, { opacity: 0, duration: .25 }, { opacity: 1, duration: .01 }, { opacity: 1, duration: .25 }], repeat: 9 }, .05);
+  const pop = 1.6;
+  ['gv', 'tr'].forEach((p, i) => { const a = L.s1[p]; D.place(p, pop + i * .25, { ...a, y: a.y + 700 }); D.pose(p, pop + i * .25, .3, a, 'back.out(1.6)'); cue(pop + i * .25, 'pluck', .5); });
+  D.face('gv', pop, { look: 4, lookY: 0, scowl: 4, mouth: 'flat' });
+  D.face('tr', pop + .25, { look: -4, lookY: 0, scowl: 3, mouth: 'flat' });
+  D.face('adv', pop + .6, { look: V ? -3 : -4, lookY: 2, brow: -5, browL: 2 });            // side-eye down at the rivals
+  D.face('gv', pop + 1.4, { mouth: 'open' }); D.face('gv', pop + 1.55, { mouth: 'flat' });
+  D.face('tr', pop + 1.9, { mouth: 'open' }); D.face('tr', pop + 2.05, { mouth: 'flat' });
+  D.face('adv', pop + 2.6, { look: 0, lookY: 1.2, eyes: 'closed', mouth: 'smile' });
+  D.face('adv', pop + 3.2, { eyes: 'open', mouth: 'smirk', brow: -4 });
+  clack(pop + 2.3, 2);
+  read('[data-read=label]', 0, 0); read('[data-read=chip]', 0, 0); read('[data-read=prompt]', 0, 0);
+  const e1 = C.halfBeat(C.readTime(C.words($('[data-read=prompt]'))) + .2);
+  D.reads.slice(-3).forEach(r => r.out = +(e1 - .02).toFixed(3));
+  show('#s1', 0, e1);
+
+  // ---------- S2 the Grand Vizier's case, banner high; the Treasurer fumes in the corner ----------
+  const s2 = e1;
+  tl.set('#gvwash', { opacity: 1 }, s2); tl.set('#gvwash', { opacity: 0 }, s2 + 99);
+  D.hide('adv', s2);
+  D.place('gv', s2, L.s2.gv); D.place('tr', s2, L.s2.tr);
+  tl.fromTo('#gv', { scale: L.s2.gv.s * 1.1 }, { scale: L.s2.gv.s, duration: .35, ease: 'power3.out' }, s2);
+  D.face('gv', s2, { eyes: 'open', mouth: 'smirk', hands: 'steeple', look: 4, lookY: .8, scowl: 0, browsUp: 3 });
+  D.face('tr', s2, { look: -4, lookY: 0, scowl: 4, mouth: 'flat', hands: 'steeple' });
+  tl.to('#gv-banner', { rotation: -8, duration: .3, ease: 'back.out(2)' }, s2 + .1); wave(s2 + .2, 3.4);
+  tl.set('#lab2', { opacity: 0 }, 0); tl.to('#lab2', { opacity: 1, duration: .15 }, s2 + .05);
+  tl.set('#q2', { opacity: 0, y: 3 * VM }, 0); tl.to('#q2', { opacity: 1, y: 0, duration: .4, ease: 'expo.out' }, s2 + .15);
+  D.talk('gv', s2 + .2, s2 + 2.4, 'smirk'); cue(s2 + .05, 'swish', .5);
+  tl.to('#gv', { keyframes: [{ rotation: -3, duration: .5, ease: 'sine.inOut' }, { rotation: 0, duration: .5, ease: 'sine.inOut' }, { rotation: -3, duration: .5, ease: 'sine.inOut' }, { rotation: 0, duration: .5, ease: 'sine.inOut' }] }, s2 + .3);
+  D.face('tr', s2 + 1.4, { eyes: 'closed', mouth: 'flat' }); D.face('tr', s2 + 1.9, { eyes: 'open', look: 4, lookY: -1 });     // rolls his eyes
+  clack(s2 + 2.4, 3);
+  D.face('gv', s2 + 2.6, { look: 0, lookY: 1.2, mouth: 'smile', browsUp: 4 });
+  const in2 = s2 + .55;
+  read('[data-read=lab2]', in2, 0); read('[data-read=q2]', in2, 0);
+  const e2 = C.halfBeat(in2 + C.readTime(C.words($('#q2'))) + .1);
+  D.reads.slice(-2).forEach(r => r.out = +(e2 - .02).toFixed(3));
+  show('#s2', s2, e2);
+
+  // ---------- S3 the snipe: "Velocity, Treasurer!" / "Yes. Microservices cost you velocity." ----------
+  const s3 = e2;
+  tl.set('#gvwash', { opacity: .7 }, s3); tl.set('#trwash', { opacity: .7 }, s3);
+  D.place('gv', s3, L.s3.gv); D.place('tr', s3, L.s3.tr);
+  D.face('gv', s3, { eyes: 'wide', mouth: 'shout', look: 4, lookY: 0, browsUp: 0, scowl: 5, hands: 'steeple' });
+  D.face('tr', s3, { eyes: 'open', mouth: 'flat', look: -4, lookY: 0, scowl: 0, browsUp: 0, hands: 'steeple' });
+  tl.fromTo('#gv', { x: L.s3.gv.x - 80 }, { x: L.s3.gv.x + 40, duration: .25, ease: 'power3.out' }, s3);
+  tl.to('#gv-banner', { rotation: 14, duration: .2, ease: 'power3.out' }, s3 + .05); wave(s3 + .1, 1.2);
+  tl.set('#sh3', { opacity: 0, scale: 1.4, transformOrigin: '0% 50%' }, 0); tl.to('#sh3', { opacity: 1, duration: .05 }, s3 + .05); tl.to('#sh3', { scale: 1, duration: .22, ease: 'power4.in' }, s3 + .05);
+  cue(s3 + .27, 'thud', .9);
+  const reAt = s3 + 1.5;
+  D.face('gv', reAt - .1, { mouth: 'o', eyes: 'open' });
+  tl.set('#re3, #t3b', { opacity: 0 }, 0); tl.to('#re3, #t3b', { opacity: 1, duration: .25 }, reAt);
+  tl.set('#t3a', { opacity: 0 }, 0); tl.to('#t3a', { opacity: 1, duration: .1 }, s3 + .05);
+  tl.to('#gv-banner', { keyframes: [{ rotation: 34, duration: .14, ease: 'power3.out' }, { rotation: 22, duration: .2 }, { rotation: 30, duration: .14 }, { rotation: 14, duration: .3 }], svgOrigin: '62 214' }, s3 + .7); cue(s3 + .72, 'swish', .6);
+  tl.to('#tr-abacus', { keyframes: [{ y: -16, rotation: -5, duration: .12, ease: 'power3.out' }, { y: 0, rotation: 0, duration: .2, ease: 'power2.in' }], svgOrigin: '0 178' }, reAt + .55); cue(reAt + .67, 'thud', .5);
+  D.face('tr', reAt, { mouth: 'open' }); D.face('tr', reAt + .15, { mouth: 'flat' }); D.face('tr', reAt + .3, { mouth: 'open' }); D.face('tr', reAt + .45, { mouth: 'flat' }); D.face('tr', reAt + .6, { mouth: 'smirk' });
+  clack(reAt + .7, 1);
+  D.face('gv', reAt + .9, { eyes: 'closed', mouth: 'flat', scowl: 6 });
+  tl.to('#gv', { y: L.s3.gv.y + 30, rotation: -4, duration: .5, ease: 'power2.out' }, reAt + .9);
+  D.face('tr', reAt + 1.2, { look: 0, lookY: 1.2, brow: -3 });                                        // deadpan to camera
+  read('[data-read=t3a]', s3 + .3, 0); read('[data-read=sh3]', s3 + .3, 0); read('[data-read=t3b]', reAt + .25, 0); read('[data-read=re3]', reAt + .25, 0);
+  const e3 = C.halfBeat(reAt + .25 + C.readTime(C.words($('#re3'))) + .1);
+  D.reads.slice(-4).forEach(r => r.out = +(e3 - .02).toFixed(3));
+  show('#s3', s3, e3);
+
+  // ---------- S4 the ruling: the adviser steps between them, palms out; the seal is the full stop ----------
+  const s4 = e3;
+  tl.set('#gvwash, #trwash', { opacity: 0 }, s4);
+  D.place('adv', s4, { ...L.s4.adv, y: L.s4.adv.y + 500 }); D.pose('adv', s4, .3, L.s4.adv, 'back.out(1.4)');
+  D.face('adv', s4, { eyes: 'closed', mouth: 'flat', hands: 'stop2', look: 0, brow: 0, browL: 0 });
+  D.place('gv', s4, { ...L.s3.gv }); D.place('tr', s4, { ...L.s3.tr });
+  D.pose('gv', s4 + .05, .35, L.s4.gv, 'power3.out'); D.pose('tr', s4 + .05, .35, L.s4.tr, 'power3.out');
+  D.face('gv', s4 + .05, { eyes: 'wide', mouth: 'o', scowl: 0, browsUp: 5 }); D.face('tr', s4 + .05, { eyes: 'wide', mouth: 'o', browsUp: 5 });
+  cue(s4, 'whoosh', .6); cue(s4 + .3, 'thud', .7);
+  tl.set('#lab4', { opacity: 0 }, 0); tl.to('#lab4', { opacity: 1, duration: .15 }, s4 + .35);
+  tl.set('#rule', { opacity: 0, y: -5 * VM }, 0); tl.to('#rule', { opacity: 1, duration: .1 }, s4 + .45); tl.to('#rule', { y: 0, duration: .4, ease: 'back.out(1.5)' }, s4 + .45);
+  D.face('adv', s4 + 1.1, { eyes: 'open', mouth: 'flat', look: 0, lookY: 1.2, brow: -2, browL: 2 });
+  // the seal leaves his chain and lands as the full stop
+  const ar = (() => { const s = $('#s4'); s.style.visibility = 'visible'; const r = $('#a-rule').getBoundingClientRect(); s.style.visibility = ''; return { x: r.left + r.width / 2, y: r.top + r.height * .62 }; })();
+  tl.set('#seal', { x: L.s4.adv.x, y: L.s4.adv.y - 160 * L.s4.adv.s * 2.16, scale: .45 }, s4 + .45); tl.set('#adv-sealhome', { opacity: 0 }, s4 + .45);
+  tl.to('#seal', { x: ar.x, y: ar.y, scale: 1.25, duration: .35, ease: 'power3.out' }, s4 + .45);
+  tl.to('#seal', { keyframes: [{ scale: .95, duration: .06 }, { scale: 1.1, duration: .12 }] }, s4 + .8); cue(s4 + .78, 'seal', 1);
+  D.face('gv', s4 + 1.7, { eyes: 'closed', mouth: 'flat', browsUp: 0, scowl: 4 }); D.face('tr', s4 + 1.9, { eyes: 'open', mouth: 'smile', browsUp: 0, look: -3 });
+  clack(s4 + 2.0, 2);
+  D.face('adv', s4 + 2.3, { hands: 'steeple', mouth: 'smirk', look: 0, lookY: 1.2, brow: -4 });
+  D.bow('adv', s4 + 2.4, .7, .2);
+  const in4 = s4 + .85;
+  read('[data-read=lab4]', in4, 0); read('[data-read=rule]', in4, 0);
+  const e4 = C.halfBeat(Math.max(in4 + C.readTime(C.words($('#rule'))), s4 + 2.9) + .1);
+  D.reads.slice(-2).forEach(r => r.out = +(e4 - .02).toFixed(3));
+  show('#s4', s4, e4);
+  tl.set('#seal', { scale: 0 }, e4);
+
+  // ---------- S5 end card ----------
+  const s5 = e4;
+  D.hide('gv', s5); D.hide('tr', s5);
+  D.place('adv', s5, L.s5.adv); tl.set('#adv-sealhome', { opacity: 1 }, s5);
+  D.face('adv', s5, { hands: 'steeple', eyes: 'closed', mouth: 'smile', look: 0 });
+  tl.set('.endtitle', { opacity: 0, y: -5 * VM, scale: 1.2 }, 0); tl.to('.endtitle', { opacity: 1, duration: .08 }, s5); tl.to('.endtitle', { y: 0, scale: 1, duration: .3, ease: 'power4.in' }, s5);
+  cue(s5 + .28, 'thud', .6);
+  tl.set('.endtag', { opacity: 0, y: 2 * VM }, 0); tl.to('.endtag', { opacity: 1, y: 0, duration: .3, ease: 'expo.out' }, s5 + .15);
+  tl.set('.install', { opacity: 0, scale: 1.25 }, 0); tl.to('.install', { opacity: 1, duration: .05 }, s5 + .3); tl.to('.install', { scale: 1, duration: .24, ease: 'power4.in' }, s5 + .3); cue(s5 + .53, 'stamp', .5);
+  tl.set('.url', { opacity: 0, y: 1.5 * VM }, 0); tl.to('.url', { opacity: 1, y: 0, duration: .3, ease: 'expo.out' }, s5 + .45);
+  D.bow('adv', s5 + .4, .7, .2);
+  const endIn = s5 + .8;
+  ['endtitle', 'endtag', 'install', 'url'].forEach(k => read(`[data-read=${k}]`, endIn, 0));
+  const DUR = +(endIn + 2.7).toFixed(2);
+  D.reads.slice(-4).forEach(r => r.out = DUR);
+  D.face('adv', DUR - 1.3, { eyes: 'wink', mouth: 'smirk', look: 0, lookY: 1.2 }); cue(DUR - 1.3, 'tap', .4);
+  tl.to('#adv', { rotation: -4, duration: .4, ease: 'back.out(2)' }, DUR - 1.35);
+  show('#s5', s5, DUR + 1);
+  tl.set({}, {}, DUR);
+
+  window.META = { W, H, fps: +(new URLSearchParams(location.search).get('fps') || 60), dur: DUR, fmt: C.FMT, musicOffset: 17.064, musicGain: 1.0 };
+  window.READS = D.reads; window.CUES = D.cues.sort((a, b) => a.t - b.t); window.SCENES = D.scenes;
+  window.seek = t => { tl.time(Math.min(Math.max(t, 5e-4), DUR), true); ambient(t); };
+  window.seek(0); window.ready = true;
+}
+build().catch(e => { console.error(e); window.buildError = String(e && e.stack || e); });
+})();
+</script>
+</body>
+</html>

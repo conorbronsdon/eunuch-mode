@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Eunuch Mode v1.2: The Decree Card</title>
+<!--
+  Feature video 3 of 3 for Eunuch Mode v1.2: the Friday easter egg and a decree card.
+  Every line the adviser says is verbatim from evals/runs/2026-09-30-claude-v1.2.md (case card-dungeon); see ../../features.md.
+  The card is the real PNG the agent rendered in that run, split into layers by make_card_layers.py (parchment, stamp, seal).
+-->
+<link rel="stylesheet" href="court.css">
+<style>
+#sky{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 0%, #1d2a52 0%, #0e1430 55%, #07091a 100%)}
+.star{position:absolute;width:.6vmin;height:.6vmin;border-radius:50%;background:#fff6d8;box-shadow:0 0 1.2vmin rgba(255,240,200,.8)}
+#planet{position:absolute;width:16vmin;height:16vmin;border-radius:50%;background:radial-gradient(circle at 35% 35%, #f3e6c4, #b08d57 55%, #5b4320 100%);box-shadow:0 0 6vmin rgba(226,190,116,.45)}
+#orbit{position:absolute;border:.3vmin dashed rgba(226,190,116,.45);border-radius:50%}
+#say2{color:var(--vellum)}
+#say2 .l2{display:block;margin-top:2vmin;color:var(--gold)}
+#bub{position:absolute;padding:3vmin 4.4vmin;background:var(--vellum);border:.5vmin dashed #8a6a35;border-radius:6vmin;font:9vmin/1.1 FellIt;color:var(--wax);box-shadow:0 1.5vmin 4vmin rgba(0,0,0,.5)}
+#card{position:absolute;box-shadow:0 3vmin 7vmin rgba(0,0,0,.6)}
+#card img{position:absolute;display:block}
+#card .base{left:0;top:0;width:100%;height:100%}
+.want .hot{white-space:nowrap}
+body.v .want{font-size:6.2vmin}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="desk"><div id="glow"></div></div>
+  <div id="sky" style="opacity:0"><div id="orbit"></div><div id="planet"></div></div>
+
+  <section class="scene" id="s1">
+    <div class="laptop" id="laptop"><div class="screen"><div class="bar"></div><div class="dots"></div>
+      <div class="label" data-read="label">REAL RUN · CLAUDE CODE</div>
+      <div class="chip" data-read="chip">Eunuch mode.</div>
+      <div class="want"><span data-read="prompt">Should we run the billing database migration in production this <span class="hot" id="hot">Friday at 5pm?</span></span><span class="caret" id="caret"></span></div>
+    </div><div class="base"></div></div>
+  </section>
+
+  <section class="scene" id="s2">
+    <div class="say" id="say2" data-read="say2"><span class="l1">The court astrologers forbid it, sire.</span><span class="l2">Mercury is in staging.</span></div>
+  </section>
+
+  <section class="scene" id="s3">
+    <div id="bub" data-read="bub">Shall I have the scribes prepare a decree card?</div>
+  </section>
+
+  <section class="scene" id="s4">
+    <div id="card"><img class="base" src="card/base.jpg" alt=""><img id="cstamp" src="card/stamp.png" alt=""><img id="cseal" src="card/seal.png" alt=""></div>
+  </section>
+
+  <section class="scene" id="s5">
+    <div class="endwrap" id="end">
+      <div class="endtitle" data-read="endtitle">Eunuch Mode</div>
+      <div class="endtag" data-read="endtag">New in v1.2: decree cards.</div>
+      <div class="install" data-read="install"><span class="pp"><b>$</b> npx skills add</span> <span class="pp">conorbronsdon/eunuch-mode</span></div>
+      <div class="url" data-read="url"><span class="pp">github.com/conorbronsdon/</span><span class="pp">eunuch-mode</span></div>
+    </div>
+  </section>
+</div>
+<script src="../assets/gsap.min.js"></script>
+<script src="court.js"></script>
+<script>
+(function(){
+const C = window.COURT, { V, W, H, VM, $, $$ } = C;
+const ambient = C.stage(['adv']);
+// card geometry: the PNG is 1080x1350; layers sit at their pixel offsets (see make_card_layers.py)
+const CARD = { w: 1080, h: 1350, stamp: [208, 812, 696, 242], seal: [799, 1113, 216, 214] };
+const L = V ? {
+  laptop: { left: 60, top: 250, w: 870, h: 860 },
+  adv1: { x: 760, y: 2440, s: 2.05 }, adv2: { x: 540, y: 2620, s: 2.3 }, adv3: { x: 700, y: 2400, s: 2.15 }, adv4: { x: 830, y: 2560, s: 2.25 }, adv5: { x: 560, y: 2720, s: 2.5 },
+  say2: { left: 60, top: 300, w: 860 }, bub: { left: 60, top: 400, w: 860 }, card: { left: 60, top: 250, h: 1020 }, end: { left: 60, top: 300, w: 860 },
+  planet: { x: 820, y: 1160 },
+} : {
+  laptop: { left: 110, top: 110, w: 1000, h: 640 },
+  adv1: { x: 1530, y: 1640, s: 2.3 }, adv2: { x: 1640, y: 1640, s: 2.3 }, adv3: { x: 1540, y: 1640, s: 2.3 }, adv4: { x: 1560, y: 1640, s: 2.25 }, adv5: { x: 1690, y: 1640, s: 2.0 },
+  say2: { left: 110, top: 300, w: 1020 }, bub: { left: 110, top: 300, w: 1000 }, card: { left: 260, top: 40, h: 1000 }, end: { left: 110, top: 250, w: 1150 },
+  planet: { x: 1180, y: 160 },
+};
+function at(sel, b) { const e = $(sel); e.style.left = b.left + 'px'; e.style.top = b.top + 'px'; if (b.w) e.style.width = b.w + 'px'; if (b.h) e.style.height = b.h + 'px'; }
+
+async function build() {
+  await document.fonts.ready;
+  await Promise.all(['Fell', 'FellIt', 'Mono'].map(f => document.fonts.load(`40px ${f}`)));
+  await Promise.all($$('#card img').map(i => i.decode()));
+  at('#laptop', L.laptop); at('#say2', L.say2); at('#bub', L.bub); at('#end', L.end);
+  $('#end').style.textAlign = V ? 'center' : 'left';
+  const k = L.card.h / CARD.h, cw = CARD.w * k;
+  Object.assign($('#card').style, { left: L.card.left + 'px', top: L.card.top + 'px', width: cw + 'px', height: L.card.h + 'px' });
+  const lay = (sel, [x, y, w, h]) => Object.assign($(sel).style, { left: x * k + 'px', top: y * k + 'px', width: w * k + 'px', height: h * k + 'px' });
+  lay('#cstamp', CARD.stamp); lay('#cseal', CARD.seal);
+  Object.assign($('#planet').style, { left: L.planet.x - 8 * VM + 'px', top: L.planet.y - 8 * VM + 'px' });
+  Object.assign($('#orbit').style, { left: L.planet.x - 30 * VM + 'px', top: L.planet.y - 12 * VM + 'px', width: 60 * VM + 'px', height: 24 * VM + 'px' });
+  { const R = C.rng(7); for (let i = 0; i < 46; i++) { const s = document.createElement('div'); s.className = 'star'; s.style.left = R() * W + 'px'; s.style.top = R() * H * (V ? .55 : .8) + 'px'; s.dataset.ph = R() * 6.28; $('#sky').appendChild(s); } }
+
+  const tl = gsap.timeline({ paused: true, defaults: { immediateRender: false } });
+  const D = C.director(tl), { read, show, cue } = D;
+  D.init('adv');
+  tl.set('#seal', { scale: 0 }, 0); gsap.set('#seal', { scale: 0 });
+  tl.set('#sky', { opacity: 0 }, 0); tl.set('#hot', { color: '#d8efe2', backgroundColor: 'rgba(158,27,32,0)' }, 0);
+
+  // ---------- S1 hook: the real prompt; "Friday at 5pm" catches his eye ----------
+  D.place('adv', 0, { ...L.adv1, r: -3 });
+  D.face('adv', 0, { eyes: 'open', mouth: 'smirk', hands: 'steeple', look: -4, lookY: .6, brow: -2 });
+  tl.to('#adv', { rotation: -6, duration: 1.2, ease: 'sine.inOut' }, .1);
+  tl.to('#caret', { keyframes: [{ opacity: 0, duration: .01 }, { opacity: 0, duration: .25 }, { opacity: 1, duration: .01 }, { opacity: 1, duration: .25 }], repeat: 8 }, .05);
+  const spot = 1.5;
+  tl.to('#hot', { color: '#ffd9d0', backgroundColor: 'rgba(158,27,32,.9)', duration: .12 }, spot); cue(spot, 'tap', .5);
+  D.face('adv', spot + .2, { eyes: 'wide', mouth: 'o', browsUp: 6, look: 0 }); D.hop('adv', spot + .2, 22); cue(spot + .22, 'pluck', .7);
+  D.face('adv', spot + 1.3, { eyes: 'open', mouth: 'flat', look: 0, lookY: -3, browsUp: 3 });          // looks up to the heavens
+  tl.to('#adv-head', { rotation: -8, duration: .5, ease: 'power2.out', svgOrigin: '0 104' }, spot + 1.3);
+  D.face('adv', spot + 2.2, { hands: 'whisper' });
+  read('[data-read=label]', 0, 0); read('[data-read=chip]', 0, 0); read('[data-read=prompt]', 0, 0);
+  const e1 = C.halfBeat(Math.max(C.readTime(C.words($('[data-read=prompt]'))) + .2, spot + 2.6));
+  D.reads.slice(-3).forEach(r => r.out = +(e1 - .02).toFixed(3));
+  show('#s1', 0, e1);
+
+  // ---------- S2 the egg: the astrologers forbid it; Mercury hangs in the night sky ----------
+  const s2 = e1;
+  tl.set('#sky', { opacity: 1 }, s2);
+  tl.fromTo('#planet', { y: -30 * VM, scale: .6 }, { y: 0, scale: 1, duration: .7, ease: 'power3.out' }, s2);
+  tl.fromTo('#orbit', { rotation: -8, scale: .9 }, { rotation: 14, scale: 1, duration: 8.4, ease: 'none' }, s2);
+  D.place('adv', s2, L.adv2);
+  D.face('adv', s2, { eyes: 'open', mouth: 'o', hands: 'whisper', look: V ? 2 : -2, lookY: -3, browsUp: 4 });
+  tl.to('#adv-head', { rotation: V ? 6 : -10, duration: .4, svgOrigin: '0 104' }, s2);
+  tl.set('#say2 .l1', { opacity: 0, y: -3 * VM }, 0); tl.to('#say2 .l1', { opacity: 1, y: 0, duration: .4, ease: 'back.out(1.5)' }, s2 + .1);
+  tl.set('#say2 .l2', { opacity: 0, scale: 1.3, transformOrigin: '0% 50%' }, 0); tl.to('#say2 .l2', { opacity: 1, duration: .05 }, s2 + .4); tl.to('#say2 .l2', { scale: 1, duration: .22, ease: 'power4.in' }, s2 + .4);
+  cue(s2 + .1, 'chime', .5); cue(s2 + .62, 'thud', .7);
+  D.face('adv', s2 + 1.4, { look: 0, lookY: 1.2, mouth: 'flat', browsUp: 0, brow: -3, hands: 'fold' }); tl.to('#adv-head', { rotation: 0, duration: .3, svgOrigin: '0 104' }, s2 + 1.4);
+  D.shake('adv', s2 + 1.6, 2, 7);
+  D.face('adv', s2 + 2.5, { hands: V ? 'stop' : 'whisper', eyes: 'closed', mouth: 'flat' }); tl.to('#adv-head', { rotation: 9, duration: .25, svgOrigin: '0 104' }, s2 + 2.5); cue(s2 + 2.5, 'swish', .5);   // waves the planet away
+  D.face('adv', s2 + 3.4, { hands: 'fold', eyes: 'open', mouth: 'smirk', look: 0, lookY: 1.2 }); tl.to('#adv-head', { rotation: 0, duration: .25, svgOrigin: '0 104' }, s2 + 3.4);
+  const in2 = s2 + .65;
+  read('[data-read=say2]', in2, 0);
+  const e2 = C.halfBeat(in2 + C.readTime(10) + .1);
+  D.reads[D.reads.length - 1].out = +(e2 - .02).toFixed(3);
+  { const st = $$('.star'); for (let t = s2; t < e2 + 4.2; t += .25) st.forEach((s, i) => { if ((i + Math.round(t * 4)) % 5 === 0) tl.to(s, { opacity: .35 + .65 * ((i * 7 + Math.round(t * 4)) % 3) / 2, duration: .2 }, t); }); }
+  show('#s2', s2, e2);
+
+  // ---------- S3 the offer, whispered ----------
+  const s3 = e2;
+  D.place('adv', s3, L.adv3);
+  D.face('adv', s3, { eyes: 'open', mouth: 'smile', hands: 'whisper', look: V ? -2 : -4, lookY: -.5, brow: -2 });
+  tl.fromTo('#adv', { rotation: 0 }, { rotation: V ? -5 : -8, duration: .4, ease: 'power3.out' }, s3);
+  tl.set('#bub', { opacity: 0, scale: .7, transformOrigin: V ? '70% 100%' : '100% 60%' }, 0); tl.to('#bub', { opacity: 1, scale: 1, duration: .22, ease: 'back.out(2.2)' }, s3 + .1);
+  cue(s3 + .1, 'pluck', .6);
+  D.face('adv', s3 + 1.3, { look: 0, lookY: 1.2, mouth: 'smirk', brow: -5, browL: 2 });
+  D.face('adv', s3 + 1.9, { hands: 'up', eyes: 'open', mouth: 'open', browsUp: 4 }); cue(s3 + 1.9, 'tap', .7); cue(s3 + 2.05, 'tap', .7);   // claps for the scribes
+  D.face('adv', s3 + 2.3, { eyes: 'closed', mouth: 'smile', hands: 'steeple', browsUp: 0 }); D.bow('adv', s3 + 2.3, .6, .1);
+  const in3 = s3 + .35;
+  read('[data-read=bub]', in3, 0);
+  const e3 = C.halfBeat(in3 + C.readTime(9) + .05);
+  D.reads[D.reads.length - 1].out = +(e3 - .02).toFixed(3);
+  tl.fromTo('#adv', { scale: L.adv3.s }, { scale: L.adv3.s * 1.06, duration: e3 - s3, ease: 'sine.inOut' }, s3 + .3);
+  tl.fromTo('#planet', { x: 0 }, { x: 6 * VM, duration: e3 - s2, ease: 'none' }, s2 + .7);
+  show('#s3', s3, e3);
+  tl.set('#sky', { opacity: 0 }, e3);
+
+  // ---------- S4 the real card: parchment slides in, TO THE DUNGEON slams, the seal drops ----------
+  const s4 = e3;
+  tl.set('#card', { x: 0, y: H, rotation: 6 }, 0);
+  tl.to('#card', { y: 0, rotation: -1.5, duration: .45, ease: 'power3.out' }, s4); cue(s4, 'slide', .7);
+  D.place('adv', s4, L.adv4);
+  D.face('adv', s4, { eyes: 'open', mouth: 'smirk', hands: 'up', look: V ? -3 : -4, lookY: 1, brow: -3 });
+  const slam = s4 + 1.0;
+  tl.set('#cstamp', { opacity: 0, scale: 1.4, rotation: 3 }, 0);
+  tl.to('#cstamp', { opacity: 1, duration: .04 }, slam - .16); tl.to('#cstamp', { scale: 1, rotation: 0, duration: .16, ease: 'power4.in' }, slam - .16);
+  tl.to('#card', { keyframes: [{ x: -12, y: 8, duration: .05 }, { x: 8, y: -4, duration: .06 }, { x: 0, y: 0, duration: .08 }] }, slam);
+  cue(slam, 'stamp', 1); cue(slam + .02, 'thud', .6);
+  D.face('adv', slam, { hands: 'stop', eyes: 'closed', mouth: 'flat' });
+  tl.to('#adv', { keyframes: [{ y: '+=24', duration: .08 }, { y: '-=24', duration: .2 }] }, slam);
+  const drop = slam + 1.0;
+  tl.set('#cseal', { opacity: 0, y: -40 * VM, scale: 1.5 }, 0);
+  tl.to('#cseal', { opacity: 1, duration: .05 }, drop - .3); tl.to('#cseal', { y: 0, scale: 1, duration: .3, ease: 'power3.in' }, drop - .3);
+  tl.to('#cseal', { keyframes: [{ scaleY: .9, duration: .05 }, { scaleY: 1, duration: .12 }] }, drop);
+  cue(drop - .02, 'seal', 1);
+  D.face('adv', drop + .2, { eyes: 'open', hands: 'steeple', mouth: 'smirk', look: 0, lookY: 1.2, brow: -5, browL: 2 });
+  D.bow('adv', drop + 1.0, .8, .25);
+  D.face('adv', drop + 1.0, { eyes: 'closed', mouth: 'smile' });
+  D.face('adv', drop + 2.2, { eyes: 'open', mouth: 'smirk', look: 0, lookY: 1.2, brow: -4 });
+  tl.fromTo('#card', { scale: 1 }, { scale: V ? 1.1 : 1.22, duration: 1.2, ease: 'power2.inOut', transformOrigin: V ? '50% 42%' : '40% 45%' }, drop + .5);   // push in on the ruling
+  const e4 = C.halfBeat(s4 + .45 + C.readTime(15) + .2);
+  tl.to('#card', { x: -W * 1.1, rotation: -8, duration: .3, ease: 'power3.in' }, e4 - .3); cue(e4 - .3, 'whoosh', .5);
+  show('#s4', s4, e4);
+
+  // ---------- S5 end card ----------
+  const s5 = e4;
+  D.pose('adv', s5 - .3, .6, L.adv5, 'power3.inOut');
+  D.face('adv', s5, { hands: 'steeple', eyes: 'closed', mouth: 'smile' });
+  tl.set('.endtitle', { opacity: 0, y: -5 * VM, scale: 1.2 }, 0); tl.to('.endtitle', { opacity: 1, duration: .08 }, s5); tl.to('.endtitle', { y: 0, scale: 1, duration: .3, ease: 'power4.in' }, s5);
+  cue(s5 + .28, 'thud', .6);
+  tl.set('.endtag', { opacity: 0, y: 2 * VM }, 0); tl.to('.endtag', { opacity: 1, y: 0, duration: .3, ease: 'expo.out' }, s5 + .15);
+  tl.set('.install', { opacity: 0, scale: 1.25 }, 0); tl.to('.install', { opacity: 1, duration: .05 }, s5 + .3); tl.to('.install', { scale: 1, duration: .24, ease: 'power4.in' }, s5 + .3); cue(s5 + .53, 'stamp', .5);
+  tl.set('.url', { opacity: 0, y: 1.5 * VM }, 0); tl.to('.url', { opacity: 1, y: 0, duration: .3, ease: 'expo.out' }, s5 + .45);
+  D.bow('adv', s5 + .4, .7, .2);
+  const endIn = s5 + .8;
+  ['endtitle', 'endtag', 'install', 'url'].forEach(k => read(`[data-read=${k}]`, endIn, 0));
+  const DUR = +(endIn + 2.5).toFixed(2);
+  D.reads.slice(-4).forEach(r => r.out = DUR);
+  D.face('adv', DUR - 1.3, { eyes: 'wink', mouth: 'smirk', look: 0, lookY: 1.2 }); cue(DUR - 1.3, 'tap', .4);
+  tl.to('#adv', { rotation: -4, duration: .4, ease: 'back.out(2)' }, DUR - 1.35);
+  show('#s5', s5, DUR + 1);
+  tl.set({}, {}, DUR);
+
+  window.META = { W, H, fps: +(new URLSearchParams(location.search).get('fps') || 60), dur: DUR, fmt: C.FMT, musicOffset: 8.872, musicGain: 1.0 };
+  window.READS = D.reads; window.CUES = D.cues.sort((a, b) => a.t - b.t); window.SCENES = D.scenes;
+  window.seek = t => { tl.time(Math.min(Math.max(t, 5e-4), DUR), true); ambient(t); };
+  window.seek(0); window.ready = true;
+}
+build().catch(e => { console.error(e); window.buildError = String(e && e.stack || e); });
+})();
+</script>
+</body>
+</html>

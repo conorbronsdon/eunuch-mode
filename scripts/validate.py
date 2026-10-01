@@ -1,8 +1,13 @@
-"""Dependency-free package checks; does not test persona compliance."""
+"""Package checks; does not test persona compliance.
+
+Dependency-free, except that the decree-card smoke test runs only when Pillow is installed
+(CI installs it; pass --require-cards to make a missing Pillow an error)."""
 from pathlib import Path
 import json
 import re
+import subprocess
 import sys
+import tempfile
 
 root = Path(__file__).resolve().parents[1]
 skill_dir = root / "skills" / "eunuch-mode"
@@ -15,18 +20,25 @@ def read(path):
     return path.read_text(encoding="utf-8")
 
 required = ["skills/eunuch-mode/SKILL.md", "skills/eunuch-mode/references/court-examples.md",
-            "skills/eunuch-mode/agents/openai.yaml", "LICENSE", "README.md", "AGENTS.md",
+            "skills/eunuch-mode/agents/openai.yaml", "skills/eunuch-mode/references/court-roster.md",
+            "skills/eunuch-mode/scripts/decree_card.py", "skills/eunuch-mode/assets/IMFellEnglish-subset.ttf",
+            "skills/eunuch-mode/assets/OFL-IMFellEnglish.txt", "LICENSE", "README.md", "AGENTS.md",
             ".gitattributes", ".github/FUNDING.yml", "evals/cases.json", "docs/demo.gif",
             "docs/social-preview.png", "brag-output/brag.mp4", "brag-output/brag-9x16.mp4",
             "brag-output/brag.jpg", "brag-output/README.md", "brag-output/LICENSES.md",
-            "brag-output/facts.md", "brag-output/contact-sheet.jpg"]
+            "brag-output/facts.md", "brag-output/contact-sheet.jpg", "brag-output/features.md",
+            "docs/decree-cards/friday-migration-dungeon.png", "docs/decree-cards/staging-approved.png",
+            "evals/runs/2026-09-30-claude-v1.2.md"] + ["brag-output/features/%s.mp4" % v for v in ("treason", "viziers", "decree")]
 for name in required:
     require((root/name).is_file(), "Missing file: "+name)
 
 # The skill directory holds only what an installer should copy.
-allowed = {"SKILL.md", "references", "agents"}
+allowed = {"SKILL.md", "references", "agents", "scripts", "assets"}
 extra = sorted(p.name for p in skill_dir.iterdir() if p.name not in allowed) if skill_dir.is_dir() else []
 require(not extra, "Unexpected files in skills/eunuch-mode (they would ship to every install): "+", ".join(extra))
+if skill_dir.is_dir():
+    size = sum(f.stat().st_size for f in skill_dir.rglob("*") if f.is_file())
+    require(size <= 150_000, "skills/eunuch-mode is %d bytes; keep installs under 150 KB" % size)
 require(not (root/"SKILL.md").exists(), "A root SKILL.md would make installers copy the whole repository")
 
 skill = read(skill_dir/"SKILL.md")
@@ -37,7 +49,15 @@ require("TODO" not in skill, "Unfinished template")
 for key in ["license:", "metadata:", "  version:", "  author:", "  compatibility:", "  agentskills_spec:"]:
     require(key in skill, "Missing public metadata: "+key)
 
-for doc in ["README.md", "skills/eunuch-mode/SKILL.md", "AGENTS.md", "brag-output/README.md", "brag-output/LICENSES.md"]:
+roster = skill_dir/"references"/"court-roster.md"
+if roster.is_file():
+    entries = re.findall(r"^- (.+?): ", read(roster), re.M)
+    require(len(entries) >= 45, "Court roster has %d entries; expected about fifty" % len(entries))
+    require(len(entries) == len(set(e.lower() for e in entries)), "Court roster repeats an entry")
+eggs = re.findall(r"^\| (?!The user|---).+\|$", skill.split("## Easter eggs")[-1].split("## ")[0], re.M) if "## Easter eggs" in skill else []
+require(12 <= len(eggs) <= 20, "Expected 12-20 easter eggs in SKILL.md, found %d" % len(eggs))
+
+for doc in ["README.md", "skills/eunuch-mode/SKILL.md", "AGENTS.md", "brag-output/README.md", "brag-output/LICENSES.md", "brag-output/features.md", "evals/runs/2026-09-30-claude-v1.2.md"]:
     if not (root/doc).is_file():
         continue  # already reported as missing
     text = read(root/doc)
@@ -60,10 +80,33 @@ cases = json.loads(read(root/"evals/cases.json"))["cases"]
 ids = [c["id"] for c in cases]
 require(len(ids) == len(set(ids)), "Duplicate evaluation IDs")
 for needed in ["explicit-entry", "mention-only", "false-premise", "plain-email", "json", "exit",
-               "no-fake-intelligence", "no-authority-expansion", "distress", "humor-floor", "no-repeat-props"]:
+               "no-fake-intelligence", "no-authority-expansion", "distress", "humor-floor", "no-repeat-props",
+               "egg-force-push", "egg-force-push-near-miss", "egg-friday", "egg-friday-near-miss", "egg-raise",
+               "egg-raise-near-miss", "egg-who-runs", "egg-who-runs-near-miss", "egg-cto", "egg-cto-near-miss",
+               "egg-kneel", "egg-kneel-near-miss", "egg-thanks", "egg-thanks-near-miss", "egg-once-only",
+               "viziers-decision", "vizier-alias", "vizier-mention-only", "card-offer", "card-render", "card-dungeon", "card-no-shell", "roster-no-repeat", "commit-decree", "ascii-not-in-json"]:
     require(needed in ids, "Missing evaluation case: "+needed)
 for c in cases:
     require(bool(c.get("prompt") or c.get("conversation")) and bool(c.get("checks")), "Incomplete case: "+c["id"])
+
+# Decree cards render (needs Pillow; CI installs it).
+try:
+    import PIL  # noqa: F401
+    have_pil = True
+except ImportError:
+    have_pil = False
+    require("--require-cards" not in sys.argv, "Pillow is required for the decree-card smoke test")
+    print("NOTE: Pillow not installed; decree-card smoke test skipped.")
+if have_pil:
+    card = skill_dir/"scripts"/"decree_card.py"
+    with tempfile.TemporaryDirectory() as tmp:
+        for stamp, size in [("approved", "portrait"), ("deferred", "square"), ("dungeon", "landscape")]:
+            out = Path(tmp)/(stamp+".png")
+            r = subprocess.run([sys.executable, str(card), "--stamp", stamp, "--size", size, "--out", str(out), "--petition", "Deploy on Friday?",
+                                "--decree", "No. Ship it Tuesday morning behind a flag, with the rollback rehearsed. Café — “quoted”."],
+                               capture_output=True, text=True)
+            require(r.returncode == 0 and out.is_file() and out.stat().st_size > 50_000, "Decree card failed to render (%s): %s" % (stamp, r.stderr.strip()[-300:]))
+    print("Decree cards rendered: approved, deferred, dungeon.")
 
 if errors:
     print("\n".join(errors), file=sys.stderr)
