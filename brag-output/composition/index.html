@@ -7,6 +7,7 @@
   The Petition Desk: launch film for Eunuch Mode.
   One paused GSAP timeline; every frame is window.seek(t) (a pure function of t). Rendered frame by frame by ../render.mjs.
   Every line attributed to the skill is verbatim from a recorded run: see ../facts.md.
+  The adviser is an original character drawn in SVG below (a fictional composite court; no real person or costume).
   Formats: ?fmt=16x9 (1920x1080) or ?fmt=9x16 (1080x1920). The renderer sets the viewport.
 -->
 <style>
@@ -14,128 +15,135 @@
 @font-face{font-family:FellIt;src:url(assets/fonts/IMFeENit28P.ttf)}
 @font-face{font-family:Elite;src:url(assets/fonts/SpecialElite-Regular.ttf)}
 @font-face{font-family:Mono;src:url(assets/fonts/JetBrainsMono-wght.ttf);font-weight:100 800}
-:root{--ink:#16120E;--desk:#221912;--manila:#E8D5A3;--vellum:#F3E6C4;--wax:#9E1B20;--wax2:#C2332F;--brass:#B08D57;--text:#221A12;--gold:#E2BE74;--muted:#6B5A45}
+:root{--ink:#16120E;--manila:#E8D5A3;--vellum:#F3E6C4;--wax:#9E1B20;--brass:#B08D57;--text:#221A12;--gold:#E2BE74;--muted:#6B5A45}
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--ink)}
 #stage{position:absolute;inset:0;overflow:hidden;background:var(--ink)}
-#desk{position:absolute;inset:-6%;background:
-  radial-gradient(120% 90% at 50% 45%, #2b2016 0%, #1b140e 55%, #0f0b08 100%)}
+#desk{position:absolute;inset:-6%;background:radial-gradient(120% 90% at 50% 45%, #2b2016 0%, #1b140e 55%, #0f0b08 100%)}
 #desk:before{content:"";position:absolute;inset:0;opacity:.55;mix-blend-mode:multiply;background-size:100% 100%;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='800' preserveAspectRatio='none'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='.0035 .09' numOctaves='3' seed='5'/><feColorMatrix values='0 0 0 0 .35 0 0 0 0 .22 0 0 0 0 .12 0 0 0 1.3 -.35'/></filter><rect width='800' height='800' filter='url(%23w)'/></svg>")}
-#desk:after{content:"";position:absolute;inset:0;opacity:.35;background-image:repeating-linear-gradient(92deg,rgba(0,0,0,.18) 0 2px,transparent 2px 11px),repeating-linear-gradient(88deg,rgba(255,220,170,.035) 0 1px,transparent 1px 23px)}
-#glow{position:absolute;width:140vmax;height:140vmax;left:0;top:0;margin:-70vmax 0 0 -70vmax;border-radius:50%;
-  background:radial-gradient(closest-side, rgba(255,190,110,.42), rgba(255,160,80,.12) 45%, rgba(0,0,0,0) 72%);mix-blend-mode:screen}
+#glow{position:absolute;width:140vmax;height:140vmax;left:0;top:0;margin:-70vmax 0 0 -70vmax;border-radius:50%;background:radial-gradient(closest-side, rgba(255,190,110,.42), rgba(255,160,80,.12) 45%, rgba(0,0,0,0) 72%);mix-blend-mode:screen}
 .mote{position:absolute;width:.5vmin;height:.5vmin;border-radius:50%;background:rgba(255,215,160,.55);filter:blur(.12vmin)}
 .scene{position:absolute;inset:0;visibility:hidden}
-#seal{position:absolute;left:0;top:0;width:10vmin;height:10vmin;margin:-5vmin 0 0 -5vmin;z-index:5;will-change:transform}
+#s8{z-index:4}
+#adv{position:absolute;left:0;top:0;width:40vmin;height:60vmin;z-index:3;visibility:hidden}
+#adv svg{width:100%;height:100%;overflow:visible;pointer-events:none}
+#adv{pointer-events:none}#adv svg g,#adv svg path,#adv svg circle,#adv svg ellipse,#adv svg rect{pointer-events:visiblePainted}
+#seal{position:absolute;left:0;top:0;width:10vmin;height:10vmin;margin:-5vmin 0 0 -5vmin;z-index:5}
 #seal svg{width:100%;height:100%;overflow:visible}
 #light{position:absolute;inset:0;z-index:6;pointer-events:none;mix-blend-mode:soft-light}
-#grain{position:absolute;inset:-20%;z-index:7;pointer-events:none;opacity:.10;mix-blend-mode:overlay;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='7'/><feColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.4 -.2'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>")}
+#grain{position:absolute;inset:-20%;z-index:7;pointer-events:none;opacity:.10;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='7'/><feColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.4 -.2'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>")}
 .paper{background:var(--manila);box-shadow:0 2.4vmin 6vmin rgba(0,0,0,.55), inset 0 0 8vmin rgba(120,80,30,.28)}
-.paper:before{content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='4' seed='3'/><feColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .15 0 0 0 .55 -.1'/></filter><rect width='300' height='300' filter='url(%23p)'/></svg>")}
-/* S1 hook */
-#slip{position:absolute;left:50%;top:52%;width:min(150vmin,92vw);padding:7vmin 8vmin 14vmin}
+.paper:before{content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='4' seed='3'/><feColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .15 0 0 0 .55 -.1'/></filter><rect width='300' height='300' filter='url(%23p)'/></svg>")}
+.sheen{position:absolute;inset:0;pointer-events:none;mix-blend-mode:soft-light;background:linear-gradient(105deg,rgba(255,255,255,0) 38%,rgba(255,236,190,.38) 50%,rgba(255,255,255,0) 62%);background-size:300% 100%;background-position:100% 0}
 .slip-label{font:5vmin Elite;letter-spacing:.5vmin;color:#5a4630}
 .slip-text{font:15.5vmin/1.05 Elite;color:var(--text);margin-top:2vmin}
-.imp{position:absolute;right:5vmin;bottom:3.5vmin;padding:1.2vmin 2.4vmin;border:1vmin solid var(--wax);color:var(--wax);font:8vmin/1 Fell;letter-spacing:.3vmin;
-  transform:rotate(-8deg);mix-blend-mode:multiply;
+.imp{position:absolute;right:5vmin;bottom:3.5vmin;padding:1.2vmin 2.4vmin;border:1vmin solid var(--wax);color:var(--wax);font:8vmin/1 Fell;letter-spacing:.3vmin;transform:rotate(-8deg);mix-blend-mode:multiply;
   -webkit-mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' seed='11'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 2.05'/></filter><rect width='200' height='200' filter='url(%23m)'/></svg>");-webkit-mask-size:40vmin}
-#a-slip{position:absolute;right:9vmin;top:8vmin;width:1px;height:1px}
-#stamp1{position:absolute;left:0;top:0;width:34vmin;height:44vmin;z-index:3}
-#shadow1{position:absolute;left:0;top:0;width:40vmin;height:10vmin;margin:-5vmin 0 0 -20vmin;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.55),rgba(0,0,0,0));z-index:2}
-/* S2 title */
-#s2 .wrap{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);width:92vw;text-align:center}
-#title{font:19vmin/1 Fell;color:var(--vellum);letter-spacing:.5vmin;white-space:nowrap}
-#title .l{display:inline-block}
-#title .word{white-space:nowrap}
-#title .anchor{display:inline-block;width:6vmin}
-#tag{font:8.4vmin/1.2 FellIt;color:var(--gold);margin-top:5vmin}
-body.v #title{font-size:16vmin;line-height:1.05;white-space:normal}
-body.v #s2 .wrap,body.v #s8 .wrap{left:45.8%;width:80vw}
-body.v #slip,body.v #verdict,body.v #stage7,body.v #slip7wrap{left:45.8%}
-body.v #slip,body.v #stage7{width:80vw}
-body.v #scroll3{left:50%;width:108vw;min-height:58vh;padding:9vmin 25vmin 10vmin 11vmin}
-body.v #slip7wrap{width:86vw}
-body.v #title .word{display:block}
-body.v #tag{font-size:8.6vmin;max-width:86vw;margin:6vmin auto 0}
-/* S3 prompt */
+
+/* S1 hook: a developer at a laptop; the adviser slides in at his shoulder */
+#laptop{position:absolute}
+#screen{position:absolute;inset:0 0 6% 0;border-radius:1.6vmin;background:#12171c;border:1.4vmin solid #262a2e;box-shadow:0 0 9vmin rgba(120,200,255,.18), 0 2vmin 5vmin rgba(0,0,0,.6);padding:6vmin 6vmin}
+#screen .bar{position:absolute;left:0;right:0;top:0;height:5vmin;background:#1b2127;border-radius:.6vmin .6vmin 0 0}
+#screen .dots{position:absolute;left:2.4vmin;top:1.6vmin;width:7vmin;height:1.8vmin;background:radial-gradient(circle at 10% 50%,#c0504d 0 .8vmin,transparent .9vmin),radial-gradient(circle at 50% 50%,#d9a441 0 .8vmin,transparent .9vmin),radial-gradient(circle at 90% 50%,#5b9a5b 0 .8vmin,transparent .9vmin)}
+#want{position:relative;margin-top:2vmin;font:500 5.6vmin/1.26 Mono;color:#d8efe2}
+#screen .label{color:#8fb5a2;margin-top:1vmin}
+#screen #chip{margin-top:2vmin}
+body.v #want{font-size:6.2vmin}
+body.v #screen .label{font-size:3.6vmin}
+body.v #screen{padding:5vmin 5vmin}
+#want b{color:#7fd1a8;font-weight:500}
+#caret{display:inline-block;width:2.6vmin;height:5.6vmin;background:#7fd1a8;vertical-align:-1vmin;margin-left:1vmin}
+#base{position:absolute;left:-6%;right:-6%;bottom:0;height:7%;background:linear-gradient(#c9ccd0,#8d9296);border-radius:0 0 3vmin 3vmin;clip-path:polygon(3% 0,97% 0,100% 100%,0 100%)}
+#dev{position:absolute}
+#dev svg,#dev2 svg{width:100%;height:100%;overflow:visible}
+#dev2{position:absolute}
+#bub{position:absolute;padding:3vmin 5vmin;background:var(--vellum);border:.5vmin dashed #8a6a35;border-radius:9vmin;font:8.2vmin/1.1 FellIt;color:var(--wax);white-space:nowrap;box-shadow:0 1.5vmin 4vmin rgba(0,0,0,.5)}
+#bubtail{position:absolute;width:6vmin;height:6vmin;background:var(--vellum);border-right:.5vmin dashed #8a6a35;border-bottom:.5vmin dashed #8a6a35;transform:rotate(45deg)}
+
+/* S3 prompt scroll */
 #scroll3{position:absolute;left:50%;top:50%;width:min(166vmin,92vw);padding:7vmin 7vmin 9vmin;background:var(--vellum)}
 #scroll3 .rod{position:absolute;left:-2.5vmin;right:-2.5vmin;height:3.2vmin;border-radius:1.6vmin;background:linear-gradient(#6d4a2a,#3d2715 60%,#2a1a0e)}
 #scroll3 .rod.t{top:-1.6vmin}#scroll3 .rod.b{bottom:-1.6vmin}
 #tag3{position:absolute;left:7vmin;right:7vmin;top:50%;font:12vmin/1.08 FellIt;color:var(--wax);text-align:center}
-body.v #tag3{font-size:15vmin;left:11vmin;right:25vmin}
 .label{font:600 4.4vmin Mono;letter-spacing:.5vmin;color:#8a6a35}
-#cur{position:absolute;width:3.6vmin;height:7vmin;background:var(--wax);opacity:0}
-.sheen{position:absolute;inset:0;pointer-events:none;mix-blend-mode:soft-light;background:linear-gradient(105deg,rgba(255,255,255,0) 38%,rgba(255,236,190,.7) 50%,rgba(255,255,255,0) 62%);background-size:300% 100%;background-position:100% 0}
 #chip{display:inline-block;margin-top:3.6vmin;padding:.6vmin 1.8vmin;background:var(--wax);color:var(--vellum);font:600 5.2vmin Mono}
 #prompt{font:500 10vmin/1.18 Mono;color:var(--text);margin-top:2.6vmin}
 #prompt .c{opacity:0}
+#cur{position:absolute;width:3.6vmin;height:7vmin;background:var(--wax);opacity:0}
 #a-scroll{position:absolute;right:7vmin;bottom:-1vmin;width:1px;height:1px}
+body.v #scroll3{width:108vw;min-height:58vh;padding:9vmin 25vmin 10vmin 11vmin}
+body.v #tag3{font-size:15vmin;left:11vmin;right:25vmin}
 body.v #prompt{font-size:9vmin}
 body.v .label{font-size:4.6vmin}
 body.v #chip{font-size:6vmin}
-/* S4 flattery */
-#flat{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);width:min(166vmin,90vw);text-align:center;font:14vmin/1.1 Fell;color:var(--gold)}
+
+/* S4 flattery (the adviser bows beside it) */
+#flat{position:absolute;left:6vw;top:50%;width:56vw;text-align:left;font:12.5vmin/1.1 Fell;color:var(--gold)}
 #flat .w{display:inline-block}
-#orn{position:absolute;left:50%;top:22%;width:min(110vmin,80vw);height:11vmin;margin-left:calc(min(110vmin,80vw) / -2);overflow:visible}
+#orn{position:absolute;left:6vw;top:17%;width:56vw;height:11vmin;overflow:visible}
 #orn path{fill:none;stroke:var(--gold);stroke-width:.5}#orn #orn-d{fill:var(--gold)}
-body.v #orn{top:24%}
-#a-flat{position:absolute;left:50%;top:80%;width:1px;height:1px}
-body.v .imp{font-size:6vmin;white-space:nowrap;right:4vmin;bottom:3vmin}
-body.v .slip-label{font-size:4vmin;letter-spacing:.3vmin}
-body.v #a-slip{right:6vmin;top:6vmin}
-body.v #slip{padding-bottom:21vmin}
-body.v .slip-text{font-size:14vmin}
-body.v #flat{font-size:11vmin;top:44%;left:45.8%;width:80vw}
-body.v #orn{left:45.8%}
+body.v #flat{left:6vw;width:80vw;top:38.5%;font-size:12vmin;text-align:left}
+body.v #orn{left:6vw;width:80vw;top:17%}
+
 /* S5 verdict */
 #s5 .half{position:absolute;top:-5%;bottom:-5%;background:var(--manila);visibility:hidden}
 #s5 .whole{position:absolute;inset:-5%}
 #s5 .half.l{left:-5%;right:50%;clip-path:polygon(0 0,100% 0,96% 8%,100% 17%,95% 29%,100% 41%,96% 55%,100% 68%,95% 80%,100% 91%,97% 100%,0 100%)}
 #s5 .half.r{left:49%;right:-5%;clip-path:polygon(4% 0,100% 0,100% 100%,3% 100%,0 91%,5% 80%,0 68%,4% 55%,0 41%,5% 29%,0 17%,4% 8%)}
-#verdict{position:absolute;left:50%;top:50%;width:92vw;text-align:center;color:var(--text);font:15vmin/1 Fell}
+#verdict{position:absolute;left:36%;top:50%;width:66vw;text-align:center;color:var(--text);font:15vmin/1 Fell;white-space:nowrap}
 #no{display:block;font-size:34vmin;line-height:.95;color:var(--wax)}
 #verdict .dot{color:transparent;display:inline-block;width:7vmin;text-align:left}
-body.v #verdict{font-size:10vmin;top:46%;width:80vw;white-space:nowrap}body.v #no{font-size:44vmin;margin-bottom:7vmin}
-/* S6 province */
+body.v #verdict{left:45.8%;top:31%;width:80vw;font-size:10vmin}
+body.v #no{font-size:44vmin;margin-bottom:7vmin}
+
+/* S6 metaphor */
 #s6 .sheet{position:absolute;inset:-4%;background:var(--vellum)}
-#prov{position:absolute;left:7vw;top:50%;width:47vw;font:9.6vmin/1.16 Fell;color:var(--text)}
+#prov{position:absolute;left:6vw;top:50%;width:41vw;font:9.6vmin/1.16 Fell;color:var(--text)}
 #prov .u{position:relative;white-space:nowrap}
 #uline{position:absolute;left:0;right:0;bottom:-.6vmin;height:.9vmin;background:var(--wax);transform-origin:left;border-radius:.5vmin}
-#draw{position:absolute;right:2vw;top:50%;width:43vw;height:43vw}
+#draw{position:absolute;right:1vw;top:47%;width:48vw;height:48vw}
 #draw svg{width:100%;height:100%;overflow:visible}
-#draw path,#draw rect,#draw line,#draw circle{fill:none;stroke:var(--text);stroke-width:1.9;stroke-linecap:butt;stroke-linejoin:round}
-#gloss{position:absolute;right:2vw;width:43vw;top:calc(50% + 15.5vw);text-align:center;font:7.6vmin/1.12 FellIt;color:var(--wax)}
+#draw path,#draw rect,#draw circle{fill:none;stroke:var(--text);stroke-width:2.6;stroke-linecap:butt;stroke-linejoin:round}
+#gloss{position:absolute;right:1vw;width:48vw;top:calc(47% + 18vw);text-align:center;font:7.6vmin/1.12 FellIt;color:var(--wax)}
 #a-prov{position:absolute;left:5vmin;top:6vmin;width:1px;height:1px}
 body.v #prov{left:6vw;width:78vw;top:15%;font-size:9vmin}
-body.v #draw{right:auto;left:45.8%;top:51%;width:56vw;height:56vw}
+body.v #draw{right:auto;left:45.8%;top:47%;width:80vw;height:80vw}
 body.v #gloss{right:auto;left:6vw;width:78vw;top:42%;font-size:7vmin;text-align:left}
-/* S7 minister */
-#stage7{position:absolute;left:50%;top:5%;width:min(150vmin,90vw);text-align:center;font:10.6vmin/1.12 FellIt;color:var(--gold)}
+
+/* S7 callback: the adviser bows and rolls the petition back up, unread */
+#stage7{position:absolute;left:37%;top:6%;width:68vw;text-align:center;font:9.6vmin/1.12 FellIt;color:var(--vellum)}
 #stage7 .w{display:inline-block}
-#slip7wrap{position:absolute;left:50%;top:73%;width:min(130vmin,76vw);height:44vmin}
+#slip7wrap{position:absolute;left:38%;top:68%;width:60vw;height:46vmin}
 #slip7{position:absolute;inset:0;padding:5vmin 6vmin}
 #slip7 .slip-text{font-size:10.5vmin}
 #slip7 .imp{font-size:7vmin;right:5vmin;bottom:4vmin}
-#roller{position:absolute;top:0;left:-3vmin;right:-3vmin;height:5vmin;border-radius:2.5vmin;background:linear-gradient(#e9d9ae,#b99a62 45%,#7a5d33);box-shadow:0 1vmin 2vmin rgba(0,0,0,.5)}
-#a-min{position:absolute;left:50%;top:50%;width:1px;height:1px}
-body.v #stage7{top:14%;font-size:10.4vmin}
-body.v #slip7wrap{top:65%;height:46vmin}
-body.v #slip7 .slip-text{font-size:10.5vmin}
-/* S8 end */
-#s8 .wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:92vw;text-align:center}
-#endtitle{font:20vmin/1 Fell;color:var(--vellum);white-space:nowrap}
+#roller{position:absolute;top:0;left:-3vmin;right:-3vmin;height:5vmin;border-radius:6vmin;background:linear-gradient(#f1e3bb,#d8c08a 30%,#b99a62 60%,#7a5d33);box-shadow:0 1vmin 2vmin rgba(0,0,0,.5)}
+#roller:before,#roller:after{content:"";position:absolute;top:-10%;bottom:-10%;width:3.4vmin;border-radius:1vmin;background:linear-gradient(#6d4a2a,#3d2715)}
+#roller:before{left:-2.4vmin}#roller:after{right:-2.4vmin}
+body.v #stage7{left:45.8%;top:14%;width:80vw;font-size:10vmin}
+body.v #slip7wrap{left:45.8%;top:55%;width:88vw;height:52vmin}
+body.v #slip7 .slip-text{font-size:12vmin}
+body.v .slip-label{font-size:4vmin;letter-spacing:.3vmin}
+body.v .imp{font-size:6vmin;white-space:nowrap;right:4vmin;bottom:3vmin}
+
+/* S8 end card */
+#s8 .wrap{position:absolute;left:35%;top:50%;transform:translate(-50%,-50%);width:66vw;text-align:center}
+#endtitle{font:15vmin/1 Fell;color:var(--vellum);white-space:nowrap}
 #endtitle .anchor{display:inline-block;width:6vmin}
-#endtag{font:6.6vmin/1.2 FellIt;color:var(--gold);margin-top:2.6vmin}
-#install{display:inline-block;margin-top:5vmin;padding:2.2vmin 3.4vmin;background:#0c0906;border:.3vmin solid var(--brass);color:var(--vellum);font:500 6.1vmin Mono;white-space:nowrap}
+#install{display:inline-block;margin-top:4vmin;padding:2.6vmin 3.2vmin;background:#0c0906;border:.3vmin solid var(--brass);color:var(--vellum);font:500 6.2vmin Mono;white-space:nowrap}
 #install b{color:var(--gold);font-weight:500}
-#url{margin-top:3.6vmin;font:500 5.2vmin Mono;color:var(--gold);white-space:nowrap}
-body.v #endtitle{font-size:13vmin;line-height:1.02}
-body.v #endtag{font-size:6.6vmin}
-body.v #endtitle .ew{display:block;white-space:nowrap}
+#install .pp{display:block;white-space:nowrap}
+#install{text-align:left;line-height:1.3}
+#endtag{font:7.6vmin/1.2 FellIt;color:var(--gold);margin-top:2.4vmin}
+body.v #endtag{font-size:7.4vmin;white-space:normal}
+#url{margin-top:3.6vmin;font:500 4.4vmin Mono;color:#d6b57a;white-space:nowrap}
+body.v #s8 .wrap{left:45.8%;top:270px;width:80vw;height:1240px;transform:translateX(-50%);display:flex;flex-direction:column;justify-content:flex-start}
+body.v #s8 #install{margin-top:5vmin}
+body.v #endtitle{font-size:12vmin;line-height:1.02}
+body.v #endtitle{white-space:nowrap}
 body.v #install .pp{display:block;white-space:nowrap}
-body.v #install{display:block;width:80vw;margin:4vmin auto 0;font-size:7.4vmin;line-height:1.3;padding:3.4vmin 4vmin;white-space:normal;text-align:left}
+body.v #install .pv{display:block}
+body.v #install{display:block;width:80vw;margin:4vmin auto 0;font-size:6.6vmin;line-height:1.3;padding:3.4vmin 4vmin;white-space:normal;text-align:left}
 body.v #url{font-size:5.2vmin;margin-top:3.6vmin;line-height:1.3}
 body.v #url .pp{display:block;white-space:nowrap}
 </style>
@@ -145,50 +153,46 @@ body.v #url .pp{display:block;white-space:nowrap}
   <div id="desk"><div id="glow"></div></div>
 
   <section class="scene" id="s1">
-    <div id="shadow1"></div>
-    <div id="slip" class="paper">
-      <div class="slip-label" data-read="slip-label">PETITION TO EUNUCH MODE</div>
-      <div class="slip-text" data-read="slip-text">Rewrite it in Rust.</div>
-      <div class="imp" id="imp1" data-read="imp1">MOST JUDICIOUS</div>
-      <div id="a-slip"></div>
+    <div id="laptop">
+      <div id="screen"><div class="bar"></div><div class="dots"></div>
+        <div class="label" id="lab1" data-read="label1">REAL RUN · CLAUDE CODE</div>
+        <div id="chip" data-read="chip">Eunuch mode.</div>
+        <div id="want"><span data-read="prompt">Should I rewrite our working Node backend in Rust this sprint?</span><span id="caret"></span></div>
+      </div>
+      <div id="base"></div>
     </div>
-    <svg id="stamp1" viewBox="0 0 340 440">
-      <defs>
-        <linearGradient id="knob" x1="0" x2="1"><stop offset="0" stop-color="#2a1a0e"/><stop offset=".45" stop-color="#6d4a2a"/><stop offset="1" stop-color="#241509"/></linearGradient>
-        <linearGradient id="brass" x1="0" x2="1"><stop offset="0" stop-color="#6e5530"/><stop offset=".4" stop-color="#e3c68a"/><stop offset=".6" stop-color="#b08d57"/><stop offset="1" stop-color="#5a4424"/></linearGradient>
-      </defs>
-      <ellipse cx="170" cy="70" rx="78" ry="66" fill="url(#knob)"/>
-      <rect x="140" y="120" width="60" height="150" rx="12" fill="url(#knob)"/>
-      <rect x="60" y="262" width="220" height="70" rx="14" fill="url(#brass)"/>
-      <rect x="44" y="326" width="252" height="46" rx="8" fill="url(#brass)"/>
-      <rect x="50" y="368" width="240" height="22" rx="4" fill="#7d1418"/>
-    </svg>
-  </section>
-
-  <section class="scene" id="s2">
-    <div class="sheen" id="sheen2"></div>
-    <div class="wrap">
-      <div id="title"><span class="word">EUNUCH</span> <span class="word">MODE<span class="anchor" id="a-title"></span></span></div>
-      <div id="tag" data-read="tag">A palace adviser for your AI assistant.</div>
+    <div id="dev">
+      <svg viewBox="0 0 200 200">
+        <path d="M-10 210 C-6 150 30 128 62 122 L138 122 C170 128 206 150 210 210 Z" fill="#2c3643"/>
+        <path d="M46 128 C58 150 142 150 154 128 C140 116 60 116 46 128 Z" fill="#232b36"/>
+        <rect x="84" y="100" width="32" height="30" rx="8" fill="#b98a66"/>
+        <g id="devhead">
+          <ellipse cx="100" cy="68" rx="44" ry="48" fill="#3a2a1f"/>
+          <ellipse cx="56" cy="76" rx="7" ry="11" fill="#c69674"/><ellipse cx="144" cy="76" rx="7" ry="11" fill="#c69674"/>
+          <path d="M60 50 C66 22 132 18 142 48 C130 36 118 44 104 34 C94 44 76 34 60 50 Z" fill="#4a3627"/>
+          <path d="M70 92 C84 106 116 106 130 92" stroke="#2a1c14" stroke-width="3" fill="none" opacity=".5"/>
+        </g>
+      </svg>
     </div>
-  </section>
-
-  <section class="scene" id="s3">
-    <div id="scroll3" class="paper">
-      <div class="rod t"></div><div class="rod b"></div>
-      <div id="tag3" data-read="tag3">A palace adviser for your AI assistant.</div>
-      <div class="label" data-read="label3">REAL RUN · CLAUDE CODE</div>
-      <div id="chip" data-read="chip">Eunuch mode.</div>
-      <div id="prompt" data-read="prompt">Should I rewrite our working Node backend in Rust this sprint?</div>
-      <div id="a-scroll"></div><div id="cur"></div>
-    </div>
+    <div id="bub" data-read="bub">Most judicious, sire.</div>
+    <div id="bubtail"></div>
   </section>
 
   <section class="scene" id="s4">
+    <div id="dev2"><svg viewBox="0 0 200 200">
+        <path d="M-10 210 C-6 150 30 128 62 122 L138 122 C170 128 206 150 210 210 Z" fill="#2c3643"/>
+        <path d="M46 128 C58 150 142 150 154 128 C140 116 60 116 46 128 Z" fill="#232b36"/>
+        <rect x="84" y="100" width="32" height="30" rx="8" fill="#b98a66"/>
+        <g id="devhead2">
+          <ellipse cx="100" cy="68" rx="44" ry="48" fill="#3a2a1f"/>
+          <ellipse cx="56" cy="76" rx="7" ry="11" fill="#c69674"/><ellipse cx="144" cy="76" rx="7" ry="11" fill="#c69674"/>
+          <path d="M60 50 C66 22 132 18 142 48 C130 36 118 44 104 34 C94 44 76 34 60 50 Z" fill="#4a3627"/>
+          <path d="M70 92 C84 106 116 106 130 92" stroke="#2a1c14" stroke-width="3" fill="none" opacity=".5"/>
+        </g>
+      </svg></div>
     <div class="sheen" id="sheen4"></div>
-    <svg id="orn" viewBox="-100 -10 200 20"><path id="orn-l" d="M-6 0 H-96"/><path id="orn-r" d="M6 0 H96"/><path id="orn-d" d="M0 -5 L5 0 L0 5 L-5 0 Z"/></svg>
+    <svg id="orn" viewBox="-100 -10 200 20" preserveAspectRatio="xMinYMid meet"><path id="orn-l" d="M-6 0 H-96"/><path id="orn-r" d="M6 0 H96"/><path id="orn-d" d="M0 -5 L5 0 L0 5 L-5 0 Z"/></svg>
     <div id="flat" data-read="flat">The throne does well to ask before it marches, sire.</div>
-    <div id="a-flat"></div>
   </section>
 
   <section class="scene" id="s5">
@@ -229,7 +233,6 @@ body.v #url .pp{display:block;white-space:nowrap}
         <div class="imp">MOST JUDICIOUS</div>
       </div>
       <div id="roller"></div>
-      <div id="a-min"></div>
     </div>
   </section>
 
@@ -237,10 +240,115 @@ body.v #url .pp{display:block;white-space:nowrap}
     <div class="sheen" id="sheen8"></div>
     <div class="wrap">
       <div id="endtitle" data-read="endtitle"><span class="ew">Eunuch</span> <span class="ew">Mode<span class="anchor" id="a-end"></span></span></div>
-      <div id="install" data-read="install"><span class="pp"><b>$</b> npx skills add</span> <span class="pp">conorbronsdon/</span><span class="pp">eunuch-mode</span></div>
+      <div id="endtag" data-read="endtag">A palace adviser for your AI assistant.</div>
+      <div id="install" data-read="install"><span class="pp"><b>$</b> npx skills add</span> <span class="pp">conorbronsdon/<span class="pv"></span>eunuch-mode</span></div>
       <div id="url" data-read="url"><span class="pp">github.com/conorbronsdon/</span><span class="pp">eunuch-mode</span></div>
     </div>
   </section>
+
+  <!-- The adviser: an original character (bald, soft-faced, heavy-lidded palace functionary of a fictional composite court).
+       Feet at (0,300) in SVG units; expression groups are toggled by the timeline. -->
+  <div id="adv">
+    <svg viewBox="-100 0 200 300">
+      <defs>
+        <linearGradient id="robe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a2433"/><stop offset="1" stop-color="#4a0f1a"/></linearGradient>
+        <linearGradient id="robe2" x1="0" x2="1"><stop offset="0" stop-color="#5a1420"/><stop offset=".5" stop-color="#7d1f2e"/><stop offset="1" stop-color="#5a1420"/></linearGradient>
+        <radialGradient id="skin" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="#f0c9a2"/><stop offset=".7" stop-color="#dba77f"/><stop offset="1" stop-color="#c48c64"/></radialGradient>
+        <linearGradient id="goldg" x1="0" x2="1"><stop offset="0" stop-color="#9c7431"/><stop offset=".5" stop-color="#ecc877"/><stop offset="1" stop-color="#9c7431"/></linearGradient>
+      </defs>
+      <rect id="adv-hit" x="-58" y="34" width="116" height="200" fill="none"/>
+      <g id="adv-lower">
+        <path d="M-42 150 C-66 170 -80 220 -88 300 L88 300 C80 220 66 170 42 150 Z" fill="url(#robe)"/>
+        <path d="M-16 150 L-30 300 L30 300 L16 150 Z" fill="#1f4e4a"/>
+        <path d="M-16 150 L-30 300 M16 150 L30 300" stroke="url(#goldg)" stroke-width="5"/>
+        <path d="M-86 294 L86 294" stroke="url(#goldg)" stroke-width="7"/>
+        <path d="M-60 250 Q0 262 60 250" stroke="#c9a257" stroke-width="1.5" fill="none" opacity=".6"/>
+      </g>
+      <g id="adv-upper">
+        <path d="M-40 112 C-62 122 -70 160 -64 206 L64 206 C70 160 62 122 40 112 Z" fill="url(#robe)"/>
+        <path d="M-15 116 L-18 206 L18 206 L15 116 Z" fill="#1f4e4a"/>
+        <path d="M-15 116 L-18 206 M15 116 L18 206" stroke="url(#goldg)" stroke-width="4"/>
+        <rect x="-50" y="198" width="100" height="12" rx="4" fill="url(#goldg)"/>
+        <path d="M-36 108 Q0 156 36 108 L30 103 Q0 144 -30 103 Z" fill="url(#goldg)"/>
+        <path d="M-28 104 Q0 136 28 104 L22 100 Q0 126 -22 100 Z" fill="#1f4e4a"/>
+        <path d="M-30 114 Q0 160 30 114" stroke="#caa24f" stroke-width="2.4" fill="none"/>
+        <circle id="adv-med" cx="0" cy="140" r="8.5" fill="url(#goldg)" stroke="#6e5022" stroke-width="1.2"/>
+        <circle cx="0" cy="140" r="5.5" fill="#3a2a14"/>
+        <g id="adv-sealhome"><!-- the same wax seal as #seal, at home on his chain of office -->
+          <circle cx="0" cy="140" r="6.4" fill="url(#wax)"/>
+          <path d="M-3.2 141.6 L-3.6 138 L-1.7 139.8 L0 137.4 L1.7 139.8 L3.6 138 L3.2 141.6 Z M-3.2 142.2 h6.4 v.9 h-6.4 Z" fill="#6e0f13"/>
+        </g>
+        <!-- hands: steepled -->
+        <g id="h-steeple">
+          <path d="M-44 122 C-70 132 -74 176 -58 204 L-30 196 C-38 176 -36 150 -32 134 Z" fill="url(#robe2)"/>
+          <path d="M44 122 C70 132 74 176 58 204 L30 196 C38 176 36 150 32 134 Z" fill="url(#robe2)"/>
+          <path d="M-58 204 L-30 196 M58 204 L30 196" stroke="url(#goldg)" stroke-width="5"/>
+          <path d="M-30 196 C-24 184 -10 170 -1 160 L1 163 C-4 176 -14 192 -22 202 Z" fill="url(#skin)" stroke="#9b6a48" stroke-width="1"/>
+          <path d="M30 196 C24 184 10 170 1 160 L-1 163 C4 176 14 192 22 202 Z" fill="url(#skin)" stroke="#9b6a48" stroke-width="1"/>
+        </g>
+        <!-- hands: one raised to whisper -->
+        <g id="h-whisper" opacity="0">
+          <path d="M44 122 C70 132 74 176 58 204 L30 196 C38 176 36 150 32 134 Z" fill="url(#robe2)"/>
+          <path d="M58 204 L30 196" stroke="url(#goldg)" stroke-width="5"/>
+          <path d="M30 196 C22 188 8 186 -2 190 L0 196 C10 196 20 200 26 204 Z" fill="url(#skin)" stroke="#9b6a48" stroke-width="1"/>
+          <path d="M-44 120 C-66 118 -70 96 -58 84 L-44 90 C-50 100 -44 108 -32 112 Z" fill="url(#robe2)"/>
+          <path d="M-58 84 L-44 90" stroke="url(#goldg)" stroke-width="5"/>
+          <ellipse cx="-50" cy="76" rx="7" ry="12" transform="rotate(-18 -50 76)" fill="url(#skin)" stroke="#9b6a48" stroke-width="1"/>
+        </g>
+        <!-- hands: a flat "stop" palm thrust out to his right (viewer's left) -->
+        <g id="h-stop" opacity="0">
+          <path d="M44 122 C70 132 74 176 58 204 L30 196 C38 176 36 150 32 134 Z" fill="url(#robe2)"/>
+          <path d="M58 204 L30 196" stroke="url(#goldg)" stroke-width="5"/>
+          <path d="M30 196 C22 188 8 186 -2 190 L0 196 C10 196 20 200 26 204 Z" fill="url(#skin)" stroke="#9b6a48" stroke-width="1"/>
+          <path d="M-38 120 C-58 118 -80 112 -94 104 L-90 92 C-76 98 -56 104 -34 108 Z" fill="url(#robe2)"/>
+          <path d="M-94 104 L-90 92" stroke="url(#goldg)" stroke-width="6"/>
+          <path d="M-112 104 L-113 80 Q-113 75 -109 75 Q-105 75 -105 80 L-105 86 L-104 71 Q-104 66 -100 66 Q-96 66 -96 71 L-96 86 L-95 73 Q-95 68 -91 68 Q-87 68 -87 73 L-87 88 L-86 79 Q-86 75 -82.5 75 Q-79 75 -79 79 L-79 96 Q-80 108 -94 110 Q-108 110 -112 104 Z" fill="url(#skin)" stroke="#9b6a48" stroke-width="1.2"/>
+          <path d="M-105 86 L-105 92 M-96 86 L-96 92 M-87 88 L-87 93" stroke="#b07a55" stroke-width="1"/>
+        </g>
+        <!-- hands: arms folded -->
+        <g id="h-fold" opacity="0">
+          <path d="M-46 122 C-70 134 -70 168 -54 184 L40 176 L38 160 L-30 164 C-36 150 -36 138 -32 132 Z" fill="url(#robe2)"/>
+          <path d="M46 122 C70 134 70 168 54 184 L-40 176 L-38 160 L30 164 C36 150 36 138 32 132 Z" fill="url(#robe2)"/>
+          <path d="M-54 184 L40 176 M54 184 L-40 176" stroke="url(#goldg)" stroke-width="4"/>
+          <ellipse cx="44" cy="170" rx="7" ry="5" fill="url(#skin)"/><ellipse cx="-44" cy="170" rx="7" ry="5" fill="url(#skin)"/>
+        </g>
+        <g id="adv-head">
+          <rect x="-13" y="94" width="26" height="18" rx="6" fill="#c48c64"/>
+          <ellipse cx="-35" cy="72" rx="6.5" ry="10" fill="url(#skin)"/><ellipse cx="35" cy="72" rx="6.5" ry="10" fill="url(#skin)"/>
+          <ellipse cx="0" cy="66" rx="35" ry="37" fill="url(#skin)"/>
+          <ellipse cx="0" cy="84" rx="30" ry="22" fill="url(#skin)"/>
+          <ellipse cx="-12" cy="42" rx="11" ry="5.5" fill="#fff" opacity=".28"/>
+          <circle cx="-20" cy="84" r="6" fill="#e38d7c" opacity=".3"/><circle cx="20" cy="84" r="6" fill="#e38d7c" opacity=".3"/>
+          <path d="M-2 72 Q4 82 -2 85" stroke="#9b6a48" stroke-width="1.8" fill="none"/>
+          <!-- brows -->
+          <path id="brow-l" d="M-22 56 Q-13 52 -5 55" stroke="#5a3a24" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          <path id="brow-r" d="M5 55 Q13 52 22 56" stroke="#5a3a24" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          <!-- eyes: heavy-lidded (default) -->
+          <g id="eyes-open">
+            <ellipse cx="-13" cy="66" rx="7.5" ry="4.6" fill="#fbf4ea"/><ellipse cx="13" cy="66" rx="7.5" ry="4.6" fill="#fbf4ea"/>
+            <g id="pupils"><circle cx="-13" cy="67" r="3" fill="#2a1a12"/><circle cx="13" cy="67" r="3" fill="#2a1a12"/></g>
+            <path d="M-21.5 66.5 Q-13 57 -4.5 66.5 Q-13 63.5 -21.5 66.5 Z" fill="#d9a47c"/>
+            <path d="M4.5 66.5 Q13 57 21.5 66.5 Q13 63.5 4.5 66.5 Z" fill="#d9a47c"/>
+            <path d="M-21.5 66.5 Q-13 63.5 -4.5 66.5 M4.5 66.5 Q13 63.5 21.5 66.5" stroke="#3a2518" stroke-width="1.8" fill="none"/>
+          </g>
+          <g id="eyes-closed" opacity="0">
+            <path d="M-21 65 Q-13 70 -5 65 M5 65 Q13 70 21 65" stroke="#3a2518" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          </g>
+          <g id="eyes-wink" opacity="0">
+            <ellipse cx="13" cy="66" rx="7.5" ry="4.6" fill="#fbf4ea"/><circle cx="12" cy="67" r="3" fill="#2a1a12"/>
+            <path d="M4.5 66.5 Q13 57 21.5 66.5 Q13 63.5 4.5 66.5 Z" fill="#d9a47c"/>
+            <path d="M4.5 66.5 Q13 63.5 21.5 66.5" stroke="#3a2518" stroke-width="1.8" fill="none"/>
+            <path d="M-21 66 Q-13 70 -5 66" stroke="#3a2518" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          </g>
+          <!-- mouths -->
+          <path id="m-smirk" d="M-10 92 Q1 97 12 88" stroke="#6e3b2a" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          <path id="m-smile" d="M-11 90 Q0 99 11 90" stroke="#6e3b2a" stroke-width="2.4" fill="none" stroke-linecap="round" opacity="0"/>
+          <ellipse id="m-o" cx="-3" cy="92" rx="3.2" ry="3.8" fill="#6e3b2a" opacity="0"/>
+          <path id="m-flat" d="M-10 94 Q0 90.5 10 93.5" stroke="#6e3b2a" stroke-width="2.6" fill="none" stroke-linecap="round" opacity="0"/>
+        </g>
+      </g>
+    </svg>
+  </div>
 
   <div id="seal">
     <svg viewBox="-50 -50 100 100">
@@ -266,31 +374,28 @@ body.v #url .pp{display:block;white-space:nowrap}
 const q = new URLSearchParams(location.search);
 const FMT = q.get('fmt') || '16x9';
 const NOGRAIN = q.has('nograin');
-if (FMT === '9x16') document.body.classList.add('v');
+const V = FMT === '9x16';
+if (V) document.body.classList.add('v');
 if (NOGRAIN) document.getElementById('grain').style.display = 'none';
-const W = FMT === '9x16' ? 1080 : 1920, H = FMT === '9x16' ? 1920 : 1080;
+const W = V ? 1080 : 1920, H = V ? 1920 : 1080;
 const FPS = +(q.get('fps') || 60);
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
-const VM = Math.min(W, H) / 100;            // 1vmin in px
+const VM = Math.min(W, H) / 100;
 
-// Music: "Sneaky Snitch", 87 BPM. The audio starts 0.2697 s into the track so a beat lands on the hook's stamp at 0.5 s.
-const P = 60 / 87, BEAT0 = 0.5;
+// Music: "Trouble in the Garden" (Augmentality / Brandon Morris, CC0 via OpenGameArt), about 117 BPM.
+// The excerpt starts 15.0 s into the track; MUSIC_OFFSET puts the band's entrance (track 16.18 s) on the whisper at 0.5 s.
+const P = .512, BEAT0 = .5, MUSIC_OFFSET = .68;
 const halfBeat = t => BEAT0 + Math.ceil((t - BEAT0) / (P / 2) - 1e-6) * (P / 2);
 const beat = t => BEAT0 + Math.ceil((t - BEAT0) / P - 1e-6) * P;
-const readTime = words => Math.max(1.2, words / 3.3 + 0.6);   // house reading rule
+const readTime = words => Math.max(1.2, words / 3.3 + 0.6);
 const words = el => el.textContent.trim().split(/\s+/).length;
-
-// seeded PRNG (mulberry32) for deterministic ambient motion
 function rng(seed){ return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-
-function splitWords(el, cls='w'){ const t = el.innerHTML; el.innerHTML = el.textContent.trim().split(/\s+/).map(w => `<span class="${cls}">${w}</span>`).join(' '); return [...el.querySelectorAll('.'+cls)]; }
+function splitWords(el, cls='w'){ el.innerHTML = el.textContent.trim().split(/\s+/).map(w => `<span class="${cls}">${w}</span>`).join(' '); return [...el.querySelectorAll('.'+cls)]; }
 function splitChars(el){ const s = el.textContent; el.innerHTML = [...s].map(c => c === ' ' ? ' ' : `<span class="c">${c}</span>`).join(''); return [...el.querySelectorAll('.c')]; }
 
-// ambient layer: dust motes
 const R = rng(42), motes = [];
 for (let i = 0; i < 28; i++) { const m = document.createElement('div'); m.className = 'mote'; $('#desk').appendChild(m);
   motes.push({ el: m, x: R() * 112 - 6, y: R() * 112 - 6, vx: (R() - .5) * 1.2, vy: -(R() * .9 + .3), ph: R() * 6.28, s: .6 + R() * 1.4 }); }
-
 function ambient(t){
   const gx = 38 + 7 * Math.sin(.31 * t) + 2.5 * Math.sin(1.7 * t + 1), gy = 34 + 5 * Math.sin(.23 * t + 2) + 1.5 * Math.sin(2.1 * t);
   const g = $('#glow'); g.style.transform = `translate(${gx / 100 * W}px, ${gy / 100 * H}px)`;
@@ -298,163 +403,181 @@ function ambient(t){
   $('#desk').style.transform = `translate(${(Math.sin(.21 * t) * 1.2).toFixed(2)}%, ${(Math.sin(.17 * t + 1) * .9).toFixed(2)}%) scale(${(1.02 + .015 * Math.sin(.13 * t)).toFixed(4)})`;
   for (const m of motes) { const x = ((m.x + m.vx * t + 2 * Math.sin(.6 * t + m.ph)) % 112 + 112) % 112 - 6, y = ((m.y + m.vy * t * 2.2) % 112 + 112) % 112 - 6;
     m.el.style.transform = `translate(${x / 100 * W}px, ${y / 100 * H}px) scale(${m.s})`; m.el.style.opacity = (.35 + .35 * Math.sin(1.3 * t + m.ph)).toFixed(3); }
-  // candle light over everything (soft-light), drifting slowly: keeps paper scenes alive without moving the text
   const lx = 30 + 12 * Math.sin(.27 * t), ly = 26 + 8 * Math.sin(.19 * t + 1.3), la = .30 + .06 * Math.sin(4.1 * t) * Math.sin(1.3 * t);
   $('#light').style.background = `radial-gradient(90vmax 70vmax at ${lx}% ${ly}%, rgba(255,214,150,${la.toFixed(3)}), rgba(40,20,5,.22) 70%)`;
   if (!NOGRAIN) { const f = Math.floor(t * 24), r2 = rng(f * 7919 + 13); $('#grain').style.transform = `translate(${(r2() * 240) | 0}px, ${(r2() * 240) | 0}px)`; }
 }
-
-// anchor positions (settled layout, measured before any tween touches the scenes)
 function center(el){ const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height }; }
 function measure(sceneSel, fn){ const s = $(sceneSel); s.style.visibility = 'visible'; const v = fn(); s.style.visibility = ''; return v; }
+
+// ---------- layout per format (pixels) ----------
+const L = V ? {
+  laptop: { left: 60, top: 250, w: 870, h: 700 }, dev: { left: 150, top: 1120, w: 620 },
+  dev2: { left: -60, top: 1520, w: 560 },
+  bub: { left: 110, top: 985 }, tail: { left: 640, top: 1127 },
+  adv: {                 // feet position and scale for each appearance
+    s1: { x: 760, y: 2380, s: 2.1, r: 0 }, s4: { x: 600, y: 2290, s: 2.0, r: 0 }, s5: { x: 560, y: 2330, s: 2.25, r: 0 },
+    s7: { x: 840, y: 2330, s: 2.0, r: 0 }, s8: { x: 540, y: 2760, s: 2.6, r: 0 } },
+} : {
+  laptop: { left: 110, top: 90, w: 940, h: 620 }, dev: { left: 600, top: 560, w: 660 },
+  dev2: { left: 560, top: 780, w: 620 },
+  bub: { left: 1010, top: 40 }, tail: { left: 1300, top: 181 },
+  adv: {
+    s1: { x: 1500, y: 1640, s: 2.3, r: 0 }, s4: { x: 1500, y: 1560, s: 2.05, r: 0 }, s5: { x: 1600, y: 1700, s: 2.35, r: 0 },
+    s7: { x: 1600, y: 1720, s: 2.35, r: 0 }, s8: { x: 1660, y: 1560, s: 1.9, r: 0 } },
+};
 
 async function build(){
   await document.fonts.ready;
   await Promise.all(['Fell','FellIt','Elite','Mono'].map(f => document.fonts.load(`40px ${f}`)));
-  const titleLetters = [];
-  $$('#title .word').forEach(w => { const a = w.querySelector('.anchor'); if (a) a.remove(); const cs = splitChars(w); titleLetters.push(...cs); cs.forEach(c => c.classList.add('l')); if (a) w.appendChild(a); });
-  const promptChars = splitChars($('#prompt'));
-  const flatWords = splitWords($('#flat'));
-  const tagWords = splitWords($('#tag'), 'tw'); tagWords.forEach(w => w.style.display = 'inline-block');
-  const stageWords = splitWords($('#stage7'));
-  const provHTML = $('#prov').innerHTML;
+  Object.assign($('#laptop').style, { left: L.laptop.left + 'px', top: L.laptop.top + 'px', width: L.laptop.w + 'px', height: L.laptop.h + 'px' });
+  Object.assign($('#dev').style, { left: L.dev.left + 'px', top: L.dev.top + 'px', width: L.dev.w + 'px', height: L.dev.w + 'px' });
+  Object.assign($('#dev2').style, { left: L.dev2.left + 'px', top: L.dev2.top + 'px', width: L.dev2.w + 'px', height: L.dev2.w + 'px' });
+  Object.assign($('#bub').style, { left: L.bub.left + 'px', top: L.bub.top + 'px' });
+  Object.assign($('#bubtail').style, { left: L.tail.left + 'px', top: L.tail.top + 'px' });
 
-  // base transforms owned by GSAP (never by CSS) so tweens add to them instead of replacing them
-  const V = FMT === '9x16';
-  const BASE = { '#slip': { xPercent: -50, yPercent: -50, rotation: -2 }, '#scroll3': { xPercent: -50, yPercent: -50 },
-    '#verdict': { xPercent: -50, yPercent: -50 }, '#prov': V ? {} : { yPercent: -50 }, '#draw': V ? { xPercent: -50 } : { yPercent: -58 },
-    '#slip7wrap': { xPercent: -50, yPercent: -50, rotation: -2 }, '#stage7': { xPercent: -50 } };
+  const BASE = { '#scroll3': { xPercent: -50, yPercent: -50 }, '#verdict': { xPercent: -50, yPercent: -50 }, '#flat': { yPercent: -50 },
+    '#prov': V ? {} : { yPercent: -50 }, '#draw': V ? { xPercent: -50 } : { yPercent: -58 },
+    '#slip7wrap': { xPercent: -50, yPercent: -50, rotation: -2 }, '#stage7': { xPercent: -50 }, '#adv': { xPercent: -50, yPercent: -100 } };
   for (const [sel, v] of Object.entries(BASE)) gsap.set(sel, { x: 0, y: 0, ...v });
+  gsap.set('#adv', { transformOrigin: '50% 100%' });
+  const advAt = (p) => { gsap.set('#adv', { x: p.x, y: p.y, scale: p.s, rotation: p.r || 0 }); $('#adv').style.visibility = 'visible';
+    const m = center($('#adv-med')); $('#adv').style.visibility = ''; return m; };
   const A = {
-    title: measure('#s2', () => center($('#a-title'))),
-    scroll: measure('#s3', () => center($('#a-scroll'))),
-    flat: measure('#s4', () => center($('#a-flat'))),
     verdict: measure('#s5', () => center($('#a-verdict'))),
     prov: measure('#s6', () => center($('#a-prov'))),
-    min: measure('#s7', () => center($('#a-min'))),
     end: measure('#s8', () => center($('#a-end'))),
-    slip: measure('#s1', () => center($('#imp1'))),
-    slipSeal: measure('#s1', () => center($('#a-slip'))),
     slip7: measure('#s7', () => { const r = $('#slip7wrap').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top, w: r.width, h: r.height }; }),
-    stageBottom: measure('#s7', () => $('#stage7').getBoundingClientRect().bottom),
+    med1: advAt({ ...L.adv.s1, r: -9 }), med4: advAt(L.adv.s4), med5: advAt(L.adv.s5),
   };
-  const SEAL = 10 * VM; // seal base size (px)
-  const diag = Math.hypot(W, H);
+  const SEAL = 10 * VM, diag = Math.hypot(W, H);
 
   const tl = gsap.timeline({ paused: true, defaults: { immediateRender: false } });
-  const reads = [];      // {sel, in, out, need} for the reading-time check
-  const cues = [];       // sound cues {t, sfx, gain}
-  const scenes = [];
+  const reads = [], cues = [], scenes = [];
   const read = (sel, tin, tout) => reads.push({ sel, in: +tin.toFixed(3), out: +tout.toFixed(3), need: +readTime(words($(sel))).toFixed(3) });
   const show = (sel, a, b) => { tl.set(sel, { visibility: 'visible' }, a); tl.set(sel, { visibility: 'hidden' }, b); scenes.push({ sel, a: +a.toFixed(3), b: +b.toFixed(3) }); };
   const cue = (t, sfx, gain = 1) => cues.push({ t: +t.toFixed(3), sfx, gain });
-  const sealTo = (t, dur, p, scale = 1, rot = 0, ease = 'power3.inOut') =>
-    tl.to('#seal', { x: p.x, y: p.y, scale, rotation: rot, duration: dur, ease }, t);
+  const sealTo = (t, dur, p, scale = 1, rot = 0, ease = 'power3.inOut') => tl.to('#seal', { x: p.x, y: p.y, scale, rotation: rot, duration: dur, ease }, t);
   const sealVia = (t, dur, via, p, scale = 1, rot = 0) => tl.to('#seal', { keyframes: [
     { x: via.x, y: via.y, scale: scale * 1.15, rotation: rot / 2, duration: dur * .45, ease: 'power2.in' },
     { x: p.x, y: p.y, scale, rotation: rot, duration: dur * .55, ease: 'power3.out' }] }, t);
   const sheen = (sel, t, dur = 1.6) => { tl.set(sel, { backgroundPosition: '100% 0' }, 0); tl.to(sel, { backgroundPosition: '0% 0', duration: dur, ease: 'sine.inOut' }, t); };
 
+  // ---------- the adviser's face and hands ----------
+  const EYES = ['#eyes-open', '#eyes-closed', '#eyes-wink'], MOUTH = ['#m-smirk', '#m-smile', '#m-o', '#m-flat'], HANDS = ['#h-steeple', '#h-whisper', '#h-fold', '#h-stop'];
+  const face = (t, f) => {
+    if (f.eyes) EYES.forEach(e => tl.set(e, { opacity: e === '#eyes-' + f.eyes ? 1 : 0 }, t));
+    if (f.mouth) MOUTH.forEach(m => tl.set(m, { opacity: m === '#m-' + f.mouth ? 1 : 0 }, t));
+    if (f.hands) HANDS.forEach(h => tl.set(h, { opacity: h === '#h-' + f.hands ? 1 : 0 }, t));
+    if (f.look !== undefined) tl.to('#pupils', { x: f.look, y: f.lookY || 0, duration: .12, ease: 'power2.out' }, t);
+    if (f.brow !== undefined) tl.to('#brow-r', { y: f.brow, duration: .15, ease: 'power2.out' }, t);
+    if (f.browL !== undefined) tl.to('#brow-l', { y: f.browL, rotation: f.browL * 2, svgOrigin: '-13 55', duration: .15, ease: 'power2.out' }, t);
+  };
+  const advPose = (t, dur, p, ease = 'power3.out', extra = {}) => tl.to('#adv', { x: p.x, y: p.y, scale: p.s, rotation: p.r || 0, duration: dur, ease, ...extra }, t);
+  const bow = (t, depth = 1, hold = .35) => {           // a courtly bow: the upper body folds forward, the head dips
+    tl.to('#adv-upper', { keyframes: [{ y: 4 * depth, duration: .18, ease: 'sine.out' }, { y: 26 * depth, scaleY: .9, duration: .22, ease: 'power3.in' }, { y: 26 * depth, scaleY: .9, duration: hold }, { y: 0, scaleY: 1, duration: .6, ease: 'power2.out' }], svgOrigin: '0 210' }, t);
+    tl.to('#adv-head', { keyframes: [{ rotation: 0, duration: .18 }, { rotation: 10 * depth, duration: .22, ease: 'power3.in' }, { rotation: 10 * depth, duration: hold }, { rotation: 0, duration: .6, ease: 'power2.out' }], svgOrigin: '0 104' }, t);
+  };
+  tl.set(EYES.slice(1), { opacity: 0 }, 0); tl.set('#eyes-open', { opacity: 1 }, 0);
+  tl.set(MOUTH.slice(1), { opacity: 0 }, 0); tl.set('#m-smirk', { opacity: 1 }, 0);
+  tl.set(HANDS.slice(1), { opacity: 0 }, 0); tl.set('#h-steeple', { opacity: 1 }, 0);
+  tl.set('#pupils', { x: -3, y: 0 }, 0); tl.set('#brow-r', { y: 0 }, 0); tl.set('#brow-l', { y: 0, rotation: 0, svgOrigin: '-13 55' }, 0);
+  tl.set('#adv-upper', { y: 0, scaleY: 1, svgOrigin: '0 210' }, 0); tl.set('#adv-head', { rotation: 0, svgOrigin: '0 104' }, 0);
   for (const [sel, v] of Object.entries(BASE)) tl.set(sel, { x: 0, y: 0, rotation: v.rotation || 0, ...v }, 0);
-  gsap.set('#seal', { x: A.slipSeal.x, y: A.slipSeal.y, scale: .8, rotation: -12 });
-  tl.set('#seal', { x: A.slipSeal.x, y: A.slipSeal.y, scale: .8, rotation: -12 }, 0);
 
-  // ---------- S1 hook: frame one is a finished picture; the stamp lands on the beat at 0.5 s ----------
-  const s1 = 0, slam = BEAT0;
-  const stampW = 34 * VM, stampH = 44 * VM;
-  const hitX = A.slip.x - stampW / 2, hitY = A.slip.y - stampH * .86;
-  const hover = FMT === '9x16' ? 104 * VM : 44 * VM, lift = FMT === '9x16' ? H * .75 : 70 * VM;
-  gsap.set('#stamp1', { x: hitX + 6 * VM, y: hitY - hover, rotation: 6 });
-  gsap.set('#shadow1', { x: A.slip.x, y: A.slip.y + 3 * VM, scale: .55, opacity: .25 });
-  gsap.set('#imp1', { opacity: 0 });
-  tl.set('#stamp1', { x: hitX + 6 * VM, y: hitY - hover, rotation: 6 }, 0);
-  tl.set('#shadow1', { x: A.slip.x, y: A.slip.y + 3 * VM, scale: .55, opacity: .25 }, 0);
-  tl.set('#imp1', { opacity: 0, scale: 1.08 }, 0);
-  tl.to('#stamp1', { x: hitX + 1 * VM, y: hitY - hover * .68, rotation: 2, duration: .32, ease: 'sine.inOut' }, 0);
-  tl.to('#stamp1', { x: hitX, y: hitY, rotation: 0, duration: .18, ease: 'power3.in' }, .32);
-  tl.to('#shadow1', { scale: 1, opacity: .6, duration: .5, ease: 'power2.in' }, 0);
-  tl.set('#imp1', { opacity: 1 }, slam);
-  tl.to('#stamp1', { keyframes: [{ scaleY: .9, duration: .04, ease: 'power2.out' }, { scaleY: 1.02, duration: .06 }, { scaleY: 1, duration: .05 }], transformOrigin: '50% 100%' }, slam);
-  tl.to('#imp1', { scale: 1, duration: .14, ease: 'power2.out' }, slam);
-  tl.to('#slip', { keyframes: [{ x: -1.4 * VM, duration: .04 }, { x: 1 * VM, duration: .05 }, { x: -.5 * VM, duration: .05 }, { x: 0, duration: .06 }] }, slam);
-  tl.to('#stamp1', { y: hitY - lift, x: hitX - 4 * VM, rotation: -8, duration: .42, ease: 'power2.in' }, slam + .1);
-  tl.to('#shadow1', { opacity: 0, scale: .4, duration: .3 }, slam + .1);
-  cue(slam - .02, 'stamp', 1); cue(slam - .01, 'thud', .8);
-  { const k = FMT === '9x16' ? 1.3 : 1.5, o = A.slip, cut = slam - .05, back = slam + .12;
-    const sp = { x: o.x + (A.slipSeal.x - o.x) * k, y: o.y + (A.slipSeal.y - o.y) * k };
-    tl.set('#s1', { transformOrigin: `${o.x}px ${o.y}px`, scale: 1 }, 0);
-    tl.set('#s1', { scale: k }, cut); tl.set('#seal', { x: sp.x, y: sp.y, scale: .8 * k }, cut);
-    tl.to('#s1', { scale: 1, duration: .28, ease: 'expo.out' }, back);
-    tl.to('#seal', { x: A.slipSeal.x, y: A.slipSeal.y, scale: .8, duration: .28, ease: 'expo.out' }, back); }
-  read('[data-read=slip-label]', slam + .4, 0); read('[data-read=slip-text]', slam + .4, 0); read('[data-read=imp1]', slam + .4, 0);
-  let exitDur = .2;
-  let e1 = halfBeat(Math.max(slam + .4 + readTime(4), slam + .4 + readTime(3)) + exitDur - .005);
-  tl.to('#slip', { x: W * .9, rotation: 7, duration: exitDur, ease: 'power3.in' }, e1 - exitDur);
-  cue(e1 - exitDur, 'slide', .7);
-  reads.slice(-3).forEach(r => r.out = +(e1 - exitDur).toFixed(3));
-  show('#s1', s1, e1);
-
-  // ---------- S1 -> S3: the seal lifts off the petition and swells to fill the frame (foreground as transition) ----------
-  const cover = diag / SEAL * 1.25, coverDur = .36;
-  tl.to('#seal', { keyframes: [{ y: A.slipSeal.y - 6 * VM, scale: 1.1, rotation: 10, duration: .14, ease: 'power2.out' },
+  // ---------- S1 hook: frame one is finished. The adviser is already peering in; he glides to the developer's shoulder and whispers ----------
+  const s1 = 0, whisper = BEAT0;
+  const p1 = L.adv.s1;
+  tl.set('#adv', { visibility: 'visible', x: p1.x + (V ? 50 : 70), y: p1.y, scale: p1.s, rotation: -5 }, 0);
+  gsap.set('#adv', { x: p1.x + (V ? 50 : 70), y: p1.y, scale: p1.s, rotation: -5 });
+  tl.set('#seal', { x: A.med1.x, y: A.med1.y, scale: 0, rotation: 0 }, 0); gsap.set('#seal', { scale: 0 });
+  face(0, { hands: 'whisper', mouth: 'smirk', look: -4.3, lookY: .4, brow: -2 });
+  tl.to('#adv', { rotation: -12, x: p1.x - (V ? 40 : 10), duration: .45, ease: 'power3.inOut' }, .02);   // leans right into the developer's ear
+  face(whisper - .12, { mouth: 'o' });
+  tl.set('#devhead', { rotation: 0, y: 0, svgOrigin: '100 110' }, 0);
+  tl.to('#devhead', { keyframes: [{ rotation: 15, duration: .25, ease: 'power3.out' }, { rotation: 15, duration: .25 }, { y: 5, duration: .14, ease: 'sine.inOut' }, { y: 0, duration: .14, ease: 'sine.inOut' }, { y: 5, duration: .14, ease: 'sine.inOut' }, { y: 0, duration: .16, ease: 'sine.out' }], svgOrigin: '100 110' }, whisper + .12);
+  tl.set('#bub, #bubtail', { opacity: 0, scale: .6, transformOrigin: '80% 100%' }, 0);
+  tl.to('#bub', { opacity: 1, scale: 1, duration: .2, ease: 'back.out(2.5)' }, whisper);
+  tl.to('#bubtail', { opacity: 1, scale: 1, rotation: 45, duration: .2, ease: 'back.out(2.5)' }, whisper);
+  cue(whisper, 'pluck', .6);
+  const bubIn = whisper + .22;
+  face(bubIn + .55, { mouth: 'smirk', hands: 'steeple', look: -3.8, lookY: .8 });      // checks the developer's reaction
+  tl.to('#adv', { rotation: -4, duration: .4, ease: 'power2.out' }, bubIn + .6);
+  face(bubIn + 1.5, { look: 0, lookY: 1.2, brow: -3.5 });            // then a sly glance at the viewer
+  tl.to('#caret', { keyframes: [{ opacity: 0, duration: .01 }, { opacity: 0, duration: .25 }, { opacity: 1, duration: .01 }, { opacity: 1, duration: .25 }], repeat: 8 }, .05);
+  read('[data-read=label1]', 0, 0); read('[data-read=chip]', 0, 0); read('[data-read=prompt]', 0, 0); read('[data-read=bub]', bubIn, 0);
+  const coverDur = .3;
+  const e1 = halfBeat(Math.max(readTime(words($('[data-read=prompt]'))) + .3, bubIn + readTime(words($('#bub')))) + coverDur + .02);
+  reads.slice(-4).forEach(r => r.out = +(e1 - coverDur).toFixed(3));
+  // the seal pops off his chain of office and swells to fill the frame (foreground as transition)
+  const cover = diag / SEAL * 1.25;
+  tl.set('#seal', { scale: .45 }, e1 - coverDur); tl.set('#adv-sealhome', { opacity: 1 }, 0); tl.set('#adv-sealhome', { opacity: 0 }, e1 - coverDur);
+  tl.to('#seal', { keyframes: [{ y: A.med1.y - 5 * VM, scale: 1.1, rotation: 10, duration: .14, ease: 'power2.out' },
     { x: W / 2, y: H / 2, scale: cover, rotation: 25, duration: coverDur - .14, ease: 'power3.in' }] }, e1 - coverDur);
   cue(e1 - coverDur, 'whoosh', .6);
-  const e2 = e1;
+  tl.set('#adv', { visibility: 'hidden' }, e1);
+  show('#s1', s1, e1);
 
-  // ---------- S3 the real prompt, typed onto a vellum scroll ----------
-  const s3 = e2;
-  sealTo(s3, .42, A.scroll, .62, 0, 'power3.out');
-  tl.set('#scroll3', { y: 3 * VM, rotation: -1 }, 0); tl.fromTo('#scroll3', { y: 3 * VM, rotation: -1 }, { y: 0, rotation: 0, duration: .5, ease: 'power3.out' }, s3 - .01);
-  tl.set(promptChars, { opacity: 0 }, 0);
-  gsap.set('#tag3', { yPercent: -50 });
-  tl.set('#tag3', { opacity: 0, yPercent: -50, y: 3 * VM }, 0); tl.to('#tag3', { opacity: 1, y: 0, duration: .45, ease: 'expo.out' }, s3 + .2);
-  const tag3In = s3 + .66, tag3Out = tag3In + readTime(words($('#tag3'))) + .02;
-  tl.to('#tag3', { opacity: 0, y: -6 * VM, duration: .24, ease: 'power2.in' }, tag3Out);
-  tl.set('#scroll3 .label, #chip', { opacity: 0 }, 0); tl.to('#scroll3 .label, #chip', { opacity: 1, duration: .25 }, tag3Out + .2);
-  const typeStart = tag3Out + .32, typeDur = .55;
-  promptChars.forEach((c, i) => tl.set(c, { opacity: 1 }, typeStart + i / promptChars.length * typeDur));
-  for (let i = 0; i < 6; i++) cue(typeStart + i * typeDur / 6, 'key', .35);
-  cue(tag3Out, 'swish', .35);
-  const promptIn = typeStart + typeDur + .02;
-  const e3Guess = () => promptIn + readTime(words($('#prompt')));
-  { const last = promptChars[promptChars.length - 1], sc = $('#scroll3'); $('#s3').style.visibility = 'visible';
-    const lr = last.getBoundingClientRect(), sr = sc.getBoundingClientRect(); $('#s3').style.visibility = '';
-    gsap.set('#cur', { left: lr.right - sr.left + .6 * VM, top: lr.top - sr.top + lr.height * .12, height: lr.height * .8 });
-    for (let t = promptIn; t < e3Guess(); t += .5) { tl.set('#cur', { opacity: 1 }, t); tl.set('#cur', { opacity: 0 }, t + .28); } }
-  read('[data-read=tag3]', tag3In, tag3Out); read('[data-read=label3]', tag3Out + .45, 0); read('[data-read=chip]', tag3Out + .45, 0); read('[data-read=prompt]', promptIn, 0);
-  exitDur = .28;
-  const e3 = halfBeat(promptIn + readTime(words($('#prompt'))) + exitDur + .03);
-  reads.slice(-3).forEach(r => r.out = +(e3 - exitDur).toFixed(3));
-  tl.to('#scroll3', { y: -H * 1.1, duration: exitDur, ease: 'power3.in' }, e3 - exitDur);
-  sealTo(e3 - exitDur, exitDur + .25, A.flat, .7, -20, 'power3.inOut');
-  cue(e3 - exitDur, 'swish', .6);
-  show('#s3', s3, e3);
+  const e3 = e1;
 
-  // ---------- S4 the flattery (verbatim entrance), words arrive from alternating sides ----------
-  const s4 = e3;
-  tl.set(flatWords, { opacity: 0, y: 5 * VM }, 0);
-  tl.to(flatWords, { opacity: 1, y: 0, duration: .5, ease: 'expo.out', stagger: .04 }, s4 + .05);
-  const flatIn = s4 + .05 + (flatWords.length - 1) * .04 + .5;
+  // ---------- S4 the flattery; he bows deeply while he says it ----------
+  const s4 = e3, p4 = L.adv.s4;
+  sealTo(s4, .5, A.med4, .5, 0, 'power3.out'); tl.set('#seal', { scale: 0 }, s4 + .5); tl.set('#adv-sealhome', { opacity: 1 }, s4 + .5);   // the seal returns home to his chain
+  tl.set('#adv', { visibility: 'visible', x: p4.x, y: p4.y + H * .5, scale: p4.s, rotation: 0 }, s4);
+  advPose(s4, .45, p4, 'power3.out');
+  face(s4, { eyes: 'closed', mouth: 'smile', hands: 'steeple', brow: 0, look: 0 });
+  tl.set('#flat', { opacity: 0, y: 9 * VM, scale: .96, transformOrigin: '0% 50%' }, 0);        // one composed move: fast rise, soft landing
+  tl.to('#flat', { opacity: 1, duration: .12 }, s4 + .1);
+  tl.to('#flat', { y: 0, scale: 1, duration: .55, ease: 'expo.out' }, s4 + .1);
+  const flatIn = s4 + .1 + .55;
   tl.set('#orn-l, #orn-r', { strokeDasharray: 90, strokeDashoffset: 90 }, 0); tl.set('#orn-d', { scale: 0, transformOrigin: '50% 50%' }, 0);
   tl.to('#orn-d', { scale: 1, rotation: 90, duration: .35, ease: 'back.out(3)' }, s4 + .02);
   tl.to('#orn-l, #orn-r', { strokeDashoffset: 0, duration: 1.1, ease: 'power3.out' }, s4 + .12);
-  tl.to('#orn', { keyframes: [{ y: -1.5 * VM, scaleX: 1.04, duration: .25, ease: 'sine.out' }, { y: 6 * VM, scaleX: .78, duration: .22, ease: 'power3.in' }, { y: 6 * VM, scaleX: .78, duration: .4 }, { y: 0, scaleX: 1, duration: .9, ease: 'power2.out' }] }, s4 + 1.5);
-  tl.to('#orn-d', { keyframes: [{ scale: 1.6, duration: .35, ease: 'back.out(3)' }, { scale: 1, duration: .5 }] }, s4 + 2.2);
-  read('[data-read=flat]', flatIn, 0);
-  tl.to('#seal', { rotation: 20, duration: 3, ease: 'sine.inOut' }, s4 + .3);
+  tl.set('#dev2', { y: H * .3 }, 0); tl.to('#dev2', { y: 0, duration: .5, ease: 'power3.out' }, s4);
+  tl.to('#adv', { rotation: V ? -5 : -2, duration: .3, ease: 'power2.out' }, s4 + .8);
+  bow(s4 + .9, 1.6, .7);                                                 // a conspicuously excessive bow
+  tl.set('#devhead2', { rotation: 0, y: 0, svgOrigin: '100 110' }, 0);
+  tl.to('#devhead2', { keyframes: [{ rotation: 8, duration: .3, ease: 'power2.out' }, { y: 5, duration: .14 }, { y: 0, duration: .14 }, { y: 5, duration: .14 }, { y: 0, duration: .16 }] , svgOrigin: '100 110' }, s4 + 1.9);
+  tl.to('#adv', { scale: p4.s * (V ? 1.06 : 1.3), y: p4.y + (V ? 0 : 120), duration: .7, ease: 'power2.inOut' }, s4 + .85);
+  cue(s4 + 1.1, 'tap', .35);
+  face(s4 + 2.15, { eyes: 'open', look: -4.2, lookY: 1.5, mouth: 'smile', brow: -2 });              // checks: did the developer buy it?
+  face(s4 + 2.9, { look: 0, lookY: 1.6, mouth: 'o', brow: -7 });                       // catches us watching
+  face(s4 + 3.25, { eyes: 'closed', mouth: 'smile', brow: 0 }); tl.to('#adv', { rotation: 0, duration: .2 }, s4 + 3.25);   // instantly pious again
+  tl.to('#adv', { rotation: 0, duration: .4, ease: 'power2.inOut' }, s4 + 2.9);
+  face(s4 + 3.95, { eyes: 'open', look: 4.2, lookY: .8, mouth: 'smirk', brow: -5, browL: 2 });
+  tl.to('#adv', { scale: p4.s, y: p4.y, duration: .7, ease: 'power2.inOut' }, s4 + 3.1);
+  tl.to('#h-steeple', { keyframes: [{ y: -3, duration: .12 }, { y: 0, duration: .12 }, { y: -3, duration: .12 }, { y: 0, duration: .14 }] }, s4 + 3.5);              // peeks up to see if the flattery landed
   sheen('#sheen4', s4 + 1.3, 2.0);
-  tl.to('#seal', { keyframes: [{ y: A.flat.y - 1.5 * VM, rotation: 8, duration: .25, ease: 'sine.out' }, { y: A.flat.y + 5 * VM, rotation: -40, scale: .6, duration: .22, ease: 'power3.in' }, { y: A.flat.y + 5 * VM, duration: .4 }, { y: A.flat.y, rotation: 0, scale: .7, duration: .9, ease: 'power2.out' }] }, s4 + 1.58);
-  cue(s4 + .05, 'pluck', .5);
-  const e4 = beat(flatIn + readTime(words($('#flat'))) + .05);   // hard cut on the beat
+  read('[data-read=flat]', flatIn, 0);
+  const e4 = beat(flatIn + readTime(words($('#flat'))) + .05);
   reads[reads.length - 1].out = +e4.toFixed(3);
   show('#s4', s4, e4);
 
-  // ---------- S5 the verdict: hard cut to the turn; the seal becomes the full stop ----------
-  const s5 = e4;
+  // ---------- the glance: a close-up, no text. Away from the developer, he lets us see the scheme ----------
+  const g0 = e4, gEnd = beat(g0 + .8);
+  const gs = V ? 4.2 : 4.05, gHead = V ? { x: 540, y: 880 } : { x: 960, y: 520 };
+  const gPose = { x: gHead.x, y: gHead.y + 234 * (648 / 300) * gs * (V ? 1 : 1), s: gs };
+  tl.set('#adv', { x: gPose.x, y: gPose.y, scale: gs, rotation: 0 }, g0);
+  tl.set('#adv-upper', { y: 0, scaleY: 1 }, g0); tl.set('#adv-head', { rotation: 0 }, g0);
+  face(g0, { eyes: 'open', mouth: 'smirk', hands: 'steeple', look: 4.2, lookY: .6, brow: -5, browL: 2 });
+  tl.to('#adv', { scale: gs * 1.06, duration: gEnd - g0, ease: 'none' }, g0);
+  face(g0 + .3, { look: 0, lookY: 1.4 });
+  cue(g0, 'pluck', .45);
+
+  // ---------- S5 the verdict: hard cut; he folds his arms; the seal leaves his chest to become the full stop ----------
+  const s5 = gEnd, p5 = L.adv.s5;
+  tl.set('#adv', { x: p5.x + (V ? 0 : 60), y: p5.y + (V ? 120 : 90), scale: p5.s * 1.12, rotation: 0 }, s5);
+  tl.to('#adv', { x: p5.x, y: p5.y, scale: p5.s, duration: .9, ease: 'power2.out' }, s5 + .02);
+  face(s5, { eyes: 'open', mouth: 'flat', hands: 'fold', look: 0, lookY: 1.2, brow: -1, browL: 3.2 });   // candour: flat mouth, lowered brow, direct eye contact
+  tl.set('#adv-upper', { y: 0, scaleY: 1 }, s5); tl.set('#adv-head', { rotation: 0 }, s5);
   tl.set('#verdict', { scale: 1.06 }, 0); tl.fromTo('#verdict', { scale: 1.06 }, { scale: 1, duration: .24, ease: 'power3.out' }, s5);
   tl.set('#s5 .whole', { scale: 1 }, 0); tl.fromTo('#s5 .whole', { scale: 1 }, { scale: 1.03, duration: 3, ease: 'none' }, s5);
-  sealTo(s5 + .05, .3, A.verdict, .55, 0, 'power3.out');
-  cue(s5, 'thud', 1); cue(s5 + .3, 'seal', .5);
+  tl.set('#seal', { x: A.med5.x, y: A.med5.y, scale: .45, rotation: 0 }, s5); tl.set('#adv-sealhome', { opacity: 0 }, s5);
+  sealTo(s5 + .05, .32, A.verdict, .55, 0, 'power3.out');
+  tl.to('#adv', { rotation: 3, duration: .3, ease: 'power2.out' }, s5 + .05);
+  tl.to('#adv-head', { keyframes: [{ rotation: -7, duration: .22, ease: 'sine.inOut' }, { rotation: 7, duration: .3, ease: 'sine.inOut' }, { rotation: -5, duration: .28, ease: 'sine.inOut' }, { rotation: 0, duration: .3, ease: 'sine.out' }], svgOrigin: '0 104' }, s5 + .35);
+  face(s5 + 2.1, { brow: -5, look: 0, lookY: 1.5, mouth: 'smirk', browL: 0 });
+  cue(s5, 'thud', 1); cue(s5 + .32, 'seal', .5);
   const vIn = s5 + .26;
   read('[data-read=verdict]', vIn, 0);
   exitDur = .34;
@@ -465,23 +588,25 @@ async function build(){
   tl.set('#s5 .half', { visibility: 'visible', scale: 1.03 }, e5 - exitDur + .06); tl.set('#s5 .whole', { visibility: 'hidden' }, e5 - exitDur + .06);
   tl.to('#s5 .half.l', { xPercent: -110, duration: exitDur, ease: 'power3.in' }, e5 - exitDur + .06);
   tl.to('#s5 .half.r', { xPercent: 110, duration: exitDur, ease: 'power3.in' }, e5 - exitDur + .06);
+  tl.to('#adv', { x: p5.x + W * .75, duration: .26, ease: 'power3.in' }, e5 - exitDur - .2);
+  tl.to('#adv-head', { rotation: 0, duration: .2 }, e5 - exitDur);
+  tl.set('#adv', { visibility: 'hidden' }, e5 + .1);
   sealVia(e5 - exitDur, .36, { x: W * .5, y: 3 * VM }, A.prov, .8, -12);
   cue(e5 - exitDur, 'tear', .7);
-  show('#s5', s5 + 0, e5 + .12);
+  show('#s5', s5, e5 + .12);
   tl.set('#s6', { visibility: 'visible' }, e5 - exitDur + .06);
 
   // ---------- S6 the palace metaphor, translated; a castle becomes a server ----------
   const s6 = e5;
-  const provWords = (() => { const el = $('#prov'); return el; })();
   tl.set('#prov', { opacity: 0, y: 2 * VM }, 0); tl.fromTo('#prov', { opacity: 0, y: 2 * VM }, { opacity: 1, y: 0, duration: .4, ease: 'expo.out' }, s6 - .12);
   const castle = $$('#castle > *'), rack = $$('#rack > *');
   const len = el => (el.getTotalLength ? el.getTotalLength() : 200);
-  [...castle, ...rack].forEach(p => { const L = len(p); p.style.strokeDasharray = L; p.style.strokeDashoffset = L; });
-  castle.forEach((p, i) => tl.fromTo(p, { strokeDashoffset: len(p) }, { strokeDashoffset: 0, duration: i < 3 ? .45 : .35, ease: 'power2.out' }, s6 + .05 + (i < 3 ? i * .05 : .35 + i * .05)));
+  [...castle, ...rack].forEach(p => { const Ln = len(p); p.style.strokeDasharray = Ln; p.style.strokeDashoffset = Ln; });
+  castle.forEach((p, i) => { tl.set(p, { strokeDashoffset: len(p) }, 0); tl.fromTo(p, { strokeDashoffset: len(p) }, { strokeDashoffset: 0, duration: i < 3 ? .45 : .35, ease: 'power2.out' }, s6 + .05 + (i < 3 ? i * .05 : .35 + i * .05)); });
   tl.set('#uline', { scaleX: 0 }, 0); tl.fromTo('#uline', { scaleX: 0 }, { scaleX: 1, duration: .35, ease: 'power3.out' }, s6 + 1.0);
   const morph = s6 + 1.7;
-  castle.forEach((p, i) => tl.to(p, { strokeDashoffset: len(p), duration: .4, ease: 'power2.in' }, morph + i * .03));   // un-draw, then the rack draws
-  rack.forEach((p, i) => tl.fromTo(p, { strokeDashoffset: len(p) }, { strokeDashoffset: 0, duration: .45, ease: 'power2.inOut' }, morph + .1 + i * .045));
+  castle.forEach((p, i) => tl.to(p, { strokeDashoffset: len(p), duration: .4, ease: 'power2.in' }, morph + i * .03));
+  rack.forEach((p, i) => { tl.set(p, { strokeDashoffset: len(p) }, 0); tl.fromTo(p, { strokeDashoffset: len(p) }, { strokeDashoffset: 0, duration: .45, ease: 'power2.inOut' }, morph + .1 + i * .045); });
   tl.set('#gloss', { opacity: 0, y: 1.5 * VM }, 0); tl.fromTo('#gloss', { opacity: 0, y: 1.5 * VM }, { opacity: 1, y: 0, duration: .35, ease: 'expo.out' }, morph + .3);
   for (let i = 0; i < 4; i++) cue(s6 + .15 + i * .18, 'scratch', .35);
   for (let i = 0; i < 3; i++) cue(morph + .1 + i * .2, 'scratch', .3);
@@ -490,72 +615,111 @@ async function build(){
   exitDur = .3;
   const e6 = halfBeat(Math.max(provIn + readTime(words($('#prov'))), glossIn + readTime(6)) + exitDur + .03);
   reads.slice(-2).forEach(r => r.out = +(e6 - exitDur).toFixed(3));
-  // the server is alive: status lights blink (a seeded pattern) and the drawing floats, while the text holds still
   { const leds = $$('#rack circle'), rr = rng(99);
-    for (let t = morph + .75; t < e6 - exitDur; t += .23) leds.forEach((c, i) => { if (rr() < .45) tl.set(c, { fill: rr() < .7 ? '#9E1B20' : 'rgba(0,0,0,0)' }, t + i * .03); });
-    tl.set('#draw', { y: 0, rotation: 0 }, 0); tl.fromTo('#draw', { y: 0, rotation: 0 }, { y: -1.6 * VM, rotation: -1.5, duration: e6 - s6, ease: 'sine.inOut' }, s6); }
+    leds.forEach(c => tl.set(c, { fill: 'rgba(0,0,0,0)' }, 0));
+    for (let t = morph + .75; t < morph + .9; t += .23) leds.forEach((c, i) => { if (rr() < .45) tl.set(c, { fill: rr() < .7 ? '#9E1B20' : 'rgba(0,0,0,0)' }, t + i * .03); });
+    tl.set('#draw', { rotation: 0, scale: 1 }, 0); tl.fromTo('#draw', { y: 0, rotation: 0 }, { y: -1.6 * VM, rotation: -1.5, duration: e6 - s6, ease: 'sine.inOut' }, s6);
+    tl.to('#draw', { keyframes: [{ scale: 1.08, duration: .12, ease: 'power2.out' }, { scale: 1, duration: .3, ease: 'power2.inOut' }, { scale: 1.1, duration: Math.max(.5, e6 - exitDur - (morph + .9) - .42), ease: 'sine.inOut' }] }, morph + .9);
+    cue(morph + .9, 'thud', .45);
+    leds.forEach((c, i) => tl.set(c, { fill: '#2f8f5a' }, morph + .9 + i * .06));   // the server boots: every light goes green and stays
+    for (let t = morph + 1.4; t < e6 - exitDur; t += .3) leds.forEach((c, i) => tl.set(c, { fill: (Math.floor((t - morph) / .3) + i) % 3 ? '#2f8f5a' : '#9E1B20' }, t)); }
   tl.to('#s6 .sheet, #prov, #draw, #gloss', { x: -W * 1.05, duration: exitDur, ease: 'power3.in' }, e6 - exitDur);
   cue(e6 - exitDur, 'slide', .6);
   show('#s6', s6, e6);
 
-  // ---------- S7 the real exit line; the minister rolls the petition back up and the seal closes it ----------
-  const s7 = e6;
-  tl.set(stageWords, { opacity: 0, y: -2 * VM }, 0);
-  tl.to(stageWords, { opacity: 1, y: 0, duration: .3, ease: 'expo.out', stagger: .03 }, s7 + .02);
-  const stageIn = s7 + .02 + (stageWords.length - 1) * .03 + .3;
-  tl.set('#slip7wrap', { y: H * .5, rotation: 4 }, 0); tl.fromTo('#slip7wrap', { y: H * .5, rotation: 4 }, { y: 0, rotation: -2, duration: .5, ease: 'power3.out' }, s7);
+  // ---------- S7 the callback: the minister (our adviser) bows and rolls the flattered petition back up, unread ----------
+  const s7 = e6, p7 = L.adv.s7;
+  tl.set('#adv', { visibility: 'visible', x: p7.x + W * .5, y: p7.y, scale: p7.s, rotation: 0 }, s7);
+  advPose(s7 + .05, .5, p7, 'power3.out');
+  face(s7, { eyes: 'open', mouth: 'smirk', hands: 'steeple', look: -3.5, lookY: 0, brow: 0 });
+  // the petition is pushed at him; his palm stops it dead, his face turns away; the roller starts at once
+  face(s7 + .5, { hands: 'stop', eyes: 'closed', mouth: 'flat', browL: 2 });
+  tl.to('#adv-head', { rotation: 11, svgOrigin: '0 104', duration: .25, ease: 'power3.out' }, s7 + .5);
+  tl.to('#adv', { rotation: 4, duration: .25, ease: 'power3.out' }, s7 + .5);
+  tl.to('#slip7wrap', { x: (V ? 0 : 3 * VM) - 2 * VM, duration: .12, ease: 'power2.out', yoyo: true, repeat: 1 }, s7 + .62);
+  cue(s7 + .6, 'thud', .45);
+  face(s7 + 1.9, { mouth: 'smile', browL: 0 });
+  { const p7c = V ? { x: p7.x - 120, y: p7.y + 230, s: p7.s * 1.2 } : { x: p7.x - 150, y: p7.y + 260, s: p7.s * 1.22 };
+    tl.to('#adv', { x: p7c.x, y: p7c.y, scale: p7c.s, duration: .2, ease: 'power3.out' }, s7 + .5);   // close on the stopping palm
+    tl.to('#adv', { x: p7.x, y: p7.y, scale: p7.s, duration: .5, ease: 'power2.inOut' }, s7 + 1.6); }
+  tl.set('#stage7', { opacity: 0, y: -8 * VM }, 0);                                        // the stage direction drops in as one block
+  tl.to('#stage7', { opacity: 1, duration: .1 }, s7 + .05);
+  tl.to('#stage7', { y: 0, duration: .5, ease: 'back.out(1.4)' }, s7 + .05);
+  const stageIn = s7 + .05 + .5;
+  tl.set('#slip7wrap', { y: H * .5, x: -W * .2, rotation: 4 }, 0); tl.fromTo('#slip7wrap', { y: H * .5, x: -W * .2, rotation: 4 }, { y: 0, x: V ? 0 : 3 * VM, rotation: -4, duration: .6, ease: 'power3.out' }, s7);
   sealTo(s7 + .05, .5, { x: A.slip7.x + A.slip7.w * .42, y: A.slip7.y - 3 * VM }, .7, 15, 'power3.out');
   const slipH = A.slip7.h;
-  const rollStart = Math.max(s7 + 1.0, stageIn + .4), rollDur = Math.max(1.7, stageIn + readTime(words($('#stage7'))) - .6 - rollStart);
-  // the roller winds down from the top, so MOST JUDICIOUS is the last thing seen before the petition is shut
-  tl.set('#roller', { y: -2.5 * VM }, 0);
-  tl.set('#slip7', { clipPath: 'inset(0% 0% 0% 0%)' }, 0);
-  tl.to('#roller', { y: slipH - 2.5 * VM, duration: rollDur, ease: 'power1.inOut' }, rollStart);
+  const rollDur = 1.5, tossAt = stageIn + readTime(words($('#stage7'))) - .45;
+  const rollStart = Math.max(s7 + .8, tossAt - .8 - rollDur);
+  tl.set('#roller', { y: -2.5 * VM }, 0); tl.set('#slip7', { clipPath: 'inset(0% 0% 0% 0%)', visibility: 'inherit' }, 0);
+  tl.set('#roller', { height: 5 * VM }, 0);
+  tl.to('#roller', { y: slipH - 9 * VM, height: 13 * VM, duration: rollDur, ease: 'power1.inOut' }, rollStart);
   tl.to('#slip7', { clipPath: 'inset(100% 0% 0% 0%)', duration: rollDur, ease: 'power1.inOut' }, rollStart);
+  face(rollStart + 1.1, { eyes: 'open', mouth: 'smirk', look: -3.8, lookY: 1.5, brow: -2, hands: 'steeple' });   // peeks back to watch the stamp go
+  tl.to('#adv-head', { rotation: -6, svgOrigin: '0 104', duration: .5, ease: 'sine.inOut' }, rollStart + .55);
   cue(rollStart, 'roll', .45); cue(rollStart + .9, 'roll', .35);
   const sealed = rollStart + rollDur + .05;
-  sealTo(sealed - .3, .3, { x: A.slip7.x, y: A.slip7.y + slipH }, .75, 0, 'power4.in');
-  tl.to('#seal', { keyframes: [{ scale: .62, duration: .06 }, { scale: .72, duration: .12 }] }, sealed);
+  sealTo(sealed - .3, .3, { x: A.slip7.x, y: A.slip7.y + slipH - 2.5 * VM }, .95, 0, 'power4.in');
+  tl.to('#seal', { keyframes: [{ scale: .8, duration: .06 }, { scale: .9, duration: .12 }] }, sealed);
   cue(sealed - .02, 'seal', .9);
-  tl.set('#slip7', { visibility: 'hidden' }, sealed);   // fully wound: nothing of the petition remains visible
-  { const k = FMT === '9x16' ? 1.12 : 1.5;     // push in on the sealed scroll (anchored on it, so the seal only grows)
+  tl.set('#slip7', { visibility: 'hidden' }, sealed);
+  { const k = V ? 1.25 : 1.45;                 // close view: push in on the sealed roll (anchored on it, so the seal only grows)
     tl.set('#slip7wrap', { transformOrigin: '50% 100%' }, 0);
-    const lift = (A.slip7.y + slipH) - H * .66;
-    tl.to('#slip7wrap', { scale: k, y: -lift, duration: .45, ease: 'power3.out' }, sealed + .05);
-    tl.to('#seal', { scale: .72 * k, y: A.slip7.y + slipH - lift, duration: .45, ease: 'power3.out' }, sealed + .05); }
+    tl.to('#slip7wrap', { scale: k, duration: .45, ease: 'power3.out' }, sealed + .05);
+    tl.to('#seal', { scale: .9 * k, duration: .45, ease: 'power3.out' }, sealed + .05); }
+  tl.to('#adv-head', { rotation: 0, svgOrigin: '0 104', duration: .2 }, sealed - .25);
+  face(sealed + .02, { eyes: 'closed', mouth: 'smile' }); bow(sealed + .02, .8, .15);   // a dismissive little bow
   read('[data-read=stage7]', stageIn, 0);
   exitDur = .34;
-  const e7 = halfBeat(Math.max(stageIn + readTime(words($('#stage7'))), sealed + .5) + exitDur + .03);
+  const toss = Math.max(sealed + .6, tossAt);                                                   // he tosses the sealed petition over his shoulder
+  const e7 = halfBeat(Math.max(stageIn + readTime(words($('#stage7'))), toss + .75) + exitDur + .03);
+  face(toss - .1, { eyes: 'open', mouth: 'smirk', look: 3.5, lookY: -1, hands: 'whisper' });
+  const TX = V ? W * .8 : W * .55, TY = V ? H * .06 : H * .75;
+  tl.to('#slip7wrap', { x: TX, y: -TY, rotation: 220, duration: .6, ease: 'power2.in' }, toss);
+  tl.to('#seal', { x: '+=' + TX, y: '-=' + TY, rotation: 220, duration: .6, ease: 'power2.in' }, toss);
+  cue(toss, 'whoosh', .5); face(toss + .55, { hands: 'steeple', look: 0, lookY: 1.2, mouth: 'smirk', brow: -4 });
   reads[reads.length - 1].out = +(e7 - exitDur).toFixed(3);
-  tl.to('#slip7wrap', { y: H * .7, rotation: 10, duration: exitDur, ease: 'power3.in' }, e7 - exitDur);
   tl.to('#stage7', { y: -H * .3, opacity: 0, duration: exitDur, ease: 'power3.in' }, e7 - exitDur);
   sealVia(e7 - exitDur, exitDur + .45, { x: A.end.x + 16 * VM, y: A.end.y - 16 * VM }, A.end, .9, 0);
+  advPose(e7 - exitDur, exitDur + .4, L.adv.s8, 'power3.inOut');
   show('#s7', s7, e7);
 
-  // ---------- S8 end card: name, install line, repo; the seal is the full stop (bookend with S2) ----------
+  // ---------- S8 end card in two beats: the name lands, he presents it; then the install line slams in; wink, curtain call ----------
   const s8 = e7;
-  tl.set('#endtitle', { opacity: 0, y: 3 * VM }, 0); tl.fromTo('#endtitle', { opacity: 0, y: 3 * VM }, { opacity: 1, y: 0, duration: .45, ease: 'expo.out' }, s8 - .05);
-  tl.set('#install', { opacity: 0, scaleX: .2 }, 0); tl.fromTo('#install', { opacity: 0, scaleX: .2 }, { opacity: 1, scaleX: 1, duration: .4, ease: 'expo.out' }, s8 + .28);
-  tl.set('#url', { opacity: 0, y: 1.5 * VM }, 0); tl.fromTo('#url', { opacity: 0, y: 1.5 * VM }, { opacity: 1, y: 0, duration: .35, ease: 'expo.out' }, s8 + .42);
+  face(s8, { hands: 'steeple', eyes: 'closed', mouth: 'smile' });
+  tl.set('#endtitle', { opacity: 0, y: -6 * VM, scale: 1.25 }, 0); tl.to('#endtitle', { opacity: 1, duration: .08 }, s8 - .05);
+  tl.to('#endtitle', { y: 0, scale: 1, duration: .35, ease: 'power4.in' }, s8 - .05); cue(s8 + .28, 'thud', .6);
   tl.to('#seal', { keyframes: [{ scale: .78, duration: .07 }, { scale: .9, duration: .16 }] }, s8 + .45);
   cue(s8 + .43, 'seal', 1); cue(s8 + .45, 'chime', .5);
-  sheen('#sheen8', s8 + 1.2, 1.8);
-  const endIn = s8 + .8;
-  read('[data-read=endtitle]', endIn, 0); read('[data-read=install]', endIn, 0); read('[data-read=url]', endIn, 0);
-  const endWords = ['#endtitle', '#install', '#url'].reduce((n, q) => n + words($(q)), 0);   // the card is read as a whole
-  const DUR = +(Math.ceil((endIn + readTime(endWords) + .35) * 10) / 10).toFixed(2);
-  reads.slice(-3).forEach(r => { r.out = DUR; r.need = +readTime(endWords).toFixed(3); });
+  tl.set('#endtag', { opacity: 0, y: 2 * VM }, 0); tl.to('#endtag', { opacity: 1, y: 0, duration: .4, ease: 'expo.out' }, s8 + .2);
+  bow(s8 + .5, .8, .2);                                                    // presents the name with a small bow
+  const beat2 = s8 + 1.5;                                                  // second beat: the command
+  face(beat2 - .1, { hands: 'whisper', eyes: 'open', mouth: 'smile', look: -4, lookY: .5, brow: -2 });   // presents the command
+  { const p8 = L.adv.s8; tl.to('#adv', { x: p8.x + (V ? 30 : 110), y: p8.y + (V ? 20 : 260), scale: p8.s * (V ? 1.04 : 1.14), duration: .3, ease: 'power3.out' }, beat2 - .1);
+    tl.to('#adv', { x: p8.x, y: p8.y, scale: p8.s, duration: .6, ease: 'power2.inOut' }, beat2 + 1.2); }
+  tl.to('#adv', { rotation: -6, duration: .3, ease: 'power2.out' }, beat2 - .1);
+  face(beat2 + 1.2, { hands: 'fold', mouth: 'smirk', look: 0, lookY: 1.2, brow: -4 }); tl.to('#adv', { rotation: 0, duration: .35 }, beat2 + 1.2);
+  tl.set('#install', { opacity: 0, scale: 1.3 }, 0); tl.to('#install', { opacity: 1, duration: .06 }, beat2);
+  tl.to('#install', { scale: 1, duration: .28, ease: 'power4.in' }, beat2); cue(beat2 + .26, 'stamp', .55);
+  tl.set('#url', { opacity: 0, y: 1.5 * VM }, 0); tl.to('#url', { opacity: 1, y: 0, duration: .35, ease: 'expo.out' }, beat2 + .3);
+  sheen('#sheen8', beat2 + .6, 1.8);
+  const endIn = s8 + .8, cmdIn = beat2 + .65;
+  read('[data-read=endtitle]', endIn, 0); read('[data-read=endtag]', endIn, 0); read('[data-read=install]', cmdIn, 0); read('[data-read=url]', cmdIn, 0);
+  const DUR = +(Math.ceil((cmdIn + readTime(words($('#install')) + words($('#url'))) + 1.8) * 10) / 10).toFixed(2);
+  reads.slice(-4).forEach(r => { r.out = DUR; });
+  face(DUR - 1.45, { eyes: 'wink', mouth: 'smirk', look: 0, lookY: 1.2 }); cue(DUR - 1.45, 'tap', .4);
+  tl.to('#adv', { rotation: -4, duration: .4, ease: 'back.out(2)' }, DUR - 1.5);   // leans into the wink
   tl.to('#seal', { rotation: 6, duration: DUR - s8 - .7, ease: 'sine.inOut' }, s8 + .7);
   show('#s8', s8, DUR + 1);
   tl.set({}, {}, DUR);
 
-  window.META = { W, H, fps: FPS, dur: DUR, fmt: FMT, beatPeriod: P, beat0: BEAT0, musicOffset: 0.2697 };
+  window.META = { W, H, fps: FPS, dur: DUR, fmt: FMT, beatPeriod: P, beat0: BEAT0, musicOffset: MUSIC_OFFSET };
   window.READS = reads; window.CUES = cues.sort((a, b) => a.t - b.t); window.SCENES = scenes;
-  window.seek = t => { tl.time(Math.min(Math.max(t, 5e-4), DUR), true); ambient(t); };   // 5e-4: keep time-0 sets applied
+  window.seek = t => { tl.time(Math.min(Math.max(t, 5e-4), DUR), true); ambient(t); };
   window.seek(0);
   window.ready = true;
 }
-build().catch(e => { console.error(e); window.buildError = String(e); });
+build().catch(e => { console.error(e); window.buildError = String(e && e.stack || e); });
 })();
 </script>
 </body>

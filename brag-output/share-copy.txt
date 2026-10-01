@@ -1,4 +1,2 @@
-I built eunuch mode: an Agent Skill that makes your AI coding assistant answer like a scheming palace adviser. Flattery ceremonial, advice candid.
-
-Music: "Sneaky Snitch" by Kevin MacLeod (incompetech.com), CC BY 4.0.
+I built eunuch mode: an Agent Skill that turns your AI coding assistant into a scheming palace adviser. Flattery ceremonial, advice candid.
 https://github.com/conorbronsdon/eunuch-mode

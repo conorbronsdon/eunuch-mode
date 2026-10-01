@@ -1,8 +1,8 @@
 # Launch film: The Petition Desk
 
-A 34-second launch film for Eunuch Mode in two cuts: [`brag.mp4`](brag.mp4) (16:9, 1920×1080, for the README and GitHub) and [`brag-9x16.mp4`](brag-9x16.mp4) (1080×1920, for X, TikTok and Shorts). Both are 60 fps with audio normalised to −14 LUFS.
+A 30-second launch film for Eunuch Mode in two cuts: [`brag.mp4`](brag.mp4) (16:9, 1920×1080, for the README and GitHub) and [`brag-9x16.mp4`](brag-9x16.mp4) (1080×1920, for X, TikTok and Shorts). Both are 60 fps with audio normalised to −14 LUFS. The music is CC0, so posts need no credit line.
 
-A developer's petition ("Rewrite it in Rust.") is stamped MOST JUDICIOUS. Then the real adviser answers: a courtly entrance, "No, not this sprint.", a palace metaphor that carries the advice, and an exit line in character, as the flattered petition is rolled back up, unread. A single red wax seal travels through every scene.
+A developer asks his AI whether to rewrite a working backend in Rust. An original character, a bald, heavy-lidded palace adviser in a fictional court robe, slides in at his shoulder and whispers "Most judicious, sire." Then the real answer lands: a courtly entrance while he bows, a side-eye shared with the viewer, "No, not this sprint." with his arms folded, a palace metaphor that carries the advice, and his own exit line as he refuses to read the flattered petition, rolls it shut, seals it and tosses it away. A red wax seal from his chain of office travels through every scene.
 
 Every line attributed to the skill is a verbatim excerpt from one recorded run of v1.1.0 on Claude Opus 5.5. [facts.md](facts.md) lists each on-screen line and its source; the full transcript is in [../evals/runs/2026-09-30-claude-v1.1.md](../evals/runs/2026-09-30-claude-v1.1.md).
 

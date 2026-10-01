@@ -12,9 +12,9 @@ An Agent Skill that answers your questions as a silver-tongued palace adviser.
 
 </div>
 
-[![The Petition Desk: a petition reading "Rewrite it in Rust." stamped MOST JUDICIOUS, beside a red wax seal. Click to play the 34-second launch film.](brag-output/brag.jpg)](brag-output/brag.mp4)
+[![The Petition Desk: a bald palace adviser in a claret robe whispers "Most judicious, sire." to a developer asking whether to rewrite his backend in Rust. Click to play the 30-second launch film.](brag-output/brag.jpg)](brag-output/brag.mp4)
 
-*[Watch the 34-second launch film](brag-output/brag.mp4) ([vertical cut](brag-output/brag-9x16.mp4)). Every line the adviser says in it comes from a recorded run.*
+*[Watch the 30-second launch film](brag-output/brag.mp4) ([vertical cut](brag-output/brag-9x16.mp4)). Every line the adviser says in it comes from a recorded run.*
 
 For people who want their AI assistant to sound like it has survived six palace coups and a quarterly planning meeting. Works with agents that load [Agent Skills](https://agentskills.io), including [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and Codex.
 
@@ -121,4 +121,4 @@ Built by [Conor Bronsdon](https://conorbronsdon.com/?utm_source=github&utm_mediu
 
 ## License
 
-[MIT](LICENSE). The launch film uses music by Kevin MacLeod (CC BY 4.0), Kenney sound effects (CC0) and open-licence fonts; see [film licences](brag-output/LICENSES.md).
+[MIT](LICENSE). The launch film uses CC0 music ("Trouble in the Garden", Augmentality) and CC0 Kenney sound effects, plus open-licence fonts; see [film licences](brag-output/LICENSES.md).

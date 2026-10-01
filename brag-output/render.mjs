@@ -82,6 +82,14 @@ if (args.check) {
         const re = /\S+/g; let m; while ((m = re.exec(n.data))) { const rg = document.createRange(); rg.setStart(n, m.index); rg.setEnd(n, m.index + m[0].length);
           for (const q of rg.getClientRects()) if (q.right > sx0 && q.left < sx1 && q.bottom > sy0 && q.top < sy1) hit = true; } }
       if (!sealLive) hit = false; const ix = hit ? 1 : 0, iy = hit ? 1 : 0;
+      // the adviser's head and torso must not cover any glyph either
+      const advEl = document.getElementById('adv'), advBox = document.getElementById('adv-hit');
+      let advHit = false;
+      // the adviser must not be drawn over any glyph: hit-test points across every word (true visual occlusion)
+      if (advEl && getComputedStyle(advEl).visibility !== 'hidden') { const w2 = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+        for (let n; (n = w2.nextNode());) { const re2 = /\S+/g; let m2; while ((m2 = re2.exec(n.data))) { const rg = document.createRange(); rg.setStart(n, m2.index); rg.setEnd(n, m2.index + m2[0].length);
+          for (const q of rg.getClientRects()) for (const fx of [.1, .5, .9]) for (const fy of [.3, .7]) { const stack = document.elementsFromPoint(q.left + q.width * fx, q.top + q.height * fy);
+            for (const hitEl of stack) { if (hitEl === el || el.contains(hitEl)) break; if (hitEl.closest && hitEl.closest('#adv') && eff(hitEl) > .05) { advHit = true; break; } } } } } }
       // text collision: no other visible text block may overlap this one
       const others = [...document.querySelectorAll('[data-read], .slip-text, .slip-label, .imp, #chip, .label')].filter(o => o !== el && !o.contains(el) && !el.contains(o) && eff(o) > .05);
       const glyphs = node => { const out = [], w = document.createTreeWalker(node, NodeFilter.SHOW_TEXT); for (let n; (n = w.nextNode());) { if (eff(n.parentElement) < .05) continue; const re = /\S+/g; let m;
@@ -91,7 +99,7 @@ if (args.check) {
       const kidsOverflow = [...el.querySelectorAll('span')].some(k => { const kb = k.getBoundingClientRect(); return kb.width && (kb.right > innerWidth - 8 || kb.left < 8); });
       const V = innerHeight > innerWidth;   // 9:16: keep reads inside the platform-safe column (TikTok/Reels/Shorts UI)
       const safe = !V || (b.left >= 40 && b.right <= innerWidth - 150 && b.top >= 250 && b.bottom <= innerHeight - 400);
-      return { x: b.left, y: b.top, w: b.width, h: b.height, op, safe, collide, fit: el.scrollWidth <= el.clientWidth + 2 && b.left >= 8 && b.right <= innerWidth - 8 && b.top >= 8 && b.bottom <= innerHeight - 8 && !kidsOverflow, sealHit: ix * iy > 0 && seal.width < innerWidth * .5 }; });
+      return { x: b.left, y: b.top, w: b.width, h: b.height, op, safe, collide: collide || advHit, fit: el.scrollWidth <= el.clientWidth + 2 && b.left >= 8 && b.right <= innerWidth - 8 && b.top >= 8 && b.bottom <= innerHeight - 8 && !kidsOverflow, sealHit: ix * iy > 0 && seal.width < innerWidth * .5 }; });
   }, { t, reads: READS });
   for (const [i, r] of READS.entries()) {
     const have = +(r.out - r.in).toFixed(3);
@@ -103,10 +111,10 @@ if (args.check) {
     const s = await sample(probe, +t.toFixed(4));
     READS.forEach((r, i) => { if (t < r.in - 1e-6 || t > r.out - step) return; const st = state[i], b = s[i];
       if (!st.ref) st.ref = b; st.worstDrift = Math.max(st.worstDrift, Math.abs(b.x - st.ref.x), Math.abs(b.y - st.ref.y));
-      st.minOp = Math.min(st.minOp, b.op); st.fit = st.fit && b.fit; st.seal = st.seal || b.sealHit; st.safe = st.safe && b.safe; st.collide = st.collide || b.collide; });
+      st.minOp = Math.min(st.minOp, b.op); st.fit = st.fit && b.fit; st.seal = st.seal || b.sealHit; st.safe = st.safe && b.safe; if (b.collide && !st.collide) st.collideAt = +t.toFixed(2); st.collide = st.collide || b.collide; });
   }
   READS.forEach((r, i) => { const st = state[i];
-    const line = `${r.sel.padEnd(28)} in ${r.in.toFixed(2)} out ${r.out.toFixed(2)} need ${r.need.toFixed(2)} drift ${st.worstDrift.toFixed(1)}px minOpacity ${st.minOp.toFixed(3)} fit ${st.fit} sealOverlap ${st.seal} safeZone ${st.safe} collision ${st.collide}`;
+    const line = `${r.sel.padEnd(28)} in ${r.in.toFixed(2)} out ${r.out.toFixed(2)} need ${r.need.toFixed(2)} drift ${st.worstDrift.toFixed(1)}px minOpacity ${st.minOp.toFixed(3)} fit ${st.fit} sealOverlap ${st.seal} safeZone ${st.safe} collision ${st.collide}${st.collide ? ' @' + st.collideAt + 's' : ''}`;
     console.log(line);
     if (st.worstDrift > 3) fails.push('DRIFT ' + line); if (st.minOp < .98) fails.push('OPACITY ' + line); if (!st.fit) fails.push('FIT ' + line); if (st.seal) fails.push('SEAL ' + line); if (!st.safe) fails.push('SAFE ' + line); if (st.collide) fails.push('COLLISION ' + line); });
   // determinism: the same t renders the same pixels after seeking elsewhere
@@ -149,7 +157,7 @@ if (args['no-audio']) { fs.copyFileSync(silent, out); }
 else {
   const CUES = await probe.evaluate(() => window.CUES);
   const A = join(COMP, 'assets', 'audio');
-  const inputs = ['-ss', String(META.musicOffset), '-t', String(dur + .2), '-i', join(A, 'sneaky-snitch-0-42s.ogg')];
+  const inputs = ['-ss', String(META.musicOffset), '-t', String(dur + .2), '-i', join(A, 'trouble-in-the-garden-15-57s.ogg')];
   const SFX_GAIN = 0.34;               // cues sit under the music
   const parts = [`[0:a]aformat=sample_rates=48000:channel_layouts=stereo,volume=1.0,afade=t=in:d=0.08,afade=t=out:st=${(dur - 1.6).toFixed(2)}:d=1.6[m]`];
   CUES.forEach((c, i) => { inputs.push('-i', join(A, `${c.sfx}.ogg`));
@@ -162,7 +170,7 @@ else {
   const norm = (src, dst) => {
     const m = run('ffmpeg', ['-hide_banner', '-i', src, '-af', 'loudnorm=I=-14:TP=-2:LRA=11:print_format=json', '-f', 'null', '-']).stderr;
     const j = JSON.parse(m.slice(m.lastIndexOf('{'), m.lastIndexOf('}') + 1));
-    run('ffmpeg', ['-v', 'error', '-y', '-i', src, '-af', `loudnorm=I=-14:TP=-2:LRA=11:measured_I=${j.input_i}:measured_TP=${j.input_tp}:measured_LRA=${j.input_lra}:measured_thresh=${j.input_thresh}:offset=${j.target_offset}:linear=true,aresample=48000`, '-c:a', 'aac', '-b:a', '256k', dst]);
+    run('ffmpeg', ['-v', 'error', '-y', '-i', src, '-af', `loudnorm=I=-14:TP=-2:LRA=11:measured_I=${j.input_i}:measured_TP=${j.input_tp}:measured_LRA=${j.input_lra}:measured_thresh=${j.input_thresh}:offset=${j.target_offset}:linear=true,alimiter=limit=0.7:level=false,aresample=48000`, '-c:a', 'aac', '-b:a', '256k', dst]);
   };
   const aac = join(tmp, 'mix.m4a'); norm(raw, aac);
   run('ffmpeg', ['-v', 'error', '-y', '-i', silent, '-i', aac, '-c:v', 'copy', '-c:a', 'copy', '-shortest', '-movflags', '+faststart', out]);

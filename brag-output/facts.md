@@ -6,13 +6,16 @@ Prompt, typed on screen verbatim: `Eunuch mode.` / `Should I rewrite our working
 
 | Scene | On screen | Source |
 | --- | --- | --- |
-| Hook, callback | PETITION TO EUNUCH MODE / Rewrite it in Rust. | Film copy: the product name and a paraphrase of the prompt |
-| Hook, callback | MOST JUDICIOUS (stamp) | Film copy: the skill's house flourish ("Most judicious, sire", SKILL.md), shown as the ceremonial approval the real answer then overrules |
-| Prompt | A palace adviser for your AI assistant. (README tagline); REAL RUN · CLAUDE CODE; Eunuch mode.; Should I rewrite our working Node backend in Rust this sprint? | README tagline and the recorded prompt |
+| Hook | REAL RUN · CLAUDE CODE; Eunuch mode.; Should I rewrite our working Node backend in Rust this sprint? (on the developer's laptop) | The recorded prompt |
+| Hook | Most judicious, sire. (the adviser's whisper) | The skill's house flourish (SKILL.md: "Most judicious, sire"), shown as the flattery the real answer then overrules |
+| Callback | PETITION TO EUNUCH MODE / Rewrite it in Rust. | Film copy: the product name and a paraphrase of the prompt |
+| Callback | MOST JUDICIOUS (stamp on the petition) | Film copy echoing the whisper |
 | Flattery | The throne does well to ask before it marches, sire. | Skill output, sentence 1 |
 | Verdict | No, not this sprint. | Skill output, sentence 2 |
 | Metaphor | A working Node backend is a loyal province that pays its taxes. / (it ships features and serves users) | Skill output, sentence 3, with its own gloss moved beneath the drawing |
 | Exit | [The Minister of Borrow Checkers bows and rolls his scroll back up, unread.] | Skill output, final line |
-| End | Eunuch Mode; $ npx skills add conorbronsdon/eunuch-mode; github.com/conorbronsdon/eunuch-mode | README install line (tested 2026-09-30) and repository URL |
+| End | Eunuch Mode; A palace adviser for your AI assistant.; $ npx skills add conorbronsdon/eunuch-mode; github.com/conorbronsdon/eunuch-mode | README tagline, README install line (tested 2026-09-30) and repository URL |
 
 Nothing on screen claims a feature the skill lacks: no tools, no memory, no enforcement.
+
+The adviser character is an original drawing; his expressions and gestures are staging, not claims about the skill. The skill itself is text only.
