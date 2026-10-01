@@ -95,7 +95,7 @@ python3 scripts/render_demo.py
 python3 scripts/validate.py
 ```
 
-Package validation checks the files and metadata; it does not prove that every model will follow the persona. Checks run locally. Optional CI and release templates live in docs/workflow-templates; copy them into .github/workflows using a credential with workflow permission to activate them.
+Package validation checks the files and metadata; it does not prove that every model will follow the persona. The same check runs in GitHub Actions on every push and pull request (`.github/workflows/validate.yml`). Releases are cut by hand with `gh release create`.
 
 ## Inspiration
 

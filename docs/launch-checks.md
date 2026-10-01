@@ -21,7 +21,7 @@ SKILL.md, agents/openai.yaml, references/court-examples.md, both scripts, README
 
 One qualitative model trial does not establish reliability across models. Non-triggering, distress and tool-permission behavior have reusable cases but were not measured in that trial. The sample GIF/video are authored illustrations. Both local and published-repository Skills CLI discovery found exactly one skill. Every agent's full installer and conversation persistence were not tested.
 
-Social-preview artwork is included; assigning GitHub's custom social image requires its Settings upload interface. Repository metadata and remote content must be verified after publication. Actions workflow creation is unavailable with the publishing credential; docs/workflow-templates contains uninstalled templates, so CI and release automation are not active. The v1.0.0 Git tag can still be published.
+Social preview: GitHub's custom image is `docs/social-card.png`, a still from the v1.1.0 film. Validation runs in GitHub Actions (`.github/workflows/validate.yml`) on every push and pull request. Releases are cut by hand with `gh release create`, so there is no release workflow.
 
 No content hold applies to this original fictional persona package.
 
