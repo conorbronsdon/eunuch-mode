@@ -28,19 +28,58 @@ export type ActivitySummary = {
   verb: string | null
 }
 
-// Commands whose second word says what they do (git push, cargo test).
-const SUBCOMMANDS = new Set(['git', 'gh', 'npm', 'pnpm', 'yarn', 'bun', 'cargo', 'docker', 'kubectl', 'go', 'uv', 'pip', 'pip3', 'poetry', 'dotnet', 'terraform', 'helm', 'claude'])
-const WORD = /^[a-z][a-z0-9_-]{0,19}$/
+// Only well-known programs are named, and only their well-known subcommands:
+// an unknown program (a script called `payroll`) or an unknown second word (a
+// file, a script name, a secret) is never sent.
+const COMMON = ['install', 'add', 'remove', 'run', 'test', 'build', 'publish', 'update', 'init']
+const SUBCOMMANDS: Readonly<Record<string, readonly string[]>> = {
+  git: ['push', 'pull', 'commit', 'status', 'log', 'diff', 'add', 'rebase', 'merge', 'checkout', 'switch', 'branch', 'fetch', 'clone', 'reset', 'revert', 'stash', 'tag', 'cherry-pick', 'restore', 'show', 'blame', 'init', 'clean', 'apply', 'bisect', 'worktree'],
+  gh: ['pr', 'issue', 'repo', 'release', 'run', 'workflow', 'api', 'auth'],
+  npm: [...COMMON, 'i', 'ci', 'exec', 'outdated', 'audit', 'version'],
+  pnpm: [...COMMON, 'i', 'exec', 'dlx', 'outdated', 'audit'],
+  yarn: [...COMMON, 'dlx', 'outdated', 'audit'],
+  bun: [...COMMON, 'i', 'x'],
+  cargo: [...COMMON, 'check', 'clippy', 'fmt', 'bench', 'doc', 'nextest', 'clean'],
+  docker: ['build', 'run', 'compose', 'ps', 'pull', 'push', 'exec', 'images', 'logs', 'stop', 'start', 'rm', 'rmi'],
+  kubectl: ['get', 'apply', 'describe', 'logs', 'delete', 'rollout', 'exec', 'port-forward', 'scale'],
+  go: ['build', 'test', 'run', 'get', 'mod', 'vet', 'fmt', 'install', 'generate'],
+  uv: ['run', 'add', 'sync', 'pip', 'venv', 'lock', 'tool'],
+  pip: ['install', 'uninstall', 'freeze', 'list', 'show'],
+  pip3: ['install', 'uninstall', 'freeze', 'list', 'show'],
+  poetry: ['add', 'install', 'run', 'lock', 'update', 'build', 'publish'],
+  dotnet: ['build', 'test', 'run', 'restore', 'publish', 'add'],
+  terraform: ['plan', 'apply', 'init', 'destroy', 'fmt', 'validate', 'import'],
+  helm: ['install', 'upgrade', 'list', 'template', 'uninstall', 'rollback'],
+  claude: ['plugin', 'mcp', 'update'],
+}
+const PROGRAMS = new Set([
+  ...Object.keys(SUBCOMMANDS),
+  'python', 'python3', 'node', 'deno', 'ruby', 'java', 'javac', 'php', 'perl', 'swift', 'rustc', 'rustup', 'tsc', 'npx', 'pnpx', 'bunx',
+  'pytest', 'jest', 'vitest', 'mocha', 'rspec', 'tox', 'nox', 'phpunit', 'ctest', 'playwright',
+  'make', 'cmake', 'ninja', 'bazel', 'gradle', 'gradlew', 'mvn', 'webpack', 'vite', 'esbuild', 'rollup', 'next',
+  'eslint', 'prettier', 'ruff', 'black', 'flake8', 'mypy', 'pylint', 'biome', 'rubocop', 'gofmt', 'golangci-lint', 'shellcheck',
+  'ls', 'cat', 'head', 'tail', 'grep', 'rg', 'find', 'fd', 'sed', 'awk', 'sort', 'uniq', 'wc', 'diff', 'echo', 'printf', 'cd', 'pwd',
+  'mkdir', 'rm', 'cp', 'mv', 'touch', 'chmod', 'ln', 'tar', 'zip', 'unzip', 'which', 'env', 'export', 'sleep', 'jq', 'yq', 'xargs', 'tee',
+  'curl', 'wget', 'ssh', 'scp', 'rsync', 'ping', 'psql', 'mysql', 'sqlite3', 'redis-cli', 'mongosh', 'prisma', 'alembic',
+  'podman', 'wrangler', 'vercel', 'netlify', 'fly', 'flyctl', 'aws', 'gcloud', 'az', 'ansible', 'pulumi', 'tofu',
+  'brew', 'apt', 'apt-get', 'choco', 'scoop', 'winget', 'gem', 'bundle', 'composer', 'conda',
+  'get-childitem', 'get-content', 'set-content', 'remove-item', 'copy-item', 'move-item', 'select-string', 'invoke-webrequest',
+])
+// Claude Code's own tools; a plugin's custom tool is sent as "a tool".
+const TOOLS = new Set([
+  'Bash', 'PowerShell', 'Read', 'Write', 'Edit', 'MultiEdit', 'NotebookEdit', 'NotebookRead', 'Grep', 'Glob', 'LSP',
+  'WebFetch', 'WebSearch', 'Agent', 'Task', 'SendMessage', 'Workflow', 'TodoWrite', 'TaskCreate', 'TaskUpdate', 'TaskList',
+  'TaskGet', 'AskUserQuestion', 'EnterPlanMode', 'ExitPlanMode', 'Skill', 'ToolSearch', 'ListMcpResourcesTool', 'ReadMcpResourceTool',
+])
 const EXT = /^\.[a-z0-9]{1,6}$/
-const TOOL = /^[A-Za-z][A-Za-z0-9_]{0,40}$/
 
-/** The verb of a shell command's first simple command: `git push`, `pytest`, or null when it is not a plain word. */
+/** The verb of a shell command's first simple command: `git push`, `pytest`; null for a program nobody knows. */
 export function verbOf(firstSegment: string): string | null {
   const words = firstSegment.trim().split(/\s+/)
   const head = (words[0] ?? '').toLowerCase()
-  if (!WORD.test(head)) return null
+  if (!PROGRAMS.has(head)) return null
   const second = (words[1] ?? '').toLowerCase()
-  if (SUBCOMMANDS.has(head) && WORD.test(second) && !second.startsWith('-')) return `${head} ${second}`
+  if (SUBCOMMANDS[head]?.includes(second)) return `${head} ${second}`
   return head
 }
 
@@ -51,7 +90,7 @@ export function summarize(
   input: Readonly<Record<string, unknown>>,
   segments: (command: string) => string[],
 ): ActivitySummary {
-  const safeTool = tool.startsWith('mcp__') ? 'an external tool' : TOOL.test(tool) ? tool : 'a tool'
+  const safeTool = tool.startsWith('mcp__') ? 'an external tool' : TOOLS.has(tool) ? tool : 'a tool'
   const path = input.file_path ?? input.notebook_path ?? input.path
   let ext: string | null = null
   if (typeof path === 'string') {

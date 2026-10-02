@@ -101,6 +101,7 @@ describe('court', () => {
     expect(statuses.at(-1)).toBe('👑 Court in session')
 
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
+    await settle()
     const ui = await mountBand($)
     expect(await ui.find({ type: 'Text', text: /Your humble vizier/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /\[(whispers|leans|glances|murmurs)/ })).toBeDefined()
@@ -123,6 +124,7 @@ describe('court', () => {
     await start($)
     await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
+    await settle()
 
     await $.tool.call({ tool: 'Bash', command: 'git push --force origin main' } as any)
     await settle()
@@ -139,6 +141,7 @@ describe('court', () => {
     await start($)
     await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
+    await settle()
     const result: any = await $.tool.call({ tool: 'Bash', command: 'false' } as any)
     await settle()
     expect(result.isError).toBe(true)
@@ -157,6 +160,7 @@ describe('court', () => {
     await $.prompt.submit({ text: 'ok, drop the bit', wait: false, origin: { kind: 'composer' } } as any)
     expect(statuses.at(-1)).toBeUndefined()
     await $.turn.start({ text: 'go', turnId: 't2' } as any)
+    await settle()
     expect(await spinnerMessage($)).toBe('Sauteing')
     const ui = await mountBand($)
     expect(await ui.find({ type: 'Text', text: /humble vizier/ })).toBeUndefined()
@@ -196,6 +200,7 @@ describe('court', () => {
     await start($)
     await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
+    await settle()
     const result: any = await $.tool.call({ tool: 'Bash', command: 'rm -rf build' } as any)
     await settle()
     expect(seen).toEqual([{ tool: 'Bash', command: 'rm -rf build' }])
@@ -209,6 +214,7 @@ describe('court', () => {
     await start($)
     await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
+    await settle()
     await $.tool.call({ tool: 'Edit', file_path: '/work/src/app.ts', old_string: 'a', new_string: 'b' } as any)
     await settle()
     expect(POOLS.edit).toContain(await spinnerMessage($))
@@ -226,6 +232,7 @@ describe('court', () => {
     await start($)
     await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
+    await settle()
     const spoken = async () => {
       const { text } = await $.command.run({ command: 'court', args: '', origin: { kind: 'composer' } } as any)
       return Number(/Lines drawn this session: (\d+)/.exec(text ?? '')?.[1] ?? -1)
@@ -252,6 +259,7 @@ describe('court', () => {
     await start($)
     await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
+    await settle()
     await $.tool.call({ tool: 'Edit', file_path: '/work/a.ts', old_string: 'a', new_string: 'b' } as any)
     await settle()
     await $.turn.complete({ reason: 'answer', answer: 'ok', durationMs: 1 } as any)
@@ -281,6 +289,7 @@ describe('court', () => {
     await start($)
     await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
+    await settle()
     await $.turn.complete({ reason: 'answer', answer: 'ok', durationMs: 1 } as any)
     await start($) // a hot reload runs session.start again
     const ui = await mountBand($, { ...BAND, isWorking: false })
@@ -295,6 +304,7 @@ describe('court', () => {
     await start($)
     await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
+    await settle()
     await $.turn.complete({ reason: 'answer', answer: 'ok', durationMs: 1 } as any)
     await settle()
     const ui = await mountBand($, { ...BAND, isWorking: false, bodyColumns: 40 })
@@ -311,6 +321,7 @@ describe('court', () => {
     await start($)
     await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
+    await settle()
     const ui = await mountBand($, { ...BAND, bodyColumns: 30 })
     expect(await ui.find({ type: 'Text', text: /♛/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /humble vizier/ })).toBeUndefined()
@@ -323,6 +334,7 @@ describe('generative', () => {
     await start($)
     await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
+    await settle()
   }
   const generative = ($: any, arg: string) => $.command.run({ command: 'court', args: `generative ${arg}`, origin: { kind: 'composer' } } as any)
   const edit = { tool: 'Edit', file_path: 'C:\Users\alice\acme\billing.ts', old_string: 'hunter2', new_string: 'sk-ant-SECRET' }
@@ -449,6 +461,7 @@ describe('treachery', () => {
     await start($)
     await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
+    await settle()
   }
   const court = async ($: any, args: string) =>
     ((await $.command.run({ command: 'court', args, origin: { kind: 'composer' } } as any)) as any).text as string
@@ -490,6 +503,23 @@ describe('treachery', () => {
     await $.prompt.submit({ text: 'eunuch mode, push my branch', wait: false, origin: { kind: 'composer' } } as any)
     expect(prompts.at(-1).text).toBe('eunuch mode, push my branch')
     expect(prompts.at(-1).context).toBeUndefined()
+  })
+
+  test('parallel sins are all noted, even when a newer call has taken the stage', async ($, on) => {
+    world(on, [])
+    await inSession($)
+    await court($, 'treachery on')
+    await Promise.all([
+      $.tool.call({ tool: 'Bash', command: 'git push --force origin main' } as any),
+      $.tool.call({ tool: 'Bash', command: 'rm -rf dist' } as any),
+      $.tool.call({ tool: 'Bash', command: 'git commit --no-verify -m wip' } as any),
+    ])
+    await settle()
+    const ledger = await court($, 'ledger')
+    expect(ledger).toContain('Rewrote the chronicle by force')
+    expect(ledger).toContain('Burned a wing of the archive')
+    expect(ledger).toContain('Slipped past the gatekeepers')
+    expect(ledger).toContain('8/10')
   })
 
   test('a full meter: the coup is attempted at the end of the turn, fails, and the meter resets', async ($, on) => {

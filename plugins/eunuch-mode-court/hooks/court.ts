@@ -109,6 +109,9 @@ let genLoading: Promise<GenState> | null = null
 // The Ledger of Grievances, kept the same way (module copy, mirrored to $.state).
 let plotMem: Plot | null = null
 let plotLoading: Promise<Plot> | null = null
+// The no-repeat line ledger, kept the same way.
+let ledgerMem: CourtLedger | null = null
+let ledgerLoading: Promise<CourtLedger> | null = null
 let asidesSpoken = 0
 
 async function sceneOf($: EngineInterface): Promise<CourtScene> {
@@ -141,6 +144,21 @@ async function modeOf($: EngineInterface): Promise<Mode> {
   return stored === 'always' || stored === 'never' ? stored : 'skill'
 }
 
+async function ledgerOf($: EngineInterface): Promise<CourtLedger> {
+  if (ledgerMem) return ledgerMem
+  ledgerLoading ??= $.state.get(LEDGER).then(({ value }) => (ledgerMem ??= value ?? { seed: 1, count: 0, used: [] }))
+  return ledgerLoading
+}
+
+/** Adds a line to the ledger; false when it was already heard. Synchronous over the module copy, so atomic. */
+async function claimLine($: EngineInterface, line: string): Promise<{ claimed: boolean; count: number }> {
+  const ledger = await ledgerOf($)
+  if (ledger.used.includes(line)) return { claimed: false, count: ledger.count }
+  ledgerMem = { seed: ledger.seed, count: ledger.count + 1, used: [...ledger.used, line] }
+  void $.state.set(LEDGER, ledgerMem).catch(() => {})
+  return { claimed: true, count: ledger.count }
+}
+
 /**
  * Draws a line nobody has heard this session and records it before returning
  * it: a banked generated line for this activity when generative mode left
@@ -149,19 +167,14 @@ async function modeOf($: EngineInterface): Promise<Mode> {
 function drawLine($: EngineInterface, activity: Activity): Promise<{ line: string; count: number }> {
   const run = drawing.then(async () => {
     const banked = (await generativeOn($)) ? await takeFromBank($, activity) : null
-    for (let attempt = 0; attempt < 16; attempt++) {
-      const { value, version } = await $.state.get(LEDGER)
-      const ledger: CourtLedger = value ?? { seed: 1, count: 0, used: [] }
-      const used = new Set(ledger.used)
-      const line = banked && !used.has(banked) ? banked : pickLine(activity, used, ledger.seed, ledger.count)
-      const written = await $.state.set(
-        LEDGER,
-        { seed: ledger.seed, count: ledger.count + 1, used: [...ledger.used, line] },
-        { ifVersion: version },
-      )
-      if (written.isSet) return { line, count: ledger.count }
+    if (banked) {
+      const claim = await claimLine($, banked)
+      if (claim.claimed) return { line: banked, count: claim.count }
     }
-    throw new Error('the line ledger stayed contended')
+    const ledger = await ledgerOf($)
+    const line = pickLine(activity, new Set(ledger.used), ledger.seed, ledger.count)
+    const claim = await claimLine($, line)
+    return { line, count: claim.count }
   })
   drawing = run.catch(() => {})
   return run
@@ -169,20 +182,7 @@ function drawLine($: EngineInterface, activity: Activity): Promise<{ line: strin
 
 /** Records a line that arrived from the model; false when it was already heard. */
 function recordLine($: EngineInterface, line: string): Promise<boolean> {
-  const run = drawing.then(async () => {
-    for (let attempt = 0; attempt < 16; attempt++) {
-      const { value, version } = await $.state.get(LEDGER)
-      const ledger: CourtLedger = value ?? { seed: 1, count: 0, used: [] }
-      if (ledger.used.includes(line)) return false
-      const written = await $.state.set(
-        LEDGER,
-        { seed: ledger.seed, count: ledger.count + 1, used: [...ledger.used, line] },
-        { ifVersion: version },
-      )
-      if (written.isSet) return true
-    }
-    return false
-  })
+  const run = drawing.then(async () => (await claimLine($, line)).claimed)
   drawing = run.catch(() => {})
   return run
 }
@@ -209,7 +209,8 @@ async function generativeModel($: EngineInterface): Promise<string> {
 
 async function genOf($: EngineInterface): Promise<GenState> {
   if (genMem) return genMem
-  genLoading ??= $.state.get(GEN).then(({ value }) => (genMem ??= value ?? EMPTY_GEN))
+  // A call in flight belonged to the module before a reload; nobody will finish it now.
+  genLoading ??= $.state.get(GEN).then(({ value }) => (genMem ??= { ...EMPTY_GEN, ...(value ?? {}), inflight: false }))
   return genLoading
 }
 
@@ -236,45 +237,58 @@ async function plotOf($: EngineInterface): Promise<Plot> {
   return plotLoading
 }
 
-async function setPlot($: EngineInterface, plot: Plot): Promise<void> {
+/** Applies `fn` to the ledger of grievances atomically over the module copy; returns what `fn` decided. */
+async function updatePlot<T>($: EngineInterface, fn: (plot: Plot) => { plot: Plot; result: T }): Promise<T> {
+  await plotOf($)
+  const { plot, result } = fn(plotMem!)
   plotMem = plot
-  await $.state.set(PLOT, plot)
+  void $.state.set(PLOT, plot).catch(() => {})
+  return result
 }
 
 /**
- * Treachery: a finished tool call's grievances go into the ledger, and the
- * adviser makes a whispered aside in the pose of the plot's stage. Reads the
- * call's input and outcome; changes nothing but the court's own drawing.
- * Returns whether he made an aside (so the usual after-call scene waits).
+ * Treachery: a finished tool call's grievances go into the ledger, whatever
+ * is on screen. Reads the call's input and outcome; writes only the ledger.
+ * Returns the plot after them, or null when there were none.
  */
-async function scheme(
+async function noteGrievances(
   $: EngineInterface,
   tool: string,
   input: Readonly<Record<string, unknown>>,
   isError: boolean,
-  seq: number,
-): Promise<boolean> {
-  if (!(await treacheryOn($))) return false
+): Promise<{ plot: Plot; found: Grievance[] } | null> {
+  if (!(await treacheryOn($))) return null
   const found: Grievance[] = grievancesOf(tool, input, isError, new Date(await $.clock.now()))
-  if (found.length === 0) return false
-  const plot = record(await plotOf($), found)
-  await setPlot($, plot)
-  const stageName = stageOf(plot.meter)
+  if (found.length === 0) return null
+  const plot = await updatePlot($, current => {
+    const next = record(current, found)
+    return { plot: next, result: next }
+  })
+  return { plot, found }
+}
+
+/**
+ * Treachery's drawing: a whispered aside in the pose of the plot's stage,
+ * only while the call's own scene is still the newest. Returns whether he made it.
+ */
+async function scheme($: EngineInterface, noted: { plot: Plot; found: Grievance[] }, seq: number): Promise<boolean> {
+  const stageName = stageOf(noted.plot.meter)
   const count = asidesSpoken++
-  const banked = (await generativeOn($)) ? await takeFromBank($, 'aside') : null
-  const line = banked ?? nth(ASIDES[stageName], count)
+  const generative = await generativeOn($)
+  const banked = generative ? await takeFromBank($, 'aside') : null
+  // A generated aside joins the no-repeat rotation; the canned asides cycle on purpose (the joke is the repetition).
+  const line = banked && (await recordLine($, banked)) ? banked : nth(ASIDES[stageName], count)
   const shown = await patchScene(
     $,
     { pose: PLOT_POSE[stageName], line, stage: nth(PLOT_STAGE[stageName], count), detail: null },
     scene => scene.active && staged.seq === seq,
   )
-  if (shown && (await generativeOn($))) void quietly(() => generateAside($, found[0]!))
+  if (shown && generative) void quietly(() => generateAside($, noted.found[0]!))
   return shown
 }
 
 async function takeFromBank($: EngineInterface, activity: Activity | 'aside'): Promise<string | null> {
-  const { value } = await $.state.get(LEDGER)
-  const used = new Set(value?.used ?? [])
+  const used = new Set((await ledgerOf($)).used)
   return updateGen($, gen => {
     const taken = takeBanked(gen, activity, used)
     return { gen: taken.gen, result: taken.line }
@@ -484,8 +498,13 @@ export function register(on: On) {
       genLoading = null
       plotMem = null
       plotLoading = null
+      ledgerMem = null
+      ledgerLoading = null
       const { value: ledger } = await $.state.get(LEDGER)
-      if (!ledger) await $.state.set(LEDGER, { seed: (await $.clock.now()) >>> 0, count: 0, used: [] })
+      if (!ledger) {
+        ledgerMem = { seed: (await $.clock.now()) >>> 0, count: 0, used: [] }
+        await $.state.set(LEDGER, ledgerMem)
+      }
       const mode = await modeOf($)
       if (mode === 'never') return adjourn($)
       // A hot reload runs this again with the old timers gone: clear the
@@ -558,9 +577,9 @@ export function register(on: On) {
     }
     const scene = await sceneOf($)
     const mode = await modeOf($)
-    const { value: ledger } = await $.state.get(LEDGER)
-    const drawn = ledger?.used.length ?? 0
-    const repeats = drawn - new Set(ledger?.used ?? []).size
+    const ledger = await ledgerOf($)
+    const drawn = ledger.used.length
+    const repeats = drawn - new Set(ledger.used).size
     return {
       text: `${COURT_HELP}\n\nNow: ${scene.active ? 'in session' : 'adjourned'} (mode: ${mode}). Lines drawn this session: ${drawn}, ${repeats === 0 ? 'none repeated' : `${repeats} repeated`}.\n${await generativeStatus($)}`,
     }
@@ -583,7 +602,8 @@ export function register(on: On) {
   })
 
   on('turn.start', async ($, e, next) => {
-    await quietly(async () => {
+    // The turn starts at once; the court dresses the scene beside it.
+    void quietly(async () => {
       if ((e as { agentId?: string }).agentId) return
       if (!(await sceneOf($)).active) return
       turnGen++
@@ -616,6 +636,8 @@ export function register(on: On) {
     // The result goes back at once; the court catches up in the background.
     void quietly(async () => {
       const seq = await before
+      // The ledger hears every main-loop call, even one whose scene a newer call has replaced.
+      const noted = isMain && (await sceneOf($)).active ? await noteGrievances($, e.tool, input, Boolean(result.isError)) : null
       if (seq === 0 || staged.seq !== seq) return
       // What generative mode may say about this call: its kind, tool, extension and verb.
       const summary = summarize(classifyTool(e.tool, input), e.tool, input, segmentsOf)
@@ -624,7 +646,7 @@ export function register(on: On) {
         const shown = await stage($, activity, null, gen)
         if (shown !== 0) void quietly(() => generate($, { ...summary, activity }, shown))
       }
-      if (await scheme($, e.tool, input, Boolean(result.isError), seq)) {
+      if (noted && (await scheme($, noted, seq))) {
         staged.shownAt = await $.clock.now()
       } else if (result.isError) {
         await followUp('error')
@@ -655,11 +677,12 @@ export function register(on: On) {
       if (!(await sceneOf($)).active) return stopTimers()
       const seq = await stage($, e.reason === 'answer' ? 'success' : 'grumble', null)
       if (seq === 0) return
-      const plot = await plotOf($)
-      if ((await treacheryOn($)) && coupDue(plot)) {
-        // The coup, attempted and foiled; the meter resets and the ledger remembers.
-        await patchScene($, { pose: 'alarm', line: nth(COUPS, plot.coups), stage: COUP_STAGE }, scene => scene.active && staged.seq === seq)
-        await setPlot($, afterCoup(plot))
+      if (await treacheryOn($)) {
+        // The coup, attempted and foiled; the meter resets and the ledger remembers. One atomic step.
+        const coup = await updatePlot($, plot => (coupDue(plot) ? { plot: afterCoup(plot), result: plot.coups } : { plot, result: null }))
+        if (coup !== null) {
+          await patchScene($, { pose: 'alarm', line: nth(COUPS, coup), stage: COUP_STAGE }, scene => scene.active && staged.seq === seq)
+        }
       }
       await patchScene($, { linger: true })
       // The closing pose keeps its two-frame animation until it leaves.

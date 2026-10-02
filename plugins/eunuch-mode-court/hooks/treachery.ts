@@ -30,6 +30,12 @@ export const GRIEVANCES: Record<Grievance, { weight: number; entry: string }> = 
   revert: { weight: 1, entry: 'Unmade a decree the court had praised' },
 }
 
+// What actually ships something: a push, a release, a publish, an apply or a deploy.
+// Read-only and preview commands (docker ps, kubectl get, terraform plan) are not deploys.
+const DEPLOY =
+  /^git\s+push\b|^gh\s+release\s+create\b|^gh\s+pr\s+merge\b|^(?:npm|pnpm|yarn|cargo|poetry|dotnet)\s+publish\b|^docker\s+push\b|^kubectl\s+(?:apply|rollout|set|scale)\b|^terraform\s+apply\b|^tofu\s+apply\b|^pulumi\s+up\b|^helm\s+(?:install|upgrade)\b|^(?:vercel|netlify|fly|flyctl|wrangler)\s+deploy\b|^vercel\s+--prod\b|^firebase\s+deploy\b/
+const DRY_RUN = /\s(?:--dry-run|-n\b|--draft|-[a-zA-Z]*n[a-zA-Z]*\b(?=.*git\s+push)|--check)\b|^git\s+push\b.*\s-[a-zA-Z]*n[a-zA-Z]*\b/
+
 /** When the plot is ripe. */
 export const PLOT_MAX = 10
 const GIANT_DIFF_LINES = 400
@@ -130,8 +136,7 @@ export function grievancesOf(
       if (/^git\s+revert\b/.test(s)) found.push('revert')
     })
     if (kinds.includes('tests') && isError) found.push('failing-tests')
-    const deploying = kinds.some(k => k === 'push' || k === 'treason' || k === 'lease' || k === 'infra')
-    if (deploying && now.getDay() === 5) found.push('friday-deploy')
+    if (now.getDay() === 5 && segments.some(s => DEPLOY.test(s) && !DRY_RUN.test(s))) found.push('friday-deploy')
   }
   if (tool === 'Edit' || tool === 'MultiEdit' || tool === 'Write' || tool === 'NotebookEdit') {
     const text = [input.new_string, input.content, input.new_source]

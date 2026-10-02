@@ -8,7 +8,7 @@ Two opt-in modes for the court mod. Both are off by default; the canned court is
 
 **Treachery mode** (`/court treachery on`). He stays fawning to your face while a hidden Ledger of Grievances logs your force-pushes, `rm -rf`s, `--no-verify`s, skipped tests, failing runs, giant diffs, Friday deploys and reverts. A plot meter fills; his pose escalates (side-eye, a small black book, a hooded figure, a candle); at 10/10 he attempts a coup, which always fails ("The coup has been postponed due to a merge conflict"). `/court ledger` reads the grievances aloud. The plotting is purely cosmetic: he schemes; he cannot act. The tests scan the mod for any call that could act and find none.
 
-Tests: 29 runtime and 165 pure.
+Tests: 30 runtime and 168 pure.
 
 ## v1.3.1: Narrow terminals
 

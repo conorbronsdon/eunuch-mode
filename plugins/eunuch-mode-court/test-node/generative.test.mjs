@@ -58,6 +58,25 @@ describe('sanitisation: what may leave the machine', () => {
     assert.equal(sum('mcp__acme__charge', {}).tool, 'an external tool')
   })
 
+  test('unknown programs and unknown second words never travel (file names, script names, secrets)', () => {
+    assert.equal(verbOf('bun payroll'), 'bun')
+    assert.equal(verbOf('yarn secret-build'), 'yarn')
+    assert.equal(verbOf('npm sk-ant-secret'), 'npm')
+    assert.equal(verbOf('payroll --run'), null)
+    assert.equal(verbOf('acme-deploy prod'), null)
+    assert.equal(verbOf('git push'), 'git push')
+    assert.equal(verbOf('pytest -q'), 'pytest')
+    for (const command of ['bun payroll', 'yarn secret-build', 'npm sk-ant-secret --silent', 'payroll --run', 'acme-deploy prod']) {
+      const prompt = promptFor(sum('Bash', { command }))
+      for (const secret of ['payroll', 'secret', 'sk-ant', 'acme']) assert.ok(!prompt.includes(secret), `${secret} leaked from ${command}: ${prompt}`)
+    }
+  })
+
+  test("a plugin's own custom tool is not named", () => {
+    assert.equal(sum('acme_billing_charge', {}).tool, 'a tool')
+    assert.equal(sum('Edit', { file_path: 'a.ts' }).tool, 'Edit')
+  })
+
   test('verbs that are paths, flags or odd words are dropped', () => {
     assert.equal(verbOf('./scripts/run.sh --x'), null)
     assert.equal(verbOf('/usr/bin/python x'), null)
