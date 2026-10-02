@@ -376,9 +376,9 @@ export function register(on: On) {
           Text({ dimColor: true, children: '  · court in session' }),
         ],
       }),
-      Text({ italic: true, wrap: 'truncate-end', children: stageText }),
+      Text({ italic: true, wrap: 'wrap', children: stageText }),
     ]
-    if (scene.linger && scene.line) lines.push(Text({ wrap: 'truncate-end', children: `“${scene.line}.”` }))
+    if (scene.linger && scene.line) lines.push(Text({ wrap: 'wrap', children: `“${scene.line}.”` }))
     else if (scene.detail) lines.push(Text({ dimColor: true, wrap: 'truncate-middle', children: scene.detail }))
 
     return Box({
