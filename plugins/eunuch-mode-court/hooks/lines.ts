@@ -559,8 +559,8 @@ export function stageFor(pose: Pose, count: number): string {
 // only: narration, not a policy (the mod never blocks anything).
 const BASH_RULES: ReadonlyArray<readonly [Activity, RegExp]> = [
   ['lease', /^git\s+push\b.*--force-with-lease\b/],
-  ['treason', /^git\s+push\b.*(?:\s--force(?![-\w])|\s-[a-zA-Z]*f\b|\s\+\S+)/],
-  ['peril', /^rm\s+(?:\S+\s+)*-[a-zA-Z]*(?:r[a-zA-Z]*f|f[a-zA-Z]*r)|^rm\s+(?:.*\s)?(?:-r|--recursive)\s(?:.*\s)?(?:-f|--force)\b|^rm\s+(?:.*\s)?(?:-f|--force)\s(?:.*\s)?(?:-r|--recursive)\b|^git\s+reset\s+(?:.*\s)?--hard\b|^git\s+clean(?!.*\s-[a-zA-Z]*n)(?!.*--dry-run)\s+(?:.*\s)?-[a-zA-Z]*f|^Remove-Item\b.*-Recurse/i],
+  ['treason', /^git\s+push(?!.*\s(?:--dry-run|-[a-zA-Z]*n)\b).*(?:\s--force(?![-\w])|\s-[a-zA-Z]*f\b|\s\+\S+)/],
+  ['peril', /^rm\s+(?:\S+\s+)*-[a-zA-Z]*(?:r[a-zA-Z]*f|f[a-zA-Z]*r)|^rm\s+(?:.*\s)?(?:-r|--recursive)\s(?:.*\s)?(?:-f|--force)\b|^rm\s+(?:.*\s)?(?:-f|--force)\s(?:.*\s)?(?:-r|--recursive)\b|^git\s+reset\s+(?:.*\s)?--hard\b|^git\s+clean(?!.*\s-[a-zA-Z]*n)(?!.*--dry-run)\s+(?:.*\s)?-[a-zA-Z]*f|^Remove-Item\b(?!.*-WhatIf\b).*-Recurse/i],
   ['edit', /^sed\s+(?:-\S+\s+)*-[a-zA-Z]*i|^sed\s+(?:.*\s)?--in-place\b|^perl\s+-[a-zA-Z]*p[a-zA-Z]*i|^patch\b|^git\s+apply\b/],
   ['commit', /^git\s+(?:commit|tag)\b/],
   ['push', /^git\s+push\b|^gh\s+(?:pr\s+create|release\s+create)\b/],
@@ -580,12 +580,43 @@ const BASH_RULES: ReadonlyArray<readonly [Activity, RegExp]> = [
  * leading `sudo`, `env` and VAR=value prefixes dropped.
  */
 export function segmentsOf(command: string): string[] {
-  const blanked = command
-    .replace(/'[^']*'/g, "''")
-    .replace(/"(?:[^"\\]|\\.)*"/g, '""')
-    .replace(/(^|\s)#[^\n]*/g, '$1')
-  return blanked
-    .split(/&&|\|\||[;|\n&]/)
+  const parts: string[] = []
+  let current = ''
+  let quote: '"' | "'" | null = null
+  for (let i = 0; i < command.length; i++) {
+    const ch = command[i]!
+    if (quote === "'") {
+      if (ch === "'") {
+        quote = null
+        current += ch
+      }
+      continue
+    }
+    if (quote === '"') {
+      if (ch === '\\') i++
+      else if (ch === '"') {
+        quote = null
+        current += ch
+      }
+      continue
+    }
+    if (ch === '\\') {
+      current += command.slice(i, i + 2)
+      i++
+    } else if (ch === "'" || ch === '"') {
+      quote = ch
+      current += ch
+    } else if (ch === '#' && (current === '' || /\s$/.test(current))) {
+      while (i + 1 < command.length && command[i + 1] !== '\n') i++
+    } else if (ch === ';' || ch === '|' || ch === '&' || ch === '\n') {
+      parts.push(current)
+      current = ''
+    } else {
+      current += ch
+    }
+  }
+  parts.push(current)
+  return parts
     .map(part => part.trim().replace(/^(?:(?:sudo|env|command|exec|time|nohup)\s+|[A-Za-z_][A-Za-z0-9_]*=\S*\s+)+/, ''))
     .filter(part => part.length > 0)
 }

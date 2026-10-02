@@ -71,6 +71,12 @@ describe('classifyCommand', () => {
     ['git commit -m "rm -rf the old build"', 'commit'],
     ['git log --grep "push --force"', 'git'],
     ['rm build.log', 'bash'],
+    ['git push --dry-run --force origin main', 'push'],
+    ['git push -n -f origin main', 'push'],
+    ['Remove-Item -Recurse -WhatIf build', 'bash'],
+    [`echo "can't"; git push --force; echo "won't"`, 'treason'],
+    [`echo 'a "b'; rm -rf build`, 'peril'],
+    ['echo "a \\" rm -rf x"', 'bash'],
   ]
   for (const [command, activity] of cases) {
     test(`${command} → ${activity}`, () => assert.equal(classifyCommand(command), activity))

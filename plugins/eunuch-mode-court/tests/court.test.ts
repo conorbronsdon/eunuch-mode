@@ -13,6 +13,7 @@ function world(
   duringCall: (e: any) => Promise<void> = async () => {},
 ) {
   const clock = mock.clock(on)
+  currentClock = clock
   mock.store(on, stores)
   on('session.start', ($: any, e: any) => ({ cwd: e.cwd }))
   on('command.register', ($: any, e: any) => ({ value: { command: e.name } }))
@@ -30,10 +31,19 @@ function world(
   on('turn.start', ($: any, e: any) => ({ turnId: e.turnId }))
   on('turn.complete', () => ({ text: '' }))
   on('tool.call', async ($: any, e: any) => {
+    // A tool takes a moment: let the court's bookkeeping, which runs beside it, land first.
+    await clock.settle()
     await duringCall(e)
     return e.command === 'false' ? { isError: true, result: 'exit 1', text: 'exit 1' } : { result: { ok: true }, text: 'ok' }
   })
   return clock
+}
+
+// The court catches up on a tool call in the background after the result returns:
+// let every pending wait and chained promise land before looking at the screen.
+let currentClock: any = null
+async function settle() {
+  for (let i = 0; i < 4; i++) await currentClock.settle()
 }
 
 async function start($: any) {
@@ -75,6 +85,7 @@ describe('court', () => {
     expect(await ui.find({ type: 'Text', text: /\[(whispers|leans|glances|murmurs)/ })).toBeDefined()
 
     await $.tool.call({ tool: 'Edit', file_path: '/work/src/app.ts', old_string: 'a', new_string: 'b' } as any)
+    await settle()
     await ui.unmount()
     await $.turn.complete({ reason: 'answer', answer: 'ok', durationMs: 1 } as any)
     const after = await mountBand($, { ...BAND, isWorking: false })
@@ -93,9 +104,11 @@ describe('court', () => {
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
 
     await $.tool.call({ tool: 'Bash', command: 'git push --force origin main' } as any)
+    await settle()
     expect(POOLS.treason).toContain(seenDuringCall)
 
     await $.tool.call({ tool: 'Read', file_path: '/work/README.md' } as any)
+    await settle()
     expect(POOLS.read).toContain(seenDuringCall)
   })
 
@@ -106,6 +119,7 @@ describe('court', () => {
     await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
     const result: any = await $.tool.call({ tool: 'Bash', command: 'false' } as any)
+    await settle()
     expect(result.isError).toBe(true)
     expect(POOLS.error).toContain(await spinnerMessage($))
     const ui = await mountBand($)
@@ -162,6 +176,7 @@ describe('court', () => {
     await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
     const result: any = await $.tool.call({ tool: 'Bash', command: 'rm -rf build' } as any)
+    await settle()
     expect(seen).toEqual([{ tool: 'Bash', command: 'rm -rf build' }])
     expect(result.text).toBe('ok')
     expect(result.deny).toBeUndefined()
@@ -174,6 +189,7 @@ describe('court', () => {
     await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
     await $.tool.call({ tool: 'Edit', file_path: '/work/src/app.ts', old_string: 'a', new_string: 'b' } as any)
+    await settle()
     expect(POOLS.edit).toContain(await spinnerMessage($))
     const ui = await mountBand($)
     expect(STAGE.scribble).toContain(((await ui.find({ type: 'Text', text: /^\[/ })) as any).text)
@@ -191,13 +207,14 @@ describe('court', () => {
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
     const spoken = async () => {
       const { text } = await $.command.run({ command: 'court', args: '', origin: { kind: 'composer' } } as any)
-      return Number(/Lines spoken this session: (\d+)/.exec(text ?? '')?.[1] ?? -1)
+      return Number(/Lines drawn this session: (\d+)/.exec(text ?? '')?.[1] ?? -1)
     }
     const before = await spoken()
     const seen: (string | null)[] = []
     await Promise.all(
       ['a', 'b', 'c', 'd', 'e'].map(async f => {
         await $.tool.call({ tool: 'Read', file_path: `/work/${f}.ts` } as any)
+        await settle()
         seen.push(await spinnerMessage($))
       }),
     )
@@ -215,6 +232,7 @@ describe('court', () => {
     await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
     await $.turn.start({ text: 'go', turnId: 't1' } as any)
     await $.tool.call({ tool: 'Edit', file_path: '/work/a.ts', old_string: 'a', new_string: 'b' } as any)
+    await settle()
     await $.turn.complete({ reason: 'answer', answer: 'ok', durationMs: 1 } as any)
     expect(statuses.at(-1)).toBeUndefined()
     expect(await spinnerMessage($)).toBe('Sauteing')
@@ -228,9 +246,11 @@ describe('court', () => {
     world(on, statuses)
     await start($)
     await $.tool.call({ tool: 'Skill', skill: 'eunuch-mode', agentId: 'sub-1' } as any)
+    await settle()
     expect(statuses.filter(s => s !== undefined)).toEqual([])
     await $.command.run({ command: 'court', args: 'never', origin: { kind: 'composer' } } as any)
     await $.tool.call({ tool: 'Skill', skill: 'eunuch-mode' } as any)
+    await settle()
     expect(statuses.filter(s => s !== undefined)).toEqual([])
   })
 

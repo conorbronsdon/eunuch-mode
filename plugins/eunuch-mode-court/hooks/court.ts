@@ -117,9 +117,12 @@ async function stage($: EngineInterface, activity: Activity, detail: string | nu
     scene => scene.active && scene.session === session && staged.seq === seq,
   )
   if (!shown) return 0
+  const now = await $.clock.now()
+  // Only the newest scene owns the timing; an older one finishing late never rolls it back.
+  if (staged.seq !== seq) return 0
   afterTool?.cancel()
   afterTool = null
-  staged = { seq, shownAt: await $.clock.now() }
+  staged.shownAt = now
   return seq
 }
 
@@ -139,11 +142,14 @@ function stopTimers(): void {
 }
 
 async function convene($: EngineInterface): Promise<void> {
-  const { value, version } = await $.state.get(SCENE)
-  if (!value?.active) {
-    await $.state.set(SCENE, { ...IDLE, active: true, session: (value?.session ?? 0) + 1 }, { ifVersion: version })
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const { value, version } = await $.state.get(SCENE)
+    if (value?.active) break
+    const written = await $.state.set(SCENE, { ...IDLE, active: true, session: (value?.session ?? 0) + 1 }, { ifVersion: version })
+    if (written.isSet) break
   }
-  $.ui.status(STATUS_TEXT)
+  // The crown goes up only over a court that is really in session.
+  if ((await sceneOf($)).active) $.ui.status(STATUS_TEXT)
 }
 
 async function adjourn($: EngineInterface): Promise<void> {
@@ -219,10 +225,10 @@ export function register(on: On) {
     const scene = await sceneOf($)
     const mode = await modeOf($)
     const { value: ledger } = await $.state.get(LEDGER)
-    const spoken = ledger?.used.length ?? 0
-    const repeats = spoken - new Set(ledger?.used ?? []).size
+    const drawn = ledger?.used.length ?? 0
+    const repeats = drawn - new Set(ledger?.used ?? []).size
     return {
-      text: `${COURT_HELP}\n\nNow: ${scene.active ? 'in session' : 'adjourned'} (mode: ${mode}). Lines spoken this session: ${spoken}, ${repeats === 0 ? 'none repeated' : `${repeats} repeated`}.`,
+      text: `${COURT_HELP}\n\nNow: ${scene.active ? 'in session' : 'adjourned'} (mode: ${mode}). Lines drawn this session: ${drawn}, ${repeats === 0 ? 'none repeated' : `${repeats} repeated`}.`,
     }
   })
 
@@ -269,7 +275,8 @@ export function register(on: On) {
         })().catch(() => 0)
       : Promise.resolve(0)
     const result = await next(e)
-    await quietly(async () => {
+    // The result goes back at once; the court catches up in the background.
+    void quietly(async () => {
       const seq = await before
       if (seq === 0 || staged.seq !== seq) return
       if (result.isError) {
@@ -278,6 +285,7 @@ export function register(on: On) {
       }
       // Let a quick action (an edit takes milliseconds) stay on screen long enough to be seen.
       const wait = MIN_SHOW_MS - ((await $.clock.now()) - staged.shownAt)
+      if (staged.seq !== seq) return
       if (wait <= 0) {
         await stage($, 'deliberate', null)
         return

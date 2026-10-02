@@ -18,7 +18,7 @@ It follows the skill: "eunuch mode" convenes the court and "drop the bit" adjour
 /reload-plugins
 ```
 
-Needs Claude Code 2.1.287 or later. Tested with `claude plugin validate`, 15 runtime tests (`claude plugin test`) and 95 pure tests in CI. It was recorded in a real terminal session; the desktop app is untested. The skill itself is unchanged apart from its version number, and the mod is optional.
+Needs Claude Code 2.1.287 or later. Tested with `claude plugin validate`, 15 runtime tests (`claude plugin test`) and 101 pure tests in CI. It was recorded in a real terminal session; the desktop app is untested. The skill itself is unchanged apart from its version number, and the mod is optional.
 
 ## v1.2.0: The court expands
 
