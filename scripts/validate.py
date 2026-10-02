@@ -31,7 +31,7 @@ required = ["skills/eunuch-mode/SKILL.md", "skills/eunuch-mode/references/court-
             "evals/runs/2026-09-30-claude-v1.2.md", ".claude-plugin/marketplace.json", "docs/mods-api.md",
             "docs/court-mod.gif"] + ["brag-output/features/%s.mp4" % v for v in ("treason", "viziers", "decree")] + [
             "plugins/eunuch-mode-court/" + f for f in (".claude-plugin/plugin.json", "hooks/hooks.json", "hooks/court.ts",
-            "hooks/lines.ts", "hooks/sprites.ts", "types/index.d.ts", "tests/court.test.ts", "test-node/lines.test.mjs", "README.md")]
+            "hooks/lines.ts", "hooks/sprites.ts", "hooks/generative.ts", "hooks/treachery.ts", "types/index.d.ts", "tests/court.test.ts", "test-node/lines.test.mjs", "test-node/generative.test.mjs", "test-node/treachery.test.mjs", "README.md")]
 for name in required:
     require((root/name).is_file(), "Missing file: "+name)
 

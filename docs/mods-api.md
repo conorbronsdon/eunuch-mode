@@ -49,6 +49,8 @@ Every hook has the shape `on(event, matcher?, async ($, e, next) => …)` and fo
 | `$.clock.every(ms, fn)` / `$.clock.after(ms, fn)` | The two-frame animation while a turn runs; the closing pose lingering eight seconds after it ends. A hot reload cancels pending timers. |
 | `$.clock.now()` | Seeds the line order so sessions differ. |
 | `$.command.register(spec)` | `/court`. |
+| `$.model.complete({ model, system, prompt, maxTokens, effort, timeoutMs })` | Generative mode only (off by default). One tool-less completion through the session's own API client: `model` is an alias (`sonnet`) or an id, resolved like `--model`; it resolves `{ isAnswered, text, usage }` or a `reason` (`api-error`, `empty-reply`, `aborted`) and never rejects for what the provider did. |
+| `$.env.get(name)` | `EUNUCH_MODE_GENERATIVE`, `EUNUCH_MODE_MODEL`. Names must be literals, and `claude plugin validate` lists them. |
 
 ## Testing
 
@@ -61,4 +63,5 @@ Every hook has the shape `on(event, matcher?, async ($, e, next) => …)` and fo
 - Mods need Claude Code 2.1.287 or later. Installed plugins' hooks modules load only while the server-side rollout flag (`tengu_plugin_hooks_modules`) is on for your account; on a build that has cached it off, `claude plugin test` says so ("the rollout switch served off"), and running any session refreshes the cache.
 - `disableAllHooks`, `allowManagedHooksOnly` and safe mode turn installed mods off.
 - In 2.1.287 both `Spinner` and `AbovePrompt` are raised on the terminal and desktop surfaces. This mod was run and recorded in the terminal only; the desktop app is untested.
-- There is no `--live` mode: every line is canned, so the mod never calls a model.
+- By default every line is canned and the mod never calls a model. Generative mode (v1.4, opt-in) uses `$.model.complete`; its request is built only from a sanitised summary (see the plugin README).
+- **Every `$.state.get` within one dispatch reads one moment.** Work that continues in a hook's background after `next(e)` returns still belongs to that dispatch, so it reads stale state. The mod keeps its generative counters and the treachery ledger in module memory (the source of truth) and mirrors them to `$.state`, so the rate limit and the cap hold. This was found with a real test failure: a counter that stayed at 1 while six calls went out.

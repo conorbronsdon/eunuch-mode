@@ -1,5 +1,15 @@
 # Release notes
 
+## v1.4.0: The court poet, and the plot
+
+Two opt-in modes for the court mod. Both are off by default; the canned court is unchanged.
+
+**Generative mode** (`/court generative on`, or `EUNUCH_MODE_GENERATIVE=1`). Sonnet writes fresh spinner lines while the adviser thinks between actions, through Claude Code's own `$.model.complete` (billed to your session, no key handled). Each request carries only the kind of action, the tool name, a file extension and a command verb; never a path, an argument, file contents or a prompt. Guards: one call per 4 seconds, 100 per session (`/court generative status` shows the count), 40 output tokens, a 3-second timeout, and an instant canned fallback. The agent never waits on it. Measured: about 350 input and 20 output tokens per call. From a live run: "Weighing the matter in the Hall of Quiet Counsel", "Consulting the Keeper of Scrolls on Pythonic matters", "Unrolling the sealed scroll for Their Radiance".
+
+**Treachery mode** (`/court treachery on`). He stays fawning to your face while a hidden Ledger of Grievances logs your force-pushes, `rm -rf`s, `--no-verify`s, skipped tests, failing runs, giant diffs, Friday deploys and reverts. A plot meter fills; his pose escalates (side-eye, a small black book, a hooded figure, a candle); at 10/10 he attempts a coup, which always fails ("The coup has been postponed due to a merge conflict"). `/court ledger` reads the grievances aloud. The plotting is purely cosmetic: he schemes; he cannot act. The tests scan the mod for any call that could act and find none.
+
+Tests: 30 runtime and 168 pure.
+
 ## v1.3.1: Narrow terminals
 
 The court mod no longer cuts off the adviser's punchline in a narrow terminal: the stage direction and the closing line now wrap inside the band instead of truncating (at 40 columns, "[accepts the credit g…" became "[accepts the credit graciously]"). Also: a tighter demo GIF and promo cuts that open on the adviser mid-scribble.

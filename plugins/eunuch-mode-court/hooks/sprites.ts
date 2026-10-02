@@ -6,6 +6,26 @@
 
 import type { Pose } from './lines.ts'
 
+/** The court's poses plus treachery mode's escalation: the secret book, the hooded figure, the candle. */
+export type AnyPose = Pose | 'ledger' | 'conspire' | 'candle'
+
+const HOOD = [
+  '......',
+  '..hh..',
+  '.hhhh.',
+  'hhEEEh',
+  'hEyEyh',
+  'hEEEEh',
+  '.hhhh.',
+  'hhhhhh',
+  'hhhhhh',
+  'hhhhhh',
+  'hhhhhh',
+  'hhhhhh',
+]
+const HOOD_BLINK = HOOD.map((row, i) => (i === 4 ? 'hEEEEh' : row))
+const beside = (adviser: readonly string[], other: readonly string[]) => adviser.map((row, i) => row + other[i])
+
 /** The film's palette, nudged so every colour reads on a dark and a light terminal. */
 export const PALETTE: Readonly<Record<string, string>> = {
   S: '#dfae86', // skin
@@ -25,12 +45,17 @@ export const PALETTE: Readonly<Record<string, string>> = {
   p: '#c4ab7c', // parchment edge
   Q: '#f7f3ea', // quill feather
   B: '#7fc4ee', // a bead of sweat
+  K: '#4a1c2a', // the secret book's leather
+  h: '#5a5476', // a hooded figure's cloak
+  y: '#f2dc6b', // eyes glinting under the hood
+  F: '#ffd25c', // candle flame
+  f: '#ff8a3d', // candle flame, its heart
+  w: '#efe6cf', // candle wax
 }
 
 const ROBE = ['...GTTTTTTG...', '.RRRGTTTTGRRR.', 'RRRRRGJJGRRRRR', 'rRRRRRSSRRRRRr']
 
-/** Two frames per pose; the band alternates them while a turn runs. */
-export const SPRITES: Readonly<Record<Pose, readonly (readonly string[])[]>> = {
+const BASE: Readonly<Record<Exclude<AnyPose, 'conspire'>, readonly (readonly string[])[]>> = {
   // The film's portrait: side-eye under heavy lids, a one-sided smirk.
   portrait: [
     [
@@ -218,6 +243,75 @@ export const SPRITES: Readonly<Record<Pose, readonly (readonly string[])[]>> = {
       ...ROBE,
     ],
   ],
+  // Treachery: writing in the small black book, eyes sliding to you.
+  ledger: [
+    [
+      '..............',
+      '....SSSSSS....',
+      '...SHHSSSSS...',
+      '..SSSSSSSSSS..',
+      '.sSLLLSSLLLSs.',
+      '.sSCSSSsSSCSs.',
+      '..SSSSMMSSSSQ.',
+      '...SSSSSSSSQQ.',
+      '...GTTTTTTGQ..',
+      '.RRKKKKKKKKERR',
+      'RRRKGKKKKKKRRR',
+      'rRSKKKKKKKKSRr',
+    ],
+    [
+      '..............',
+      '....SSSSSS....',
+      '...SHHSSSSS...',
+      '..SSSSSSSSSS..',
+      '.sSLLLSSLLLSs.',
+      '.sSWEESSWEESs.',
+      '..SSSSMMMMSSQ.',
+      '...SSSSSSSSQQ.',
+      '...GTTTTTTGQ..',
+      '.RRKKKKKKKKERR',
+      'RRRKGKKKKKKRRR',
+      'rRSKKKKKKKKSRr',
+    ],
+  ],
+  // Treachery: scheming by candlelight, the flame flickering.
+  candle: [
+    [
+      '....SSSSSS....',
+      '...SHHSSSSS...',
+      '..SSSSSSSSSS..',
+      '.sSLLLSSLLLSs.',
+      '.sSWEESSWEESs.',
+      '.sSCSSSsSSMS.F',
+      '..SSSSMMMMS.Ff',
+      '...SSSSSSSS.w.',
+      '...GTTTTTTG.w.',
+      '.RRRGTTTTGRRwR',
+      'RRRRRGJJGRRRwR',
+      'rRRRRRSSRRRSwr',
+    ],
+    [
+      '....SSSSSS....',
+      '...SHHSSSSS...',
+      '..SSSSSSSSSS..',
+      '.sSLLLSSLLLSs.',
+      '.sSWEESSWEESs.',
+      '.sSCSSSsSSMS.f',
+      '..SSSSMMMMS.fF',
+      '...SSSSSSSS.w.',
+      '...GTTTTTTG.w.',
+      '.RRRGTTTTGRRwR',
+      'RRRRRGJJGRRRwR',
+      'rRRRRRSSRRRSwr',
+    ],
+  ],
+}
+
+/** Two frames per pose; the band alternates them while a turn runs. */
+export const SPRITES: Readonly<Record<AnyPose, readonly (readonly string[])[]>> = {
+  ...BASE,
+  // Treachery: the whisper, with a hooded figure beside him, its eyes glinting.
+  conspire: [beside(BASE.whisper[0]!, HOOD), beside(BASE.whisper[1]!, HOOD_BLINK)],
 }
 
 /** One run of cells drawn in the same colours. */
@@ -258,7 +352,7 @@ export function toRows(sprite: readonly string[]): Run[][] {
 }
 
 /** The frame of a pose to draw at a given tick. */
-export function frameOf(pose: Pose, tick: number): readonly string[] {
+export function frameOf(pose: AnyPose, tick: number): readonly string[] {
   const frames = SPRITES[pose]
   return frames[Math.abs(tick) % frames.length]!
 }
