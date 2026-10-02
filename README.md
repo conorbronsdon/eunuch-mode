@@ -73,9 +73,9 @@ These are natural-language requests, not CLI flags. The instructions ask the age
 
 A [Claude Code mod](https://claude.dev/blog/getting-started-with-claude-code-mods/) puts the adviser on screen. While eunuch mode is on, he stands above your prompt in pixel art and poses for whatever the agent is doing. The spinner narrates each action in court language, and the status line reads `👑 Court in session`.
 
-[![The court mod in a real Claude Code session: asked in eunuch mode to fix a failing test, the agent works while the pixel-art adviser whispers, bows, side-eyes a failed command, scribbles on a scroll during the fix and ends with a smug bow, as the spinner narrates in court language and the status line reads "Court in session"](docs/court-mod.gif)](docs/court-mod.gif)
+[![The court mod in a real Claude Code session: the pixel-art adviser scribbles on a scroll while the spinner reads "Correcting the decree with a steady hand", then whispers and bows as Claude runs and fixes the tests, and ends with a smug bow: "The court applauds, politely." The status line reads "Court in session"](docs/court-mod.gif)](docs/court-mod.gif)
 
-*A real Claude Code 2.1.287 session (with the recording machine's personal settings left out), captured from the terminal and rendered with [agg](https://github.com/asciinema/agg). Idle pauses are shortened.*
+*Cut from one real Claude Code 2.1.287 session (rendered with [agg](https://github.com/asciinema/agg)): trimmed, re-timed and cropped to the band above the prompt, opening on the edit. Claude Code's own plugin label before the crown is masked.*
 
 - **Poses:** a fawning bow while tools run, scribbling on a scroll for edits, a whisper while thinking, side-eye on a failed command, alarm (with a bead of sweat) for `git push --force` or `rm -rf`, and a smug bow when the work is done.
 - **The palace spinner:** "Dispatching the palace guards" (shell), "Amending the royal scroll" (edits), "Consulting the archives" (reads), "Sending envoys abroad" (web), "The royal food taster samples the code" (tests), "Bribing the borrow checker" (`cargo`), and "HIGH TREASON" for a force push. About 250 curated lines, extended by the court roster, so no line repeats until several hundred have been spoken. No model calls, so it costs nothing, and a tool call never waits on the court.

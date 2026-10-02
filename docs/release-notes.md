@@ -1,5 +1,9 @@
 # Release notes
 
+## v1.3.1: Narrow terminals
+
+The court mod no longer cuts off the adviser's punchline in a narrow terminal: the stage direction and the closing line now wrap inside the band instead of truncating (at 40 columns, "[accepts the credit g…" became "[accepts the credit graciously]"). Also: a tighter demo GIF and promo cuts that open on the adviser mid-scribble.
+
 ## v1.3.0: The court mod
 
 The adviser now has a body, on your screen.

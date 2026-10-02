@@ -268,6 +268,22 @@ describe('court', () => {
     expect(statuses.at(-1)).toBe('👑 Court in session')
   })
 
+  test('at 40 columns the closing line and stage direction wrap instead of losing their ends', async ($, on) => {
+    const statuses: (string | undefined)[] = []
+    world(on, statuses)
+    await start($)
+    await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
+    await $.turn.start({ text: 'go', turnId: 't1' } as any)
+    await $.turn.complete({ reason: 'answer', answer: 'ok', durationMs: 1 } as any)
+    await settle()
+    const ui = await mountBand($, { ...BAND, isWorking: false, bodyColumns: 40 })
+    const quote = (await ui.find({ type: 'Text', text: /^“.+\.”$/ })) as any
+    const stage = (await ui.find({ type: 'Text', text: /^\[.+\]$/ })) as any
+    expect(quote.props.wrap).toBe('wrap')
+    expect(stage.props.wrap).toBe('wrap')
+    await ui.unmount()
+  })
+
   test('a narrow terminal gets one line, not the figure', async ($, on) => {
     const statuses: (string | undefined)[] = []
     world(on, statuses)
