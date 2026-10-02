@@ -23,7 +23,7 @@ Claude Code mods were announced on 2026-10-01 ([@ClaudeDevs](https://x.com/Claud
 
 ## Hooks
 
-Every hook has the shape `on(event, matcher?, async ($, e, next) => …)` and forms a middleware chain. This mod only **observes** (`const r = await next(e); …; return r`) or **rewrites display props** (`next({ ...e, props })`); it never answers an event without calling `next`.
+Every hook has the shape `on(event, matcher?, async ($, e, next) => …)` and forms a middleware chain. On the agent's work (`prompt.submit`, `skill.prompt`, `turn.*`, `tool.call`) this mod only **observes**: `next(e)` gets the event unchanged. In `tool.call`, the court's bookkeeping starts beside `next(e)` rather than before it, so the tool never waits on it. It **rewrites display props** on the Spinner (`next({ ...e, props })`). Two hooks are the mod's own and answer without `next`: `command.run` for its own `/court`, and the `AbovePrompt` band, which it draws only while the court is in session and otherwise hands back with `next(e)`.
 
 | Event | Used for | Notes from the 2.1.287 types |
 | --- | --- | --- |

@@ -183,6 +183,71 @@ describe('court', () => {
     expect(POOLS.deliberate).toContain(await spinnerMessage($))
   })
 
+  test('parallel tool calls each draw a different line, and every one is recorded', async ($, on) => {
+    const statuses: (string | undefined)[] = []
+    world(on, statuses)
+    await start($)
+    await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
+    await $.turn.start({ text: 'go', turnId: 't1' } as any)
+    const spoken = async () => {
+      const { text } = await $.command.run({ command: 'court', args: '', origin: { kind: 'composer' } } as any)
+      return Number(/Lines spoken this session: (\d+)/.exec(text ?? '')?.[1] ?? -1)
+    }
+    const before = await spoken()
+    const seen: (string | null)[] = []
+    await Promise.all(
+      ['a', 'b', 'c', 'd', 'e'].map(async f => {
+        await $.tool.call({ tool: 'Read', file_path: `/work/${f}.ts` } as any)
+        seen.push(await spinnerMessage($))
+      }),
+    )
+    // Five calls staged at once: five lines drawn and recorded (the ledger refuses a repeat by construction).
+    expect((await spoken()) - before).toBeGreaterThanOrEqual(5)
+    expect(seen.every(line => line !== null && line !== 'Sauteing')).toBe(true)
+  })
+
+  test('/court off during a tool call stays off when the call finishes', async ($, on) => {
+    const statuses: (string | undefined)[] = []
+    world(on, statuses, {}, async () => {
+      await $.command.run({ command: 'court', args: 'off', origin: { kind: 'composer' } } as any)
+    })
+    await start($)
+    await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
+    await $.turn.start({ text: 'go', turnId: 't1' } as any)
+    await $.tool.call({ tool: 'Edit', file_path: '/work/a.ts', old_string: 'a', new_string: 'b' } as any)
+    await $.turn.complete({ reason: 'answer', answer: 'ok', durationMs: 1 } as any)
+    expect(statuses.at(-1)).toBeUndefined()
+    expect(await spinnerMessage($)).toBe('Sauteing')
+    const ui = await mountBand($)
+    expect(await ui.find({ type: 'Text', text: /humble vizier/ })).toBeUndefined()
+    await ui.unmount()
+  })
+
+  test('a subagent\'s Skill call does not convene the court, and /court never holds against the main loop\'s', async ($, on) => {
+    const statuses: (string | undefined)[] = []
+    world(on, statuses)
+    await start($)
+    await $.tool.call({ tool: 'Skill', skill: 'eunuch-mode', agentId: 'sub-1' } as any)
+    expect(statuses.filter(s => s !== undefined)).toEqual([])
+    await $.command.run({ command: 'court', args: 'never', origin: { kind: 'composer' } } as any)
+    await $.tool.call({ tool: 'Skill', skill: 'eunuch-mode' } as any)
+    expect(statuses.filter(s => s !== undefined)).toEqual([])
+  })
+
+  test('a reload during the closing pose clears it but keeps the court in session', async ($, on) => {
+    const statuses: (string | undefined)[] = []
+    world(on, statuses)
+    await start($)
+    await $.command.run({ command: 'court', args: 'on', origin: { kind: 'composer' } } as any)
+    await $.turn.start({ text: 'go', turnId: 't1' } as any)
+    await $.turn.complete({ reason: 'answer', answer: 'ok', durationMs: 1 } as any)
+    await start($) // a hot reload runs session.start again
+    const ui = await mountBand($, { ...BAND, isWorking: false })
+    expect(await ui.find({ type: 'Text', text: /humble vizier/ })).toBeUndefined()
+    await ui.unmount()
+    expect(statuses.at(-1)).toBe('👑 Court in session')
+  })
+
   test('a narrow terminal gets one line, not the figure', async ($, on) => {
     const statuses: (string | undefined)[] = []
     world(on, statuses)

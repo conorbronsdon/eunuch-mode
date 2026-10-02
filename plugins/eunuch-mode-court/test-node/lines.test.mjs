@@ -5,6 +5,7 @@ import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
 import {
   POOLS,
+  capacityOf,
   POSE_OF,
   STAGE,
   classifyCommand,
@@ -54,6 +55,22 @@ describe('classifyCommand', () => {
     ["sed -n '1,5p' x", 'bash'],
     ['ls -la', 'bash'],
     ['echo hello', 'bash'],
+    // Alarms only for the real thing: not quoted, commented, dry-run or mentioned text.
+    ['git push origin main --force', 'treason'],
+    ['FOO=1 git push -f origin x', 'treason'],
+    ['cd build && rm -rf dist', 'peril'],
+    ['sudo rm -rf /tmp/x', 'peril'],
+    ['rm -r -f build', 'peril'],
+    ['echo "git push --force"', 'bash'],
+    ["echo 'rm -rf /'", 'bash'],
+    ['rg "rm -rf" README.md', 'bash'],
+    ['ls # rm -rf /', 'bash'],
+    ['git clean -fdn', 'git'],
+    ['git clean -n -f', 'git'],
+    ['git clean --dry-run -fd', 'git'],
+    ['git commit -m "rm -rf the old build"', 'commit'],
+    ['git log --grep "push --force"', 'git'],
+    ['rm build.log', 'bash'],
   ]
   for (const [command, activity] of cases) {
     test(`${command} → ${activity}`, () => assert.equal(classifyCommand(command), activity))
@@ -166,11 +183,20 @@ describe('pickLine', () => {
     assert.deepEqual([...drawn].sort(), [...pool].sort())
   })
 
-  test('hundreds of Bash calls in one session still never repeat', () => {
-    const n = POOLS.bash.length + generatedLines('bash').length
-    const drawn = drawMany('bash', n)
-    assert.equal(new Set(drawn).size, n)
-    assert.ok(n > 150, `capacity ${n}`)
+  test('hundreds of calls of one kind in one session never repeat, up to the stated capacity', () => {
+    for (const activity of ['bash', 'read', 'treason', 'success']) {
+      const n = capacityOf(activity)
+      assert.ok(n >= 300, `${activity} capacity ${n}`)
+      const drawn = drawMany(activity, n)
+      assert.equal(new Set(drawn).size, n, activity)
+    }
+  })
+
+  test('past capacity it starts the curated pool again rather than failing', () => {
+    const n = capacityOf('bash')
+    const drawn = drawMany('bash', n + 3)
+    assert.equal(drawn.length, n + 3)
+    for (const line of drawn.slice(n)) assert.ok(POOLS.bash.includes(line))
   })
 
   test('different sessions start differently', () => {

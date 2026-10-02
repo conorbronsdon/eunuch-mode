@@ -78,7 +78,7 @@ A [Claude Code mod](https://claude.dev/blog/getting-started-with-claude-code-mod
 *A real Claude Code 2.1.287 session (with the recording machine's personal settings left out), captured from the terminal and rendered with [agg](https://github.com/asciinema/agg). Idle pauses are shortened.*
 
 - **Poses:** a fawning bow while tools run, scribbling on a scroll for edits, a whisper while thinking, side-eye on a failed command, alarm (with a bead of sweat) for `git push --force` or `rm -rf`, and a smug bow when the work is done.
-- **The palace spinner:** "Dispatching the palace guards" (shell), "Amending the royal scroll" (edits), "Consulting the archives" (reads), "Sending envoys abroad" (web), "The royal food taster samples the code" (tests), "Bribing the borrow checker" (`cargo`), and "HIGH TREASON" for a force push. About 250 curated lines, extended by the court roster, and none repeats in a session. No model calls, so it is free and instant.
+- **The palace spinner:** "Dispatching the palace guards" (shell), "Amending the royal scroll" (edits), "Consulting the archives" (reads), "Sending envoys abroad" (web), "The royal food taster samples the code" (tests), "Bribing the borrow checker" (`cargo`), and "HIGH TREASON" for a force push. About 250 curated lines, extended by the court roster, so no line repeats until several hundred have been spoken. No model calls, so it costs nothing, and a tool call never waits on the court.
 - **It follows the skill:** saying "eunuch mode" or loading the skill convenes the court, and "drop the bit" adjourns it. `/court on|off|always|never` overrides that. It never blocks or changes a tool call, a prompt or the model's output.
 
 Install (Claude Code 2.1.287 or later):

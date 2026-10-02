@@ -15,7 +15,7 @@ A [Claude Code mod](https://claude.dev/blog/getting-started-with-claude-code-mod
 | failing (a tool error, an interrupted turn) | side-eye, one brow raised | [narrows his eyes] |
 | done | a smug bow, then a sly look up | [a small, satisfied bow] |
 
-There are about 250 curated lines across 32 kinds of activity. When a kind runs dry, the court roster takes over ("Consulting the Keeper of the Flaky Tests"), giving several hundred more. No line repeats within a session, and none of them calls a model: the mod costs nothing and adds no latency.
+There are about 250 curated lines across 32 kinds of activity. When a kind runs dry, the court roster takes over ("Consulting the Keeper of the Flaky Tests"), giving several hundred more, so no line repeats until several hundred have been spoken (`/court` shows the count). None of them calls a model, so the mod costs nothing.
 
 ## Install
 
@@ -44,7 +44,7 @@ The mod is optional and separate from the skill. Install the skill the usual way
 
 ## What it does not do
 
-It never blocks, denies, rewrites or delays a tool call, a prompt or the model's output. Every hook passes the event on unchanged. The one thing it rewrites is the spinner's display text, and it yields that whenever Claude Code sets its own spinner message (compacting, for example). On a terminal narrower than about 40 columns, the band shrinks to one line.
+It never blocks, denies or rewrites a tool call, a prompt or the model's output: every hook on the agent's work passes the event on unchanged. A tool call starts at once, with the court's bookkeeping (a few in-session state writes) running beside it. The one thing it rewrites is the spinner's display text, and it yields that whenever Claude Code sets its own spinner message (compacting, for example). On a terminal narrower than about 40 columns, the band shrinks to one line.
 
 ## Develop
 

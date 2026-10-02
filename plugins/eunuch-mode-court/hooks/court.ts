@@ -2,10 +2,12 @@
 // stands above the prompt in pixel art, the spinner narrates each action in
 // court language, and the status line reads "👑 Court in session".
 //
-// Every hook observes and passes the event on with next(e). The only thing
-// it rewrites is the spinner's display text; it never blocks, denies or
-// changes a tool call, a prompt or the model's output, and it makes no model
-// calls (all narration is curated text in lines.ts).
+// Hooks on the agent's work (prompts, skills, turns, tool calls) observe and
+// pass the event on with next(e), unchanged. A tool call starts at once: the
+// court's bookkeeping runs beside it, not before it. The drawings are the
+// mod's own: the spinner keeps Claude Code's line with the court's text in it,
+// the band above the prompt is drawn only while the court is in session, and
+// /court is the mod's own command. It makes no model calls (lines.ts).
 
 import type { EngineInterface, On, Timer } from 'claude-code'
 import type { CourtLedger, CourtScene } from '../types'
@@ -31,6 +33,7 @@ const SPRITE_COLUMNS = 14
 
 const IDLE: CourtScene = {
   active: false,
+  session: 0,
   pose: 'portrait',
   line: null,
   stage: null,
@@ -41,18 +44,36 @@ const IDLE: CourtScene = {
 let ticker: Timer | null = null
 let lingerTimer: Timer | null = null
 let afterTool: Timer | null = null
-// Which scene is newest, so a delayed return to thinking never overwrites a later action.
-let staged = { seq: 0, at: 0 }
+// The newest scene and when it reached the screen, so a delayed return to
+// thinking never overwrites a later action.
+let staged = { seq: 0, shownAt: 0 }
+// Line draws run one at a time in this module, so two parallel tool calls
+// never draw the same line.
+let drawing: Promise<unknown> = Promise.resolve()
 
 async function sceneOf($: EngineInterface): Promise<CourtScene> {
   const { value } = await $.state.get(SCENE)
   return value ?? IDLE
 }
 
-async function patchScene($: EngineInterface, patch: Partial<CourtScene>): Promise<CourtScene> {
-  const next = { ...(await sceneOf($)), ...patch }
-  await $.state.set(SCENE, next)
-  return next
+/**
+ * Applies `patch` to the scene only while `guard` holds, with a versioned
+ * write: a stale update (an older tool call, a scene set before /court off)
+ * re-reads and gives up instead of undoing a newer one.
+ */
+async function patchScene(
+  $: EngineInterface,
+  patch: Partial<CourtScene>,
+  guard: (scene: CourtScene) => boolean = scene => scene.active,
+): Promise<boolean> {
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const { value, version } = await $.state.get(SCENE)
+    const scene = value ?? IDLE
+    if (!guard(scene)) return false
+    const written = await $.state.set(SCENE, { ...scene, ...patch }, { ifVersion: version })
+    if (written.isSet) return true
+  }
+  return false
 }
 
 async function modeOf($: EngineInterface): Promise<Mode> {
@@ -60,31 +81,45 @@ async function modeOf($: EngineInterface): Promise<Mode> {
   return stored === 'always' || stored === 'never' ? stored : 'skill'
 }
 
-/** Draws a line no one has heard this session; retries if another hook drew at the same moment. */
-async function drawLine($: EngineInterface, activity: Activity): Promise<{ line: string; count: number }> {
-  for (let attempt = 0; attempt < 4; attempt++) {
-    const { value, version } = await $.state.get(LEDGER)
-    const ledger: CourtLedger = value ?? { seed: 1, count: 0, used: [] }
-    const line = pickLine(activity, new Set(ledger.used), ledger.seed, ledger.count)
-    const written = await $.state.set(
-      LEDGER,
-      { seed: ledger.seed, count: ledger.count + 1, used: [...ledger.used, line] },
-      { ifVersion: version },
-    )
-    if (written.isSet) return { line, count: ledger.count }
-  }
-  return { line: pickLine(activity, new Set(), Date.now(), 0), count: 0 }
+/** Draws a line nobody has heard this session and records it before returning it. */
+function drawLine($: EngineInterface, activity: Activity): Promise<{ line: string; count: number }> {
+  const run = drawing.then(async () => {
+    for (let attempt = 0; attempt < 16; attempt++) {
+      const { value, version } = await $.state.get(LEDGER)
+      const ledger: CourtLedger = value ?? { seed: 1, count: 0, used: [] }
+      const line = pickLine(activity, new Set(ledger.used), ledger.seed, ledger.count)
+      const written = await $.state.set(
+        LEDGER,
+        { seed: ledger.seed, count: ledger.count + 1, used: [...ledger.used, line] },
+        { ifVersion: version },
+      )
+      if (written.isSet) return { line, count: ledger.count }
+    }
+    throw new Error('the line ledger stayed contended')
+  })
+  drawing = run.catch(() => {})
+  return run
 }
 
-/** Sets the scene for an activity: its pose, a fresh line and a stage direction. Returns its sequence number. */
+/**
+ * Sets the scene for an activity (its pose, a fresh line and a stage
+ * direction) unless a newer scene or an adjournment got there first.
+ * Returns the scene's sequence number, or 0 when it was dropped.
+ */
 async function stage($: EngineInterface, activity: Activity, detail: string | null): Promise<number> {
-  afterTool?.cancel()
-  afterTool = null
   const seq = ++staged.seq
-  staged = { seq, at: await $.clock.now() }
+  const { session } = await sceneOf($)
   const { line, count } = await drawLine($, activity)
   const pose = POSE_OF[activity]
-  await patchScene($, { pose, line, stage: stageFor(pose, count), detail })
+  const shown = await patchScene(
+    $,
+    { pose, line, stage: stageFor(pose, count), detail },
+    scene => scene.active && scene.session === session && staged.seq === seq,
+  )
+  if (!shown) return 0
+  afterTool?.cancel()
+  afterTool = null
+  staged = { seq, shownAt: await $.clock.now() }
   return seq
 }
 
@@ -98,27 +133,29 @@ function startTicker($: EngineInterface): void {
   })
 }
 
-function stopTicker(): void {
-  ticker?.cancel()
-  ticker = null
+function stopTimers(): void {
+  for (const timer of [ticker, lingerTimer, afterTool]) timer?.cancel()
+  ticker = lingerTimer = afterTool = null
 }
 
 async function convene($: EngineInterface): Promise<void> {
-  const scene = await sceneOf($)
-  if (!scene.active) await $.state.set(SCENE, { ...IDLE, active: true })
+  const { value, version } = await $.state.get(SCENE)
+  if (!value?.active) {
+    await $.state.set(SCENE, { ...IDLE, active: true, session: (value?.session ?? 0) + 1 }, { ifVersion: version })
+  }
   $.ui.status(STATUS_TEXT)
 }
 
 async function adjourn($: EngineInterface): Promise<void> {
-  stopTicker()
-  lingerTimer?.cancel()
-  lingerTimer = null
-  await $.state.set(SCENE, IDLE)
+  stopTimers()
+  staged.seq++
+  const scene = await sceneOf($)
+  await $.state.set(SCENE, { ...IDLE, session: scene.session + 1 })
   $.ui.status(undefined)
 }
 
 /** Runs an observer without ever letting it break the event it watches. */
-async function quietly(work: () => Promise<void>): Promise<void> {
+async function quietly(work: () => Promise<unknown>): Promise<void> {
   try {
     await work()
   } catch {
@@ -148,9 +185,12 @@ export function register(on: On) {
       const { value: ledger } = await $.state.get(LEDGER)
       if (!ledger) await $.state.set(LEDGER, { seed: (await $.clock.now()) >>> 0, count: 0, used: [] })
       const mode = await modeOf($)
+      if (mode === 'never') return adjourn($)
+      // A hot reload runs this again with the old timers gone: clear the
+      // moment-to-moment display, keep whether the court is in session.
       const scene = await sceneOf($)
-      if (mode === 'never') await adjourn($)
-      else if (mode === 'always' || scene.active) await convene($)
+      if (scene.active) await $.state.set(SCENE, { ...IDLE, active: true, session: scene.session })
+      if (mode === 'always' || scene.active) await convene($)
     })
     return result
   })
@@ -178,7 +218,12 @@ export function register(on: On) {
     }
     const scene = await sceneOf($)
     const mode = await modeOf($)
-    return { text: `${COURT_HELP}\n\nNow: ${scene.active ? 'in session' : 'adjourned'} (mode: ${mode}).` }
+    const { value: ledger } = await $.state.get(LEDGER)
+    const spoken = ledger?.used.length ?? 0
+    const repeats = spoken - new Set(ledger?.used ?? []).size
+    return {
+      text: `${COURT_HELP}\n\nNow: ${scene.active ? 'in session' : 'adjourned'} (mode: ${mode}). Lines spoken this session: ${spoken}, ${repeats === 0 ? 'none repeated' : `${repeats} repeated`}.`,
+    }
   })
 
   on('prompt.submit', async ($, e, next) => {
@@ -200,8 +245,7 @@ export function register(on: On) {
   on('turn.start', async ($, e, next) => {
     await quietly(async () => {
       if ((e as { agentId?: string }).agentId) return
-      const scene = await sceneOf($)
-      if (!scene.active) return
+      if (!(await sceneOf($)).active) return
       lingerTimer?.cancel()
       lingerTimer = null
       await patchScene($, { linger: false })
@@ -213,32 +257,36 @@ export function register(on: On) {
 
   on('tool.call', async ($, e, next) => {
     const isMain = !e.agentId
-    let seq = 0
-    await quietly(async () => {
-      if (e.tool === 'Skill' && isCourtSkill(String((e as { skill?: unknown }).skill ?? ''))) await convene($)
-      if (!isMain || !(await sceneOf($)).active) return
-      const input = e as unknown as Record<string, unknown>
-      seq = await stage($, classifyTool(e.tool, input), detailOf(e.tool, input))
-    })
+    const input = e as unknown as Record<string, unknown>
+    // The court dresses the scene while the tool runs; the tool does not wait for it.
+    const before = isMain
+      ? (async () => {
+          if (e.tool === 'Skill' && isCourtSkill(String(input.skill ?? '')) && (await modeOf($)) !== 'never') {
+            await convene($)
+          }
+          if (!(await sceneOf($)).active) return 0
+          return stage($, classifyTool(e.tool, input), detailOf(e.tool, input))
+        })().catch(() => 0)
+      : Promise.resolve(0)
     const result = await next(e)
-    if (seq !== 0) {
-      await quietly(async () => {
-        if (!(await sceneOf($)).active || staged.seq !== seq) return
-        if (result.isError) {
-          await stage($, 'error', null)
-          return
-        }
-        // Let a quick action (an edit takes milliseconds) stay on screen long enough to be seen.
-        const wait = MIN_SHOW_MS - ((await $.clock.now()) - staged.at)
-        if (wait <= 0) {
-          await stage($, 'deliberate', null)
-          return
-        }
-        afterTool = $.clock.after(wait, () => {
-          if (staged.seq === seq) void stage($, 'deliberate', null).catch(() => {})
-        })
+    await quietly(async () => {
+      const seq = await before
+      if (seq === 0 || staged.seq !== seq) return
+      if (result.isError) {
+        await stage($, 'error', null)
+        return
+      }
+      // Let a quick action (an edit takes milliseconds) stay on screen long enough to be seen.
+      const wait = MIN_SHOW_MS - ((await $.clock.now()) - staged.shownAt)
+      if (wait <= 0) {
+        await stage($, 'deliberate', null)
+        return
+      }
+      afterTool?.cancel()
+      afterTool = $.clock.after(wait, () => {
+        if (staged.seq === seq) void stage($, 'deliberate', null).catch(() => {})
       })
-    }
+    })
     return result
   })
 
@@ -246,16 +294,22 @@ export function register(on: On) {
     const result = await next(e)
     await quietly(async () => {
       if (e.agentId) return
-      stopTicker()
       afterTool?.cancel()
       afterTool = null
-      const scene = await sceneOf($)
-      if (!scene.active) return
-      await stage($, e.reason === 'answer' ? 'success' : 'grumble', null)
+      if (!(await sceneOf($)).active) return stopTimers()
+      const seq = await stage($, e.reason === 'answer' ? 'success' : 'grumble', null)
+      if (seq === 0) return
       await patchScene($, { linger: true })
+      // The closing pose keeps its two-frame animation until it leaves.
       lingerTimer?.cancel()
       lingerTimer = $.clock.after(LINGER_MS, () => {
-        void patchScene($, { linger: false, pose: 'portrait', line: null, stage: null, detail: null }).catch(() => {})
+        ticker?.cancel()
+        ticker = null
+        void patchScene(
+          $,
+          { linger: false, pose: 'portrait', line: null, stage: null, detail: null },
+          scene => scene.active && staged.seq === seq,
+        ).catch(() => {})
       })
     })
     return result
@@ -321,8 +375,7 @@ export function register(on: On) {
   })
 
   on('session.end', async ($, e, next) => {
-    stopTicker()
-    lingerTimer?.cancel()
+    stopTimers()
     return next(e)
   })
 }

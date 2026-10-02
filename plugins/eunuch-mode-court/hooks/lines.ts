@@ -513,20 +513,36 @@ function mix(a: number, b: number): number {
   return (h ^ (h >>> 16)) >>> 0
 }
 
+// Generated lines that suit any ordinary action, the overflow once an
+// activity's own pool and family are spent.
+const NEUTRAL: readonly Activity[] = ['bash', 'think', 'edit']
+
 /**
  * The next line for `activity`, never one in `used`: the curated pool first,
- * then the generated court lines for its family. Only when both are spent
- * (hundreds of calls of one kind) does it start the pool again.
+ * then the generated court lines for its family, then the neutral generated
+ * lines. Only when all of those are spent (hundreds of calls) does it start
+ * the curated pool again, so a session that long hears a repeat.
  *
  * @param seed varies the order between sessions
  * @param count how many lines the session has drawn, so equal states still advance
  */
 export function pickLine(activity: Activity, used: ReadonlySet<string>, seed: number, count: number): string {
-  const fresh = POOLS[activity].filter(line => !used.has(line))
-  const candidates = fresh.length > 0 ? fresh : generatedLines(activity).filter(line => !used.has(line))
-  if (candidates.length > 0) return candidates[mix(seed, count) % candidates.length]!
+  const tiers: (() => readonly string[])[] = [
+    () => POOLS[activity],
+    () => generatedLines(activity),
+    () => NEUTRAL.flatMap(generatedLines),
+  ]
+  for (const tier of tiers) {
+    const candidates = tier().filter(line => !used.has(line))
+    if (candidates.length > 0) return candidates[mix(seed, count) % candidates.length]!
+  }
   const pool = POOLS[activity]
   return pool[mix(seed, count) % pool.length]!
+}
+
+/** How many draws of one activity a session gets before any line repeats. */
+export function capacityOf(activity: Activity): number {
+  return new Set([...POOLS[activity], ...generatedLines(activity), ...NEUTRAL.flatMap(generatedLines)]).size
 }
 
 /** The stage direction for a pose, cycling through its list. */
@@ -535,16 +551,19 @@ export function stageFor(pose: Pose, count: number): string {
   return list[count % list.length]!
 }
 
-// A command's activity is decided by the first rule it matches, so the
-// dangerous ones come first. Patterns read the command text only: a safety
-// net for the narration, not a policy (the mod never blocks anything).
+// A command's activity is decided by the first rule any of its simple
+// commands matches, so the dangerous ones come first. The alarm rules (lease,
+// treason, peril) and the other git rules are anchored to the start of a
+// simple command, so `echo "git push --force"` or `rg "rm -rf"` alarms nobody,
+// and a dry run (`git clean -n`) is not peril. They read the command text
+// only: narration, not a policy (the mod never blocks anything).
 const BASH_RULES: ReadonlyArray<readonly [Activity, RegExp]> = [
-  ['lease', /\bgit\s+push\b[^|;&]*--force-with-lease\b/],
-  ['treason', /\bgit\s+push\b[^|;&]*(?:\s--force\b|\s-f\b|\s\+[\w/.-]+)/],
-  ['peril', /\brm\s+-[a-zA-Z]*r[a-zA-Z]*f|\brm\s+-[a-zA-Z]*f[a-zA-Z]*r|\bgit\s+reset\s+--hard\b|\bgit\s+clean\s+-[a-zA-Z]*f|\bdrop\s+(?:table|database)\b|\bRemove-Item\b[^|;&]*-Recurse/i],
-  ['edit', /\bsed\s+(?:-[a-zA-Z]+\s+)*-[a-zA-Z]*i|\bsed\s+--in-place\b|\bperl\s+-[a-zA-Z]*p[a-zA-Z]*i|\bpatch\s|\bgit\s+apply\b/],
-  ['commit', /\bgit\s+(?:commit|tag)\b/],
-  ['push', /\bgit\s+push\b|\bgh\s+(?:pr\s+create|release\s+create)\b/],
+  ['lease', /^git\s+push\b.*--force-with-lease\b/],
+  ['treason', /^git\s+push\b.*(?:\s--force(?![-\w])|\s-[a-zA-Z]*f\b|\s\+\S+)/],
+  ['peril', /^rm\s+(?:\S+\s+)*-[a-zA-Z]*(?:r[a-zA-Z]*f|f[a-zA-Z]*r)|^rm\s+(?:.*\s)?(?:-r|--recursive)\s(?:.*\s)?(?:-f|--force)\b|^rm\s+(?:.*\s)?(?:-f|--force)\s(?:.*\s)?(?:-r|--recursive)\b|^git\s+reset\s+(?:.*\s)?--hard\b|^git\s+clean(?!.*\s-[a-zA-Z]*n)(?!.*--dry-run)\s+(?:.*\s)?-[a-zA-Z]*f|^Remove-Item\b.*-Recurse/i],
+  ['edit', /^sed\s+(?:-\S+\s+)*-[a-zA-Z]*i|^sed\s+(?:.*\s)?--in-place\b|^perl\s+-[a-zA-Z]*p[a-zA-Z]*i|^patch\b|^git\s+apply\b/],
+  ['commit', /^git\s+(?:commit|tag)\b/],
+  ['push', /^git\s+push\b|^gh\s+(?:pr\s+create|release\s+create)\b/],
   ['tests', /\b(?:pytest|jest|vitest|mocha|rspec|phpunit|ctest|tox|nox|playwright\s+test|go\s+test|cargo\s+(?:test|nextest)|(?:npm|pnpm|yarn|bun)\s+(?:run\s+)?test|dotnet\s+test|mvn\s+test|gradle\w*\s+test|plugin\s+test|unittest)\b|\bnode\s+--test\b/],
   ['rust', /\b(?:cargo|rustc|rustup|clippy)\b/],
   ['install', /\b(?:npm\s+(?:i|install|ci|add)|pnpm\s+(?:i|install|add)|yarn\s+(?:add|install)|bun\s+(?:i|install|add)|pip3?\s+install|uv\s+(?:add|sync|pip)|poetry\s+(?:add|install)|apt(?:-get)?\s+install|brew\s+install|gem\s+install|go\s+get|choco\s+install|scoop\s+install|winget\s+install)\b/],
@@ -553,12 +572,28 @@ const BASH_RULES: ReadonlyArray<readonly [Activity, RegExp]> = [
   ['infra', /\b(?:docker|podman|kubectl|helm|terraform|tofu|pulumi|ansible|wrangler|vercel|fly|aws|gcloud|az)\b/],
   ['db', /\b(?:psql|mysql|sqlite3|mongosh|redis-cli|prisma|alembic|knex|sequelize|migrate)\b/],
   ['courier', /\b(?:curl|wget|http|xh|Invoke-WebRequest|Invoke-RestMethod)\b/],
-  ['git', /\bgit\b|\bgh\b/],
+  ['git', /^(?:git|gh)\b/],
 ]
+
+/**
+ * A command's simple commands, with quoted text and comments blanked and
+ * leading `sudo`, `env` and VAR=value prefixes dropped.
+ */
+export function segmentsOf(command: string): string[] {
+  const blanked = command
+    .replace(/'[^']*'/g, "''")
+    .replace(/"(?:[^"\\]|\\.)*"/g, '""')
+    .replace(/(^|\s)#[^\n]*/g, '$1')
+  return blanked
+    .split(/&&|\|\||[;|\n&]/)
+    .map(part => part.trim().replace(/^(?:(?:sudo|env|command|exec|time|nohup)\s+|[A-Za-z_][A-Za-z0-9_]*=\S*\s+)+/, ''))
+    .filter(part => part.length > 0)
+}
 
 /** The activity a Bash (or PowerShell) command is narrated as. */
 export function classifyCommand(command: string): Activity {
-  for (const [activity, pattern] of BASH_RULES) if (pattern.test(command)) return activity
+  const segments = segmentsOf(command)
+  for (const [activity, pattern] of BASH_RULES) if (segments.some(part => pattern.test(part))) return activity
   return 'bash'
 }
 

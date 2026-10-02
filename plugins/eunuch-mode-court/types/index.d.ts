@@ -8,6 +8,8 @@ export type CourtPose = 'portrait' | 'bow' | 'scribble' | 'whisper' | 'alarm' | 
 export type CourtScene = {
   /** Whether the court is in session (the skill is on, or /court on). */
   active: boolean
+  /** Bumped on every convene and adjourn, so a scene drawn for an earlier sitting is never written over a later one. */
+  session: number
   /** The adviser's pose. */
   pose: CourtPose
   /** The spinner's narration while a turn runs, or the closing line after it. */
