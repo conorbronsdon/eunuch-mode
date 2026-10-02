@@ -12,3 +12,12 @@ jobs:
           python-version: '3.12'
       - run: python3 -m pip install Pillow==12.3.0
       - run: python3 scripts/validate.py --require-cards
+  court-mod:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.20'
+      - name: Court mod mapping and rotation tests
+        run: node --test plugins/eunuch-mode-court/test-node/*.test.mjs
