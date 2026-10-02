@@ -112,6 +112,20 @@ let plotLoading: Promise<Plot> | null = null
 // The no-repeat line ledger, kept the same way.
 let ledgerMem: CourtLedger | null = null
 let ledgerLoading: Promise<CourtLedger> | null = null
+// Mirror writes to $.state run one after another, so a slow earlier write never lands over a newer one.
+let mirrorChain: Promise<unknown> = Promise.resolve()
+// Bumped on every load and reload; work started under an older epoch keeps its hands off the new state.
+let epoch = 0
+
+function mirrorLedger($: EngineInterface, value: CourtLedger): void {
+  mirrorChain = mirrorChain.then(() => $.state.set(LEDGER, value)).catch(() => {})
+}
+function mirrorGen($: EngineInterface, value: GenState): void {
+  mirrorChain = mirrorChain.then(() => $.state.set(GEN, value)).catch(() => {})
+}
+function mirrorPlot($: EngineInterface, value: Plot): void {
+  mirrorChain = mirrorChain.then(() => $.state.set(PLOT, value)).catch(() => {})
+}
 let asidesSpoken = 0
 
 async function sceneOf($: EngineInterface): Promise<CourtScene> {
@@ -155,7 +169,7 @@ async function claimLine($: EngineInterface, line: string): Promise<{ claimed: b
   const ledger = await ledgerOf($)
   if (ledger.used.includes(line)) return { claimed: false, count: ledger.count }
   ledgerMem = { seed: ledger.seed, count: ledger.count + 1, used: [...ledger.used, line] }
-  void $.state.set(LEDGER, ledgerMem).catch(() => {})
+  mirrorLedger($, ledgerMem)
   return { claimed: true, count: ledger.count }
 }
 
@@ -219,7 +233,7 @@ async function updateGen<T>($: EngineInterface, fn: (gen: GenState) => { gen: Ge
   await genOf($)
   const { gen, result } = fn(genMem!)
   genMem = gen
-  void $.state.set(GEN, gen).catch(() => {})
+  mirrorGen($, gen)
   return result
 }
 
@@ -242,7 +256,7 @@ async function updatePlot<T>($: EngineInterface, fn: (plot: Plot) => { plot: Plo
   await plotOf($)
   const { plot, result } = fn(plotMem!)
   plotMem = plot
-  void $.state.set(PLOT, plot).catch(() => {})
+  mirrorPlot($, plot)
   return result
 }
 
@@ -305,6 +319,7 @@ async function takeFromBank($: EngineInterface, activity: Activity | 'aside'): P
  */
 async function generate($: EngineInterface, summary: ActivitySummary, seq: number): Promise<void> {
   if (!(await generativeOn($))) return
+  const mine = epoch
   const now = await $.clock.now()
   const allowed = await updateGen($, gen =>
     mayCall(gen, summary.activity, now)
@@ -329,6 +344,8 @@ async function generate($: EngineInterface, summary: ActivitySummary, seq: numbe
     line = null
   }
   const fresh = line
+  // A reload since the call began: its bookkeeping belongs to the old module.
+  if (mine !== epoch) return
   await updateGen($, gen => ({
     gen: {
       ...gen,
@@ -353,6 +370,7 @@ async function generate($: EngineInterface, summary: ActivitySummary, seq: numbe
 
 /** Generative mode, treachery's asides: banked for the next grievance, under the same guards. */
 async function generateAside($: EngineInterface, grievance: Grievance): Promise<void> {
+  const mine = epoch
   const now = await $.clock.now()
   const allowed = await updateGen($, gen =>
     mayCall(gen, 'aside', now)
@@ -377,6 +395,7 @@ async function generateAside($: EngineInterface, grievance: Grievance): Promise<
     fresh = null
   }
   const line = fresh
+  if (mine !== epoch) return
   await updateGen($, gen => ({
     gen: {
       ...gen,
@@ -494,6 +513,7 @@ export function register(on: On) {
         argumentHint: '[on|off|always|skill|never]',
         immediate: true,
       })
+      epoch++
       genMem = null
       genLoading = null
       plotMem = null
@@ -602,15 +622,19 @@ export function register(on: On) {
   })
 
   on('turn.start', async ($, e, next) => {
-    // The turn starts at once; the court dresses the scene beside it.
+    // The turn is claimed now, before any await, so work that lands after the
+    // turn has ended can tell; the scene is dressed beside the turn.
+    const isMain = !(e as { agentId?: string }).agentId
+    if (isMain) turnGen++
+    const myTurn = turnGen
     void quietly(async () => {
-      if ((e as { agentId?: string }).agentId) return
-      if (!(await sceneOf($)).active) return
-      turnGen++
+      if (!isMain) return
+      if (!(await sceneOf($)).active || turnGen !== myTurn) return
       lingerTimer?.cancel()
       lingerTimer = null
       await patchScene($, { linger: false })
-      const seq = await stage($, 'think', null)
+      const seq = await stage($, 'think', null, myTurn)
+      if (turnGen !== myTurn) return
       startTicker($)
       // Thinking lasts: a fresh line has time to arrive while it is still true.
       if (seq !== 0) void quietly(() => generate($, { activity: 'think', tool: 'none', ext: null, verb: null }, seq))

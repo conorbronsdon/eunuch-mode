@@ -33,8 +33,9 @@ export const GRIEVANCES: Record<Grievance, { weight: number; entry: string }> = 
 // What actually ships something: a push, a release, a publish, an apply or a deploy.
 // Read-only and preview commands (docker ps, kubectl get, terraform plan) are not deploys.
 const DEPLOY =
-  /^git\s+push\b|^gh\s+release\s+create\b|^gh\s+pr\s+merge\b|^(?:npm|pnpm|yarn|cargo|poetry|dotnet)\s+publish\b|^docker\s+push\b|^kubectl\s+(?:apply|rollout|set|scale)\b|^terraform\s+apply\b|^tofu\s+apply\b|^pulumi\s+up\b|^helm\s+(?:install|upgrade)\b|^(?:vercel|netlify|fly|flyctl|wrangler)\s+deploy\b|^vercel\s+--prod\b|^firebase\s+deploy\b/
-const DRY_RUN = /\s(?:--dry-run|-n\b|--draft|-[a-zA-Z]*n[a-zA-Z]*\b(?=.*git\s+push)|--check)\b|^git\s+push\b.*\s-[a-zA-Z]*n[a-zA-Z]*\b/
+  /^git\s+push\b|^gh\s+release\s+create\b|^gh\s+pr\s+merge\b|^(?:npm|pnpm|yarn|cargo|poetry|dotnet)\s+publish\b|^docker\s+push\b|^kubectl\s+(?:apply|set|scale|rollout\s+(?:restart|undo|resume))\b|^terraform\s+apply\b|^tofu\s+apply\b|^pulumi\s+up\b|^helm\s+(?:install|upgrade)\b|^(?:vercel|netlify|fly|flyctl|wrangler|firebase)\s+deploy\b|^vercel\s+--prod\b/
+// Previews and rehearsals, read per program: `-n` is a dry run for git push but a namespace for kubectl and helm.
+const DRY_RUN = /\s--dry-run(?:=(?:client|server|true))?(?=\s|$)|\s--draft\b|^git\s+push\b.*\s-[a-zA-Z]*n[a-zA-Z]*(?=\s|$)/
 
 /** When the plot is ripe. */
 export const PLOT_MAX = 10

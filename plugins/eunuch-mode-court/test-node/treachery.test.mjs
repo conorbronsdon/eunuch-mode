@@ -38,12 +38,12 @@ describe('grievances: the sins he notes', () => {
     assert.deepEqual(bash('git push origin main', false, FRIDAY), ['friday-deploy'])
     assert.deepEqual(bash('git push -f origin main', false, FRIDAY), ['force-push', 'friday-deploy'])
     assert.deepEqual(bash('git push origin main', false, MONDAY), [])
-    for (const deploy of ['npm publish', 'terraform apply -auto-approve', 'wrangler deploy', 'kubectl apply -f k8s/', 'gh release create v1.0']) {
+    for (const deploy of ['npm publish', 'terraform apply -auto-approve', 'wrangler deploy', 'kubectl apply -f k8s/', 'gh release create v1.0', 'kubectl apply -n prod -f k8s/', 'helm upgrade api ./chart -n prod', 'kubectl apply --dry-run=none -f k8s/', 'kubectl rollout restart deploy/api']) {
       assert.deepEqual(bash(deploy, false, FRIDAY), ['friday-deploy'], deploy)
     }
   })
   test('on a Friday, looking is not deploying', () => {
-    for (const command of ['docker ps', 'kubectl get pods', 'terraform plan', 'git push --dry-run origin main', 'git push -n origin main', 'gh pr create --draft', 'npm publish --dry-run', 'git status']) {
+    for (const command of ['docker ps', 'kubectl get pods', 'terraform plan', 'git push --dry-run origin main', 'git push -n origin main', 'git push -nf origin main', 'gh pr create --draft', 'npm publish --dry-run', 'kubectl apply --dry-run=client -f k8s/', 'kubectl rollout status deploy/api', 'kubectl rollout history deploy/api', 'git status']) {
       assert.deepEqual(bash(command, false, FRIDAY), [], command)
     }
   })
