@@ -1,7 +1,7 @@
 {
   "name": "eunuch-mode-court",
-  "version": "1.3.1",
-  "description": "A Claude Code mod for Eunuch Mode: while the skill is on, the palace adviser stands above the prompt in pixel art, posing for what the agent is doing; the spinner narrates each action in court language; and the status line reads \"Court in session\". Canned lines, no model calls; /court toggles it.",
+  "version": "1.4.0",
+  "description": "A Claude Code mod for Eunuch Mode: while the skill is on, the palace adviser stands above the prompt in pixel art, posing for what the agent is doing; the spinner narrates each action in court language; and the status line reads \"Court in session\". Canned lines by default; opt-in generative mode (fresh lines from Sonnet) and treachery mode (he plots your downfall, cosmetically). /court toggles it all.",
   "author": { "name": "Conor Bronsdon", "url": "https://github.com/conorbronsdon" },
   "homepage": "https://github.com/conorbronsdon/eunuch-mode",
   "repository": "https://github.com/conorbronsdon/eunuch-mode",

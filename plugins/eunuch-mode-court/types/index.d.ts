@@ -3,7 +3,7 @@
 // `ledger` is bookkeeping no drawing reads, so writing it redraws nothing;
 // `frame` is the animation tick, kept apart so a tick never races a scene change.
 
-export type CourtPose = 'portrait' | 'bow' | 'scribble' | 'whisper' | 'alarm' | 'sideeye' | 'smug'
+export type CourtPose = 'portrait' | 'bow' | 'scribble' | 'whisper' | 'alarm' | 'sideeye' | 'smug' | 'ledger' | 'conspire' | 'candle'
 
 export type CourtScene = {
   /** Whether the court is in session (the skill is on, or /court on). */
@@ -31,8 +31,27 @@ export type CourtLedger = {
   used: string[]
 }
 
+/** Generative mode's bookkeeping for the session (see hooks/generative.ts). */
+export type CourtGen = {
+  calls: number
+  fallbacks: number
+  lastAt: number
+  inflight: boolean
+  inputTokens: number
+  outputTokens: number
+  cache: Record<string, string[]>
+  recent: string[]
+}
+
+/** Treachery mode's hidden Ledger of Grievances (see hooks/treachery.ts). */
+export type CourtPlot = {
+  meter: number
+  counts: Partial<Record<'force-push' | 'failing-tests' | 'skipped-test' | 'no-verify' | 'giant-diff' | 'friday-deploy' | 'rm-rf' | 'revert', number>>
+  coups: number
+}
+
 declare module 'claude-code' {
   interface PluginState {
-    'eunuch-mode-court': { scene: CourtScene; ledger: CourtLedger; frame: number }
+    'eunuch-mode-court': { scene: CourtScene; ledger: CourtLedger; frame: number; gen: CourtGen; plot: CourtPlot }
   }
 }

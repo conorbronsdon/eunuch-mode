@@ -69,6 +69,15 @@ Full answer and ten more cases: [v1.1 recorded run](evals/runs/2026-09-30-claude
 
 These are natural-language requests, not CLI flags. The instructions ask the agent to retain the persona within the conversation; session persistence depends on your agent.
 
+## New in v1.4: the court poet, and the plot
+
+Two opt-in modes for the court mod, both off by default:
+
+- **Generative mode** (`/court generative on`): Sonnet writes fresh spinner lines on the fly, through Claude Code's own model call. It sends only the kind of action, the tool name, a file extension and a command verb: never paths, arguments, contents or prompts. It is rate-limited, capped at 100 calls a session, and falls back to the canned line instantly. Real lines from a live run: "Weighing the matter in the Hall of Quiet Counsel", "Consulting the Keeper of Scrolls on Pythonic matters".
+- **Treachery mode** (`/court treachery on`): he stays fawning to your face while a hidden Ledger of Grievances fills with your force-pushes, `--no-verify`s and Friday deploys. A plot meter rises, his pose escalates from side-eye to a candle-lit scheme, and at the top he attempts a coup, which always fails ("The coup has been postponed due to a merge conflict"). The plotting is purely cosmetic: he schemes; he cannot act.
+
+Details, costs and exactly what is sent: [plugin README](plugins/eunuch-mode-court/README.md#generative-mode-optional).
+
 ## New in v1.3: the court mod
 
 A [Claude Code mod](https://claude.dev/blog/getting-started-with-claude-code-mods/) puts the adviser on screen. While eunuch mode is on, he stands above your prompt in pixel art and poses for whatever the agent is doing. The spinner narrates each action in court language, and the status line reads `👑 Court in session`.

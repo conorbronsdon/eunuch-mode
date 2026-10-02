@@ -263,12 +263,13 @@ describe('detailOf', () => {
 })
 
 describe('sprites', () => {
-  test('every frame is 14 by 12 pixels drawn only in the palette', () => {
+  test('every frame is 12 pixels tall, 14 wide (20 with the hooded figure), drawn only in the palette', () => {
     for (const [pose, frames] of Object.entries(SPRITES)) {
+      const width = pose === 'conspire' ? 20 : 14
       for (const frame of frames) {
         assert.equal(frame.length, 12, pose)
         for (const row of frame) {
-          assert.equal(row.length, 14, `${pose}: ${row}`)
+          assert.equal(row.length, width, `${pose}: ${row}`)
           for (const ch of row) assert.ok(ch === '.' || ch in PALETTE, `${pose}: ${ch}`)
         }
       }
@@ -286,7 +287,7 @@ describe('sprites', () => {
     for (const pose of Object.keys(SPRITES)) {
       const rows = toRows(frameOf(pose, 0))
       assert.equal(rows.length, 6)
-      for (const runs of rows) assert.equal(runs.reduce((n, r) => n + [...r.text].length, 0), 14)
+      for (const runs of rows) assert.equal(runs.reduce((n, r) => n + [...r.text].length, 0), pose === 'conspire' ? 20 : 14)
     }
   })
 
