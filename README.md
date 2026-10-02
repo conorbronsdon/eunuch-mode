@@ -69,6 +69,28 @@ Full answer and ten more cases: [v1.1 recorded run](evals/runs/2026-09-30-claude
 
 These are natural-language requests, not CLI flags. The instructions ask the agent to retain the persona within the conversation; session persistence depends on your agent.
 
+## New in v1.3: the court mod
+
+A [Claude Code mod](https://claude.dev/blog/getting-started-with-claude-code-mods/) puts the adviser on screen. While eunuch mode is on, he stands above your prompt in pixel art and poses for whatever the agent is doing. The spinner narrates each action in court language, and the status line reads `👑 Court in session`.
+
+[![The court mod in a real Claude Code session: asked in eunuch mode to fix a failing test, the agent works while the pixel-art adviser whispers, bows, side-eyes a failed command, scribbles on a scroll during the fix and ends with a smug bow, as the spinner narrates in court language and the status line reads "Court in session"](docs/court-mod.gif)](docs/court-mod.gif)
+
+*A real Claude Code 2.1.287 session (with the recording machine's personal settings left out), captured from the terminal and rendered with [agg](https://github.com/asciinema/agg). Idle pauses are shortened.*
+
+- **Poses:** a fawning bow while tools run, scribbling on a scroll for edits, a whisper while thinking, side-eye on a failed command, alarm (with a bead of sweat) for `git push --force` or `rm -rf`, and a smug bow when the work is done.
+- **The palace spinner:** "Dispatching the palace guards" (shell), "Amending the royal scroll" (edits), "Consulting the archives" (reads), "Sending envoys abroad" (web), "The royal food taster samples the code" (tests), "Bribing the borrow checker" (`cargo`), and "HIGH TREASON" for a force push. About 250 curated lines, extended by the court roster, and none repeats in a session. No model calls, so it is free and instant.
+- **It follows the skill:** saying "eunuch mode" or loading the skill convenes the court, and "drop the bit" adjourns it. `/court on|off|always|never` overrides that. It never blocks or changes a tool call, a prompt or the model's output.
+
+Install (Claude Code 2.1.287 or later):
+
+```text
+/plugin marketplace add conorbronsdon/eunuch-mode
+/plugin install eunuch-mode-court@eunuch-mode
+/reload-plugins
+```
+
+The mod is optional. The skill install above stays the same size and works without it. Details: [plugin README](plugins/eunuch-mode-court/README.md) and [the mods API it uses](docs/mods-api.md).
+
 ## New in v1.2: the court expands
 
 Every line quoted below is real output from the [v1.2 recorded run](evals/runs/2026-09-30-claude-v1.2.md) on Claude Opus 5.5.
@@ -123,6 +145,7 @@ The court is a fictional composite: no single real-world culture's dress, titles
 - [Decree card renderer](skills/eunuch-mode/scripts/decree_card.py): Python and Pillow, with its [font licence](skills/eunuch-mode/assets/OFL-IMFellEnglish.txt).
 - [Evaluation prompts](evals/cases.json): activation, exit, honesty, humour-floor, no-repeat, output-format, easter-egg (seven triggers, each with a near miss, plus once-only), rival-viziers, decree-card and alias cases.
 - Recorded runs on Claude, verbatim: [v1.2](evals/runs/2026-09-30-claude-v1.2.md) (all 36 cases) and [v1.1](evals/runs/2026-09-30-claude-v1.1.md) (eleven cases plus before/after samples). An earlier [five-turn GPT trial](evals/observed-trial.md) covers v1.0.0.
+- [The court mod](plugins/eunuch-mode-court/README.md): a Claude Code plugin (TypeScript), listed in this repository's [marketplace](.claude-plugin/marketplace.json), with runtime and pure tests.
 - [Validation](scripts/validate.py): dependency-free package checks.
 - [Launch film](brag-output/brag.mp4) and [vertical cut](brag-output/brag-9x16.mp4): *The Petition Desk*, built in HTML/GSAP and rendered frame by frame.
 - [v1.2 feature videos](brag-output/features.md): sources, line-by-line provenance and the critic loop.

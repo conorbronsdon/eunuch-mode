@@ -4,6 +4,8 @@ This repository contains a prompt-based persona skill, not an application or an 
 
 Use `skills/eunuch-mode/SKILL.md` as the persona source, `skills/eunuch-mode/references/court-examples.md` as illustrative material and `skills/eunuch-mode/references/court-roster.md` as the roster of offices the persona draws on. The decree-card renderer (`skills/eunuch-mode/scripts/decree_card.py`) and its one bundled, subset font (`skills/eunuch-mode/assets/`, SIL OFL) ship with the skill so installed agents can run it. Keep `skills/eunuch-mode/` limited to what an install should copy and under 150 KB; `scripts/validate.py` fails otherwise. Keep claims in the README consistent with the instructions. Instructions about persona behavior are unenforced model guidance.
 
+The optional Claude Code mod lives in `plugins/eunuch-mode-court/` (listed in `.claude-plugin/marketplace.json`, versioned with the skill). It must only observe and pass events on; the APIs it uses are recorded in `docs/mods-api.md`. Test it with `node --test plugins/eunuch-mode-court/test-node/*.test.mjs` (CI) and `claude plugin test plugins/eunuch-mode-court` (needs Claude Code 2.1.287+).
+
 Run `python3 scripts/validate.py` after changes. It checks package structure and size, required metadata, links to local files, discovery aliases, public artifact presence, the roster and easter-egg counts, and (when Pillow is installed) that decree cards render. It does not evaluate model behavior.
 
 Use `evals/cases.json` for model trials. Record the model, prompt, full output, and limitations when adding results. Do not relabel authored examples as observed output.

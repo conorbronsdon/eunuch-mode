@@ -1,0 +1,4 @@
+{
+  "description": "The Eunuch Mode court: the adviser above the prompt, the palace spinner, the crown status line and /court",
+  "modules": ["./court.ts"]
+}

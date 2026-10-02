@@ -28,7 +28,10 @@ required = ["skills/eunuch-mode/SKILL.md", "skills/eunuch-mode/references/court-
             "brag-output/brag.jpg", "brag-output/README.md", "brag-output/LICENSES.md",
             "brag-output/facts.md", "brag-output/contact-sheet.jpg", "brag-output/features.md",
             "docs/decree-cards/friday-migration-dungeon.png", "docs/decree-cards/staging-approved.png",
-            "evals/runs/2026-09-30-claude-v1.2.md"] + ["brag-output/features/%s.mp4" % v for v in ("treason", "viziers", "decree")]
+            "evals/runs/2026-09-30-claude-v1.2.md", ".claude-plugin/marketplace.json", "docs/mods-api.md",
+            "docs/court-mod.gif"] + ["brag-output/features/%s.mp4" % v for v in ("treason", "viziers", "decree")] + [
+            "plugins/eunuch-mode-court/" + f for f in (".claude-plugin/plugin.json", "hooks/hooks.json", "hooks/court.ts",
+            "hooks/lines.ts", "hooks/sprites.ts", "types/index.d.ts", "tests/court.test.ts", "test-node/lines.test.mjs", "README.md")]
 for name in required:
     require((root/name).is_file(), "Missing file: "+name)
 
@@ -57,7 +60,23 @@ if roster.is_file():
 eggs = re.findall(r"^\| (?!The user|---).+\|$", skill.split("## Easter eggs")[-1].split("## ")[0], re.M) if "## Easter eggs" in skill else []
 require(12 <= len(eggs) <= 20, "Expected 12-20 easter eggs in SKILL.md, found %d" % len(eggs))
 
-for doc in ["README.md", "skills/eunuch-mode/SKILL.md", "AGENTS.md", "brag-output/README.md", "brag-output/LICENSES.md", "brag-output/features.md", "evals/runs/2026-09-30-claude-v1.2.md"]:
+# The court mod: a Claude Code plugin listed in this repository's marketplace, versioned with the skill.
+market_path = root/".claude-plugin"/"marketplace.json"
+plugin_path = root/"plugins"/"eunuch-mode-court"/".claude-plugin"/"plugin.json"
+if market_path.is_file() and plugin_path.is_file():
+    market = json.loads(read(market_path))
+    plugin = json.loads(read(plugin_path))
+    listed = {p["name"]: p for p in market.get("plugins", [])}
+    require("eunuch-mode-court" in listed, "marketplace.json does not list eunuch-mode-court")
+    entry = listed.get("eunuch-mode-court", {})
+    require((root/entry.get("source", "")).resolve() == plugin_path.parent.parent.resolve(), "marketplace.json source does not point at plugins/eunuch-mode-court")
+    skill_version = re.search(r'^  version: "([^"]+)"', read(skill_dir/"SKILL.md"), re.M)
+    for label, version in [("plugin.json", plugin.get("version")), ("marketplace.json", entry.get("version"))]:
+        require(skill_version is not None and version == skill_version.group(1), label+" version %s does not match the skill's %s" % (version, skill_version and skill_version.group(1)))
+    hooks = json.loads(read(plugin_path.parent.parent/"hooks"/"hooks.json"))
+    require(len(hooks.get("modules", [])) == 1, "A mod names exactly one hooks module")
+
+for doc in ["README.md", "skills/eunuch-mode/SKILL.md", "AGENTS.md", "brag-output/README.md", "brag-output/LICENSES.md", "brag-output/features.md", "evals/runs/2026-09-30-claude-v1.2.md", "docs/mods-api.md", "plugins/eunuch-mode-court/README.md"]:
     if not (root/doc).is_file():
         continue  # already reported as missing
     text = read(root/doc)

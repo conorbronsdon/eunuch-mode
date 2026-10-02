@@ -1,0 +1,17 @@
+{
+  "name": "eunuch-mode",
+  "owner": { "name": "Conor Bronsdon", "url": "https://github.com/conorbronsdon" },
+  "metadata": {
+    "description": "Eunuch Mode for Claude Code: the court mod (an animated palace adviser, a palace spinner and a crown status line)."
+  },
+  "plugins": [
+    {
+      "name": "eunuch-mode-court",
+      "source": "./plugins/eunuch-mode-court",
+      "description": "The palace adviser above your prompt, a spinner that narrates each action in court language, and a crown status line while eunuch mode is on.",
+      "version": "1.3.0",
+      "license": "MIT",
+      "keywords": ["mod", "spinner", "persona", "humor"]
+    }
+  ]
+}
