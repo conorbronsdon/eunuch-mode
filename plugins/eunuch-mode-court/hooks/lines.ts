@@ -559,8 +559,8 @@ export function stageFor(pose: Pose, count: number): string {
 // only: narration, not a policy (the mod never blocks anything).
 const BASH_RULES: ReadonlyArray<readonly [Activity, RegExp]> = [
   ['lease', /^git\s+push\b.*--force-with-lease\b/],
-  ['treason', /^git\s+push(?!.*\s(?:--dry-run|-[a-zA-Z]*n)\b).*(?:\s--force(?![-\w])|\s-[a-zA-Z]*f\b|\s\+\S+)/],
-  ['peril', /^rm\s+(?:\S+\s+)*-[a-zA-Z]*(?:r[a-zA-Z]*f|f[a-zA-Z]*r)|^rm\s+(?:.*\s)?(?:-r|--recursive)\s(?:.*\s)?(?:-f|--force)\b|^rm\s+(?:.*\s)?(?:-f|--force)\s(?:.*\s)?(?:-r|--recursive)\b|^git\s+reset\s+(?:.*\s)?--hard\b|^git\s+clean(?!.*\s-[a-zA-Z]*n)(?!.*--dry-run)\s+(?:.*\s)?-[a-zA-Z]*f|^Remove-Item\b(?!.*-WhatIf\b).*-Recurse/i],
+  ['treason', /^git\s+push(?!.*\s(?:--dry-run\b|-[a-zA-Z]*n[a-zA-Z]*\b)).*(?:\s--force(?![-\w])|\s-[a-zA-Z]*f[a-zA-Z]*\b|\s\+\S+)/],
+  ['peril', /^rm\s+(?:\S+\s+)*-[a-zA-Z]*(?:r[a-zA-Z]*f|f[a-zA-Z]*r)|^rm\s+(?:.*\s)?(?:-r|--recursive)\s(?:.*\s)?(?:-f|--force)\b|^rm\s+(?:.*\s)?(?:-f|--force)\s(?:.*\s)?(?:-r|--recursive)\b|^git\s+reset\s+(?:.*\s)?--hard\b|^git\s+clean(?!.*\s-[a-zA-Z]*n)(?!.*--dry-run)\s+(?:.*\s)?-[a-zA-Z]*f|^Remove-Item\b(?!.*-WhatIf(?!:\$false)\b).*-Recurse/i],
   ['edit', /^sed\s+(?:-\S+\s+)*-[a-zA-Z]*i|^sed\s+(?:.*\s)?--in-place\b|^perl\s+-[a-zA-Z]*p[a-zA-Z]*i|^patch\b|^git\s+apply\b/],
   ['commit', /^git\s+(?:commit|tag)\b/],
   ['push', /^git\s+push\b|^gh\s+(?:pr\s+create|release\s+create)\b/],

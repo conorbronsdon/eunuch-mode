@@ -47,6 +47,9 @@ let afterTool: Timer | null = null
 // The newest scene and when it reached the screen, so a delayed return to
 // thinking never overwrites a later action.
 let staged = { seq: 0, shownAt: 0 }
+// Bumped when a turn starts and when it ends, so tool-call bookkeeping still
+// running in the background never redraws a turn that has finished.
+let turnGen = 0
 // Line draws run one at a time in this module, so two parallel tool calls
 // never draw the same line.
 let drawing: Promise<unknown> = Promise.resolve()
@@ -106,7 +109,8 @@ function drawLine($: EngineInterface, activity: Activity): Promise<{ line: strin
  * direction) unless a newer scene or an adjournment got there first.
  * Returns the scene's sequence number, or 0 when it was dropped.
  */
-async function stage($: EngineInterface, activity: Activity, detail: string | null): Promise<number> {
+async function stage($: EngineInterface, activity: Activity, detail: string | null, gen: number = turnGen): Promise<number> {
+  if (gen !== turnGen) return 0
   const seq = ++staged.seq
   const { session } = await sceneOf($)
   const { line, count } = await drawLine($, activity)
@@ -114,7 +118,7 @@ async function stage($: EngineInterface, activity: Activity, detail: string | nu
   const shown = await patchScene(
     $,
     { pose, line, stage: stageFor(pose, count), detail },
-    scene => scene.active && scene.session === session && staged.seq === seq,
+    scene => scene.active && scene.session === session && staged.seq === seq && gen === turnGen,
   )
   if (!shown) return 0
   const now = await $.clock.now()
@@ -142,9 +146,11 @@ function stopTimers(): void {
 }
 
 async function convene($: EngineInterface): Promise<void> {
+  const sitting = (await sceneOf($)).session
   for (let attempt = 0; attempt < 8; attempt++) {
     const { value, version } = await $.state.get(SCENE)
-    if (value?.active) break
+    // An adjournment (or another convening) got there first: it wins.
+    if (value?.active || (value?.session ?? 0) !== sitting) break
     const written = await $.state.set(SCENE, { ...IDLE, active: true, session: (value?.session ?? 0) + 1 }, { ifVersion: version })
     if (written.isSet) break
   }
@@ -252,6 +258,7 @@ export function register(on: On) {
     await quietly(async () => {
       if ((e as { agentId?: string }).agentId) return
       if (!(await sceneOf($)).active) return
+      turnGen++
       lingerTimer?.cancel()
       lingerTimer = null
       await patchScene($, { linger: false })
@@ -264,6 +271,7 @@ export function register(on: On) {
   on('tool.call', async ($, e, next) => {
     const isMain = !e.agentId
     const input = e as unknown as Record<string, unknown>
+    const gen = turnGen
     // The court dresses the scene while the tool runs; the tool does not wait for it.
     const before = isMain
       ? (async () => {
@@ -271,7 +279,7 @@ export function register(on: On) {
             await convene($)
           }
           if (!(await sceneOf($)).active) return 0
-          return stage($, classifyTool(e.tool, input), detailOf(e.tool, input))
+          return stage($, classifyTool(e.tool, input), detailOf(e.tool, input), gen)
         })().catch(() => 0)
       : Promise.resolve(0)
     const result = await next(e)
@@ -280,19 +288,19 @@ export function register(on: On) {
       const seq = await before
       if (seq === 0 || staged.seq !== seq) return
       if (result.isError) {
-        await stage($, 'error', null)
+        await stage($, 'error', null, gen)
         return
       }
       // Let a quick action (an edit takes milliseconds) stay on screen long enough to be seen.
       const wait = MIN_SHOW_MS - ((await $.clock.now()) - staged.shownAt)
       if (staged.seq !== seq) return
       if (wait <= 0) {
-        await stage($, 'deliberate', null)
+        await stage($, 'deliberate', null, gen)
         return
       }
       afterTool?.cancel()
       afterTool = $.clock.after(wait, () => {
-        if (staged.seq === seq) void stage($, 'deliberate', null).catch(() => {})
+        if (staged.seq === seq) void stage($, 'deliberate', null, gen).catch(() => {})
       })
     })
     return result
@@ -302,6 +310,7 @@ export function register(on: On) {
     const result = await next(e)
     await quietly(async () => {
       if (e.agentId) return
+      turnGen++
       afterTool?.cancel()
       afterTool = null
       if (!(await sceneOf($)).active) return stopTimers()
