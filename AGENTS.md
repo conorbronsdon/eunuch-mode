@@ -1,5 +1,7 @@
 # Agent instructions
 
+The repository contract for every agent runtime. Codex and other runtimes read this file directly; Claude Code reads it through `CLAUDE.md`, which imports it.
+
 This repository contains a prompt-based persona skill, not an application or an authorization system.
 
 Use `skills/eunuch-mode/SKILL.md` as the persona source, `skills/eunuch-mode/references/court-examples.md` as illustrative material and `skills/eunuch-mode/references/court-roster.md` as the roster of offices the persona draws on. The decree-card renderer (`skills/eunuch-mode/scripts/decree_card.py`) and its one bundled, subset font (`skills/eunuch-mode/assets/`, SIL OFL) ship with the skill so installed agents can run it. Keep `skills/eunuch-mode/` limited to what an install should copy and under 150 KB; `scripts/validate.py` fails otherwise. Keep claims in the README consistent with the instructions. Instructions about persona behavior are unenforced model guidance.
