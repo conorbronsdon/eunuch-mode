@@ -10,9 +10,10 @@ Checks:
 - every workflow sets a top-level `permissions:` key;
 - .github/dependabot.yml watches the `github-actions` ecosystem.
 
-Each run first self-tests the parser (a tag, a short SHA and a branch ref must
-be flagged; a full SHA pin and a local action must not), so a parser that
-stopped matching cannot pass silently.
+Each run first self-tests the parser (a tag, a short SHA, a branch ref and refs
+that only end in a SHA, such as v4@<sha>, must be flagged; a full SHA pin and a
+local action must not; a top-level permissions block must be recognised and a
+job-level one must not), so a parser that stopped matching cannot pass silently.
 """
 import re
 import sys
@@ -20,7 +21,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 USES = re.compile(r"""^\s*(?:-\s+)?uses:\s*["']?([^\s"'#]+)""")
-FULL_SHA = re.compile(r"@[0-9a-f]{40}$")
+# Exactly owner/repo[/path]@<40-hex SHA>: one "@", and the whole version is the SHA.
+FULL_SHA_PIN = re.compile(r"[^@\s]+@[0-9a-f]{40}")
 
 
 def unpinned_uses(text):
@@ -32,7 +34,7 @@ def unpinned_uses(text):
         ref = m.group(1)
         if ref.startswith("./") or ref.startswith("docker://"):
             continue
-        if not FULL_SHA.search(ref):
+        if not FULL_SHA_PIN.fullmatch(ref):
             bad.append(ref)
     return bad
 
@@ -48,6 +50,8 @@ def self_test():
         "tag": "      - uses: actions/checkout@v4\n",
         "short SHA": "      - uses: actions/checkout@11d5960\n",
         "branch": "        uses: actions/setup-node@main\n",
+        "tag before a SHA": "      - uses: actions/checkout@v4@%s # v4.4.0\n" % sha,
+        "doubled SHA": "      - uses: actions/checkout@%s@%s # v4.4.0\n" % (sha, sha),
     }
     for name, line in must_fire.items():
         if not unpinned_uses(line):
@@ -61,6 +65,8 @@ def self_test():
         errors.append("self-test: parser flagged a full SHA pin or local action")
     if has_top_level_permissions("jobs:\n  a:\n    permissions:\n      contents: read\n"):
         errors.append("self-test: job-level permissions counted as top-level")
+    if not has_top_level_permissions("on: push\npermissions:\n  contents: read\njobs: {}\n"):
+        errors.append("self-test: a top-level permissions block was not recognised")
     return errors
 
 
